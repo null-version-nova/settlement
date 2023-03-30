@@ -35,6 +35,7 @@ class RenderedWorld {
         val layer = mutableListOf<TileGroup2>()
         val preLayer = mutableListOf<TileGroup3>()
         val cell = cells[cellCoordinates] ?: return TileGroups2(layer)
+        println("Cell exists!")
         preLayer.addAll(cell.findAllInPlane(affectedAxis(direction), depth))
         for (i in preLayer) { layer.add(cell.slice(i, affectedAxis(direction))) }
         return TileGroups2(layer)
