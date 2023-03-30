@@ -7,10 +7,13 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileSet
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 import com.badlogic.gdx.math.MathUtils
 import org.nullversionnova.Identifier
+import org.nullversionnova.IntegerVector2
 import org.nullversionnova.IntegerVector3
 import org.nullversionnova.client.Client.Global.getTileTexture
+import org.nullversionnova.server.TileGroup2
+import org.nullversionnova.server.TileGroup3
+import org.nullversionnova.server.TileGroups2
 import org.nullversionnova.server.WorldCell
-import org.nullversionnova.server.base.Base
 
 class RenderedWorld {
     // Initialize
@@ -28,104 +31,24 @@ class RenderedWorld {
     var direction = 0
     var depth = 0
 
-    private fun getCellLayer(cell: IntegerVector3, cells: MutableMap<IntegerVector3,WorldCell>, direction: Int, depth: Int): Array<Array<Identifier>> {
-        lateinit var layer: Array<Array<Identifier>>
-        when (direction) {
-            0 -> {
-                layer = Array(WorldCell.CELL_SIZE_Y) {
-                    Array(WorldCell.CELL_SIZE_Z) {
-                        Identifier(Base.pack_identifier, "air")
-                    }
-                }
-                if (cells[cell] == null) { return layer }
-                for (j in 0 until WorldCell.CELL_SIZE_Y) {
-                    for (k in 0 until WorldCell.CELL_SIZE_Z) {
-                        layer[j][k] = getTileTexture(direction, cells[cell]!!.tilemap[depth][j][k])
-                    }
-                }
-                return layer
-            }
-            1 -> {
-                layer = Array(WorldCell.CELL_SIZE_Y) {
-                    Array(WorldCell.CELL_SIZE_Z) {
-                        Identifier(Base.pack_identifier, "air")
-                    }
-                }
-                if (cells[cell] == null) { return layer }
-                for (j in 0..WorldCell.CELL_SIZE_Y) {
-                    for (k in 0..WorldCell.CELL_SIZE_Z) {
-                        layer[j][k] = getTileTexture(direction, cells[cell]!!.tilemap[depth][j][k])
-                    }
-                }
-                return layer
-            }
-            2 -> {
-                layer = Array(WorldCell.CELL_SIZE_X) {
-                    Array(WorldCell.CELL_SIZE_Z) {
-                        Identifier(Base.pack_identifier, "air")
-                    }
-                }
-                if (cells[cell] == null) { return layer }
-                for (j in 0..WorldCell.CELL_SIZE_X) {
-                    for (k in 0..WorldCell.CELL_SIZE_Z) {
-                        layer[j][k] = getTileTexture(direction, cells[cell]!!.tilemap[j][depth][k])
-                    }
-                }
-                return layer
-            }
-            3 -> {
-                layer = Array(WorldCell.CELL_SIZE_X) {
-                    Array(WorldCell.CELL_SIZE_Z) {
-                        Identifier(Base.pack_identifier, "air")
-                    }
-                }
-                if (cells[cell] == null) { return layer }
-                for (j in 0..WorldCell.CELL_SIZE_X) {
-                    for (k in 0..WorldCell.CELL_SIZE_Z) {
-                        layer[j][k] = getTileTexture(direction, cells[cell]!!.tilemap[j][depth][k])
-                    }
-                }
-                return layer
-            }
-            4 -> {
-                layer = Array(WorldCell.CELL_SIZE_Y) {
-                    Array(WorldCell.CELL_SIZE_X) {
-                        Identifier(Base.pack_identifier, "air")
-                    }
-                }
-                if (cells[cell] == null) { return layer }
-                for (j in 0..WorldCell.CELL_SIZE_Y) {
-                    for (k in 0..WorldCell.CELL_SIZE_X) {
-                        layer[j][k] = getTileTexture(direction, cells[cell]!!.tilemap[k][j][depth])
-                    }
-                }
-                return layer
-            }
-            else -> {
-                layer = Array(WorldCell.CELL_SIZE_Y) {
-                    Array(WorldCell.CELL_SIZE_X) {
-                        Identifier(Base.pack_identifier, "air")
-                    }
-                }
-                if (cells[cell] == null) { return layer }
-                for (j in 0..WorldCell.CELL_SIZE_Y) {
-                    for (k in 0..WorldCell.CELL_SIZE_X) {
-                        layer[j][k] = getTileTexture(direction, cells[cell]!!.tilemap[k][j][depth])
-                    }
-                }
-                return layer
-            }
+    private fun getCellLayer(cellCoordinates: IntegerVector3, cells: MutableMap<IntegerVector3,WorldCell>, direction: Int, depth: Int): TileGroups2 {
+        val layer = mutableListOf<TileGroup2>()
+        val preLayer = mutableListOf<TileGroup3>()
+        val cell = cells[cellCoordinates] ?: return TileGroups2(layer)
+        preLayer.addAll(cell.findAllInPlane(affectedAxis(direction), depth))
+        for (i in preLayer) { layer.add(cell.slice(i, affectedAxis(direction))) }
+        return TileGroups2(layer)
+    }
+    private fun getTileLayer(layer: TileGroups2, map: TiledMap, axis : Int) : TiledMapTileLayer {
+        val tileLayer : TiledMapTileLayer = when(axis) {
+            0 -> TiledMapTileLayer(WorldCell.CELL_SIZE_Y,WorldCell.CELL_SIZE_Z, Client.scale, Client.scale)
+            1 -> TiledMapTileLayer(WorldCell.CELL_SIZE_X,WorldCell.CELL_SIZE_Z, Client.scale, Client.scale)
+            else -> TiledMapTileLayer(WorldCell.CELL_SIZE_X,WorldCell.CELL_SIZE_Y, Client.scale, Client.scale)
         }
-    } // organize better
-    private fun getTileLayer(layer: Array<Array<Identifier>>, map: TiledMap) : TiledMapTileLayer {
-        val tileLayer = TiledMapTileLayer(layer.size,layer[0].size, Client.scale, Client.scale)
-        for (i in layer.indices) {
-            for (j in layer[0].indices) {
-                tileLayer.setCell(i,j, TiledMapTileLayer.Cell().setTile(textureIds[layer[i][j]]?.let {
-                    map.tileSets.getTile(
-                        it
-                    )
-                }))
+        for (i in 0 until tileLayer.width) {
+            for (j in 0 until tileLayer.height) {
+                tileLayer.setCell(i,j, TiledMapTileLayer.Cell().setTile(textureIds[getTileTexture(axis,layer.findTileGroup(
+                    IntegerVector2(i,j)).identifier)]?.let { map.tileSets.getTile(it) }))
             }
         }
         return tileLayer
@@ -143,7 +66,7 @@ class RenderedWorld {
                 1 -> IntegerVector3(cameraCellCoordinates.x, cameraCellCoordinates.y + displacement,cameraCellCoordinates.z)
                 else -> IntegerVector3(cameraCellCoordinates.x,cameraCellCoordinates.y,cameraCellCoordinates.z + displacement)
             }
-            map.layers.add(getTileLayer(getCellLayer(newCameraPosition, cells, direction, depthDirection(depth,direction,i)),map))
+            map.layers.add(getTileLayer(getCellLayer(newCameraPosition, cells, direction, depthDirection(depth,direction,i)),map, affectedAxis(direction)))
         }
         println("Reloaded!")
         return map
@@ -159,9 +82,11 @@ class RenderedWorld {
             }
         }
         fun affectedAxis(direction: Int) : Int {
-            return if (direction == 0 || direction == 1) { 0 }
-            else if (direction == 2 || direction == 3) { 1 }
-            else { 2 }
+            return when (direction) {
+                0, 1 -> { 0 }
+                2, 3 -> { 1 }
+                else -> { 2 }
+            }
         }
     }
 }

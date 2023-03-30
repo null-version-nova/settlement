@@ -8,4 +8,17 @@ data class IntegerVector3(val x: Int, val y: Int, val z: Int) {
     fun toVector3() : Vector3 {
         return Vector3(x.toFloat(),y.toFloat(),z.toFloat())
     }
+    fun getAxisFromInt(axis: Int) : Int {
+        return when (axis) {
+            0 -> {
+                x
+            }
+            1 -> {
+                y
+            }
+            else -> {
+                z
+            }
+        }
+    }
 }

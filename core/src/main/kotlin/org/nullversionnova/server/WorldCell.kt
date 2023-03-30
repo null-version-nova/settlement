@@ -12,13 +12,12 @@ class WorldCell {
     var loadedStaticEntities = mutableListOf<StaticEntity>()
 
     // Methods
-    fun sortMap() { tilemap.sortWith(compareBy({ it.cornerA.x },{ it.cornerA.y },{ it.cornerA.z })) }
     fun checkAllInBounds(tileGroup: TileGroup3) : MutableSet<IntegerVector3> {
         val set = mutableSetOf<IntegerVector3>()
         for (i in 0 until CELL_SIZE_X) {
-            if (i > lowerNumber(tileGroup.cornerA.x,tileGroup.cornerB.x) && i < higherNumber(tileGroup.cornerA.x,tileGroup.cornerB.x)) {
+            if (i > tileGroup.getLesserOnAxis(0).x && i < tileGroup.getGreaterOnAxis(0).x) {
                 for (j in 0 until CELL_SIZE_Y) {
-                    if (i > lowerNumber(tileGroup.cornerA.y,tileGroup.cornerB.y) && i < higherNumber(tileGroup.cornerA.y,tileGroup.cornerB.y)) {
+                    if (j > tileGroup.getLesserOnAxis(1).y && j < tileGroup.getGreaterOnAxis(1).y) {
                         for (k in 0 until CELL_SIZE_Z) {
                             set.add(IntegerVector3(i,j,k))
                         }
@@ -30,22 +29,15 @@ class WorldCell {
     }
     fun findTileGroup(position: IntegerVector3) : Int {
         val candidates = mutableSetOf<Int>()
-        for (j in 0 until tilemap.size) {
-            if (position.x >= lowerNumber(tilemap[j].cornerA.x,tilemap[j].cornerB.x) && position.x <= higherNumber(tilemap[j].cornerA.x,tilemap[j].cornerB.x)) {
-                candidates.add(j)
-            }
+        for (i in findAllInPlane(0, position.x)) {
+            candidates.add(tilemap.indexOf(i))
         }
-        for (j in 0 until tilemap.size) {
-            if (position.y <= lowerNumber(tilemap[j].cornerA.y,tilemap[j].cornerB.y) || position.y >= higherNumber(tilemap[j].cornerA.y,tilemap[j].cornerB.y)) {
-                candidates.remove(j)
-            }
+        for (i in 0 until tilemap.size) {
+            if (position.y <= tilemap[i].getLesserOnAxis(1).y || position.y >= tilemap[i].getGreaterOnAxis(1).y) { candidates.remove(i) }
         }
-        for (j in 0 until tilemap.size) {
-            if (position.z <= lowerNumber(tilemap[j].cornerA.z,tilemap[j].cornerB.z) || position.z >= higherNumber(tilemap[j].cornerA.z,tilemap[j].cornerB.z)) {
-                candidates.remove(j)
-            }
+        for (i in 0 until tilemap.size) {
+            if (position.z <= tilemap[i].getLesserOnAxis(2).z || position.z >= tilemap[i].getGreaterOnAxis(2).z) { candidates.remove(i) }
         }
-
         return candidates.first()
     }
     fun slice(tileGroup: TileGroup3, direction: Int) : TileGroup2 {
@@ -73,19 +65,12 @@ class WorldCell {
         }
         return TileGroup2(cornerA, cornerB, tileGroup.identifier)
     }
-    fun lowerNumber(first: Int, second: Int) : Int {
-        return if (first > second) {
-            first
-        } else {
-            second
+    fun findAllInPlane(axis: Int, depth: Int) : MutableSet<TileGroup3> {
+        val candidates = mutableSetOf<TileGroup3>()
+        for (j in tilemap) {
+            if (depth >= j.getLesserOnAxis(axis).getAxisFromInt(axis) && depth <= j.getGreaterOnAxis(axis).getAxisFromInt(axis)) { candidates.add(j) }
         }
-    }
-    fun higherNumber(first: Int, second: Int) : Int {
-        return if (first < second) {
-            first
-        } else {
-            second
-        }
+        return candidates
     }
 
     // Companions
