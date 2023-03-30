@@ -38,6 +38,8 @@ class RenderedWorld {
         println("Cell exists!")
         preLayer.addAll(cell.findAllInPlane(affectedAxis(direction), depth))
         for (i in preLayer) { layer.add(cell.slice(i, affectedAxis(direction))) }
+        println(layer.size)
+        println(layer[0].cornerB.x)
         return TileGroups2(layer)
     }
     private fun getTileLayer(layer: TileGroups2, map: TiledMap, axis : Int) : TiledMapTileLayer {
