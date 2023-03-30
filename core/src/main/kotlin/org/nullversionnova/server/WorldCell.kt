@@ -70,7 +70,6 @@ class WorldCell {
         for (j in tilemap) {
             if (depth >= j.getLesserOnAxis(axis).getAxisFromInt(axis) && depth <= j.getGreaterOnAxis(axis).getAxisFromInt(axis)) {
                 candidates.add(j)
-                println("Tilegroup found!")
             }
         }
         return candidates
