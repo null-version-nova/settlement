@@ -46,9 +46,7 @@ class RenderedWorld {
             else -> TiledMapTileLayer(WorldCell.CELL_SIZE_X,WorldCell.CELL_SIZE_Y, Client.scale, Client.scale)
         }
         for (i in 0 until tileLayer.width) {
-            println(i)
             for (j in 0 until tileLayer.height) {
-                println(j)
                 tileLayer.setCell(i,j, TiledMapTileLayer.Cell().setTile(textureIds[getTileTexture(axis,layer.findTileGroup(
                     IntegerVector2(i,j)).identifier)]?.let { map.tileSets.getTile(it) }))
             }
