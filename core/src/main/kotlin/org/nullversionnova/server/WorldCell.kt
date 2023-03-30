@@ -68,7 +68,10 @@ class WorldCell {
     fun findAllInPlane(axis: Int, depth: Int) : MutableSet<TileGroup3> {
         val candidates = mutableSetOf<TileGroup3>()
         for (j in tilemap) {
-            if (depth >= j.getLesserOnAxis(axis).getAxisFromInt(axis) && depth <= j.getGreaterOnAxis(axis).getAxisFromInt(axis)) { candidates.add(j) }
+            if (depth >= j.getLesserOnAxis(axis).getAxisFromInt(axis) && depth <= j.getGreaterOnAxis(axis).getAxisFromInt(axis)) {
+                candidates.add(j)
+                println("Tilegroup found!")
+            }
         }
         return candidates
     }
