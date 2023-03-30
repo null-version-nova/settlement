@@ -1,14 +1,12 @@
 package org.nullversionnova.server.base.entities
 
 import org.nullversionnova.Identifier
-import com.badlogic.gdx.graphics.Texture
 
 abstract class Entity(val identifier: Identifier) {
     // Members
     var tickable = false
     var maxHealth = 1
     private var health = maxHealth
-    private lateinit var sprite : Texture
 
     // Methods
     open fun tick() {}

@@ -5,7 +5,6 @@ import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
-import com.badlogic.gdx.math.MathUtils
 import org.nullversionnova.Identifier
 import org.nullversionnova.IntegerVector2
 import org.nullversionnova.IntegerVector3
@@ -14,6 +13,7 @@ import org.nullversionnova.server.TileGroup2
 import org.nullversionnova.server.TileGroup3
 import org.nullversionnova.server.TileGroups2
 import org.nullversionnova.server.WorldCell
+import kotlin.math.floor
 
 class RenderedWorld {
     // Initialize
@@ -60,7 +60,7 @@ class RenderedWorld {
         val map = TiledMap()
         map.tileSets.addTileSet(tileSet)
         for (i in 0..renderDistance) {
-            val displacement = MathUtils.floor(depthDirection(depth,direction,i).toFloat() / WorldCell.CELL_SIZE_X.toFloat())
+            val displacement = floor(depthDirection(depth,direction,i).toFloat() / WorldCell.CELL_SIZE_X.toFloat()).toInt()
             val newCameraPosition = when (affectedAxis(direction)) {
                 0 -> IntegerVector3(cameraCellCoordinates.x + displacement,cameraCellCoordinates.y,cameraCellCoordinates.z)
                 1 -> IntegerVector3(cameraCellCoordinates.x, cameraCellCoordinates.y + displacement,cameraCellCoordinates.z)

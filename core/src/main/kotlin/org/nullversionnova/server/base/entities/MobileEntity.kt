@@ -1,7 +1,7 @@
 package org.nullversionnova.server.base.entities
 
-import org.nullversionnova.Identifier
 import com.badlogic.gdx.math.Vector3
+import org.nullversionnova.Identifier
 
 class MobileEntity(identifier: Identifier, var position: Vector3) : Entity(identifier) {
 
