@@ -73,7 +73,7 @@ class RenderedWorld {
     }
 
     companion object Global {
-        const val renderDistance = 8
+        const val renderDistance = 16
         fun depthDirection(depth: Int, direction: Int, increase: Int) : Int {
             return depth + if (direction % 2 == 0) {
                 increase

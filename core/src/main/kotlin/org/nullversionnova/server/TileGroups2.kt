@@ -13,7 +13,6 @@ data class TileGroups2(val group: MutableList<TileGroup2>) {
     fun findTileGroup(position: IntegerVector2) : TileGroup2 {
         val candidates = mutableSetOf<TileGroup2>()
         for (i in findAllInPlane(0, position.x)) { candidates.add(i) }
-        println(candidates.size)
         for (i in candidates) { if (position.y < i.getLesserOnAxis(1).y || position.y > i.getGreaterOnAxis(1).y) { candidates.remove(i) } }
         return candidates.first()
     }

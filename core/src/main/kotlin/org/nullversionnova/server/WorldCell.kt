@@ -77,7 +77,7 @@ class WorldCell {
 
     // Companions
     companion object Global {
-        const val CELL_SIZE_X = 32
+        const val CELL_SIZE_X = 64
         const val CELL_SIZE_Y = CELL_SIZE_X
         const val CELL_SIZE_Z = CELL_SIZE_X
     }
