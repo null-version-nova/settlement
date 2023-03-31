@@ -1,5 +1,6 @@
 package org.nullversionnova.server
 
+import org.nullversionnova.Identifier
 import org.nullversionnova.IntegerVector2
 
 data class TileGroups2(val group: MutableList<TileGroup2>) {
@@ -24,5 +25,10 @@ data class TileGroups2(val group: MutableList<TileGroup2>) {
             }
         }
         return set
+    }
+    fun listAllTilesInGroup() : MutableSet<Identifier> {
+        val allTiles = mutableSetOf<Identifier>()
+        for (i in group) { allTiles.add(i.identifier) }
+        return allTiles
     }
 }

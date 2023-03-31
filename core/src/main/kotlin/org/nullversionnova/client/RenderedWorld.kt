@@ -3,6 +3,7 @@ package org.nullversionnova.client
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 import org.nullversionnova.Identifier
@@ -48,13 +49,15 @@ class RenderedWorld {
             1 -> TiledMapTileLayer(WorldCell.CELL_SIZE_X,WorldCell.CELL_SIZE_Z, Client.scale, Client.scale)
             else -> TiledMapTileLayer(WorldCell.CELL_SIZE_X,WorldCell.CELL_SIZE_Y, Client.scale, Client.scale)
         }
+        val allTiles = mutableMapOf<Identifier,Cell>()
+        println("Getting cells")
+        for (i in layer.listAllTilesInGroup()) {
+            allTiles[i] = Cell().setTile(textureIds[getTileTexture(axis,i)]?.let { map.tileSets.getTile(it) })
+        }
+        println("Cells gotten")
         for (i in 0 until tileLayer.width) {
             for (j in 0 until tileLayer.height) {
-                println("Starting cell creation")
-                val cell = TiledMapTileLayer.Cell().setTile(textureIds[getTileTexture(axis,layer.findTileGroup(
-                    IntegerVector2(i,j)).identifier)]?.let { map.tileSets.getTile(it) })
-                println("Finishing cell creation")
-                tileLayer.setCell(i,j, cell)
+                tileLayer.setCell(i,j, allTiles[layer.findTileGroup(IntegerVector2(i,j)).identifier])
             }
         }
         println("Tile processing complete for layer")
