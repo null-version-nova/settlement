@@ -41,7 +41,7 @@ class RenderedWorld {
         println("Layer processed")
         return TileGroups2(layer)
     }
-    private fun getTileLayer(layer: TileGroups2, map: TiledMap, axis : Int) : TiledMapTileLayer {
+    private fun getTileLayer(layer: TileGroups2, map: TiledMap, axis : Int) : TiledMapTileLayer { // Super-duper slow. Will look for alternatives.
         println("Getting textures for layer")
         val tileLayer : TiledMapTileLayer = when(axis) {
             0 -> TiledMapTileLayer(WorldCell.CELL_SIZE_Y,WorldCell.CELL_SIZE_Z, Client.scale, Client.scale)
@@ -50,8 +50,11 @@ class RenderedWorld {
         }
         for (i in 0 until tileLayer.width) {
             for (j in 0 until tileLayer.height) {
-                tileLayer.setCell(i,j, TiledMapTileLayer.Cell().setTile(textureIds[getTileTexture(axis,layer.findTileGroup(
-                    IntegerVector2(i,j)).identifier)]?.let { map.tileSets.getTile(it) }))
+                println("Starting cell creation")
+                val cell = TiledMapTileLayer.Cell().setTile(textureIds[getTileTexture(axis,layer.findTileGroup(
+                    IntegerVector2(i,j)).identifier)]?.let { map.tileSets.getTile(it) })
+                println("Finishing cell creation")
+                tileLayer.setCell(i,j, cell)
             }
         }
         println("Tile processing complete for layer")
