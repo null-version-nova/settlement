@@ -33,34 +33,28 @@ class RenderedWorld {
     var depth = 0
 
     private fun getCellLayer(cellCoordinates: IntegerVector3, cells: MutableMap<IntegerVector3,WorldCell>, direction: Int, depth: Int): TileGroups2 {
-        println("Processing layer")
         val layer = mutableListOf<TileGroup2>()
         val preLayer = mutableListOf<TileGroup3>()
         val cell = cells[cellCoordinates] ?: return TileGroups2(layer)
         preLayer.addAll(cell.tilemap.findAllInPlane(affectedAxis(direction), depth))
         for (i in preLayer) { layer.add(cell.slice(i, affectedAxis(direction))) }
-        println("Layer processed")
         return TileGroups2(layer)
     }
-    private fun getTileLayer(layer: TileGroups2, map: TiledMap, axis : Int) : TiledMapTileLayer { // Super-duper slow. Will look for alternatives.
-        println("Getting textures for layer")
+    private fun getTileLayer(layer: TileGroups2, map: TiledMap, axis : Int) : TiledMapTileLayer {
         val tileLayer : TiledMapTileLayer = when(axis) {
             0 -> TiledMapTileLayer(WorldCell.CELL_SIZE_Y,WorldCell.CELL_SIZE_Z, Client.scale, Client.scale)
             1 -> TiledMapTileLayer(WorldCell.CELL_SIZE_X,WorldCell.CELL_SIZE_Z, Client.scale, Client.scale)
             else -> TiledMapTileLayer(WorldCell.CELL_SIZE_X,WorldCell.CELL_SIZE_Y, Client.scale, Client.scale)
         }
         val allTiles = mutableMapOf<Identifier,Cell>()
-        println("Getting cells")
-        for (i in layer.listAllTilesInGroup()) {
+        for (i in layer.listAllTilesInGroup()) { // What a lifesaver!
             allTiles[i] = Cell().setTile(textureIds[getTileTexture(axis,i)]?.let { map.tileSets.getTile(it) })
         }
-        println("Cells gotten")
         for (i in 0 until tileLayer.width) {
             for (j in 0 until tileLayer.height) {
                 tileLayer.setCell(i,j, allTiles[layer.findTileGroup(IntegerVector2(i,j)).identifier])
             }
         }
-        println("Tile processing complete for layer")
         return tileLayer
     }
 
