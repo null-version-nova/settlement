@@ -32,14 +32,17 @@ class RenderedWorld {
     var depth = 0
 
     private fun getCellLayer(cellCoordinates: IntegerVector3, cells: MutableMap<IntegerVector3,WorldCell>, direction: Int, depth: Int): TileGroups2 {
+        println("Processing layer")
         val layer = mutableListOf<TileGroup2>()
         val preLayer = mutableListOf<TileGroup3>()
         val cell = cells[cellCoordinates] ?: return TileGroups2(layer)
         preLayer.addAll(cell.tilemap.findAllInPlane(affectedAxis(direction), depth))
         for (i in preLayer) { layer.add(cell.slice(i, affectedAxis(direction))) }
+        println("Layer processed")
         return TileGroups2(layer)
     }
     private fun getTileLayer(layer: TileGroups2, map: TiledMap, axis : Int) : TiledMapTileLayer {
+        println("Getting textures for layer")
         val tileLayer : TiledMapTileLayer = when(axis) {
             0 -> TiledMapTileLayer(WorldCell.CELL_SIZE_Y,WorldCell.CELL_SIZE_Z, Client.scale, Client.scale)
             1 -> TiledMapTileLayer(WorldCell.CELL_SIZE_X,WorldCell.CELL_SIZE_Z, Client.scale, Client.scale)
@@ -51,6 +54,7 @@ class RenderedWorld {
                     IntegerVector2(i,j)).identifier)]?.let { map.tileSets.getTile(it) }))
             }
         }
+        println("Tile processing complete for layer")
         return tileLayer
     }
 
