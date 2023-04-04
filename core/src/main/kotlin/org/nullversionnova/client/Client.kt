@@ -10,8 +10,8 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
 import com.beust.klaxon.Klaxon
-import org.nullversionnova.Identifier
-import org.nullversionnova.IntegerVector3
+import org.nullversionnova.data.Identifier
+import org.nullversionnova.data.IntegerVector3
 import org.nullversionnova.client.base.BaseClient
 import org.nullversionnova.server.Server
 
@@ -114,7 +114,7 @@ class Client : ApplicationListener, InputProcessor {
         const val scale = 8
         fun getTileTexture(direction: Int, identifier: Identifier): Identifier {
             val data = Klaxon().parse<TileTextureData>(Gdx.files.internal("${identifier.pack}/models/tiles/${identifier.name}.json").readString())
-                ?: return Identifier(BaseClient.pack_identifier,"default")
+                ?: return Identifier("core","default")
             if (direction == 4) {
                 return data.bottom
             }

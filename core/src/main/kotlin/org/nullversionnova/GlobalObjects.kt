@@ -1,6 +1,7 @@
 package org.nullversionnova
 
 import com.badlogic.gdx.math.Vector3
+import org.nullversionnova.data.IntegerVector3
 import org.nullversionnova.server.WorldCell
 import kotlin.math.floor
 

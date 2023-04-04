@@ -1,7 +1,6 @@
-package org.nullversionnova.server
+package org.nullversionnova.data
 
-import org.nullversionnova.Identifier
-import org.nullversionnova.IntegerVector2
+import org.nullversionnova.server.WorldCell
 
 data class TileGroups2(val group: MutableList<TileGroup2>) {
     fun findAllInPlane(axis: Int, depth: Int) : MutableSet<TileGroup2> {

@@ -1,6 +1,6 @@
 package org.nullversionnova.server.base.entities
 
-import org.nullversionnova.Identifier
+import org.nullversionnova.data.Identifier
 
 abstract class Entity(val identifier: Identifier) {
     // Members

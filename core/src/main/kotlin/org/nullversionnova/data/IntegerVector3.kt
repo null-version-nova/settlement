@@ -1,4 +1,4 @@
-package org.nullversionnova
+package org.nullversionnova.data
 
 import com.badlogic.gdx.math.Vector3
 

@@ -1,6 +1,4 @@
-package org.nullversionnova.server
-
-import org.nullversionnova.IntegerVector3
+package org.nullversionnova.data
 
 data class TileGroups3(val group: MutableList<TileGroup3>) {
     fun findTileGroup(position: IntegerVector3) : TileGroup3 {

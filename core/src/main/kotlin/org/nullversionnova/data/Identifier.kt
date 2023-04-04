@@ -1,4 +1,4 @@
-package org.nullversionnova
+package org.nullversionnova.data
 
 import org.nullversionnova.server.base.Base
 

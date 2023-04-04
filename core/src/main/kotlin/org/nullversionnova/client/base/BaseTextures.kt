@@ -5,6 +5,7 @@ import org.nullversionnova.client.base.BaseClient.getId
 
 object BaseTextures {
     fun loadTextures(registry: ClientRegistry) {
-        registry.loadTextureFromTile(getId("rock"))
+        registry.loadTexture(getId("rock"))
+        registry.loadTexture(getId("sand"))
     }
 }

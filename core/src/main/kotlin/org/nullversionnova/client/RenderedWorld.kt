@@ -6,13 +6,13 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
-import org.nullversionnova.Identifier
-import org.nullversionnova.IntegerVector2
-import org.nullversionnova.IntegerVector3
+import org.nullversionnova.data.Identifier
+import org.nullversionnova.data.IntegerVector2
+import org.nullversionnova.data.IntegerVector3
 import org.nullversionnova.client.Client.Global.getTileTexture
-import org.nullversionnova.server.TileGroup2
-import org.nullversionnova.server.TileGroup3
-import org.nullversionnova.server.TileGroups2
+import org.nullversionnova.data.TileGroup2
+import org.nullversionnova.data.TileGroup3
+import org.nullversionnova.data.TileGroups2
 import org.nullversionnova.server.WorldCell
 import kotlin.math.floor
 

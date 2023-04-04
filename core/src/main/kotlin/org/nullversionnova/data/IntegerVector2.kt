@@ -1,4 +1,4 @@
-package org.nullversionnova
+package org.nullversionnova.data
 
 data class IntegerVector2(var x: Int, var y: Int) {
     fun getAxisFromInt(axis: Int) : Int {

@@ -1,14 +1,19 @@
 package org.nullversionnova.server
 
-import org.nullversionnova.Identifier
-import org.nullversionnova.IntegerVector2
-import org.nullversionnova.IntegerVector3
+import org.nullversionnova.data.Identifier
+import org.nullversionnova.data.IntegerVector2
+import org.nullversionnova.data.IntegerVector3
+import org.nullversionnova.data.TileGroup2
+import org.nullversionnova.data.TileGroup3
+import org.nullversionnova.data.TileGroups3
 import org.nullversionnova.server.base.entities.StaticEntity
 
 class WorldCell {
     // Members
-    val tilemap = TileGroups3(mutableListOf(TileGroup3(IntegerVector3(0,0,0),
-        IntegerVector3(CELL_SIZE_X, CELL_SIZE_Y, CELL_SIZE_Z), Identifier("rock"))))
+    val tilemap = TileGroups3(mutableListOf(TileGroup3(
+        IntegerVector3(0,0,0),
+        IntegerVector3(CELL_SIZE_X, CELL_SIZE_Y, CELL_SIZE_Z), Identifier("rock")
+    )))
     var loadedStaticEntities = mutableListOf<StaticEntity>()
 
     // Methods

@@ -1,6 +1,6 @@
 package org.nullversionnova.server
 
-import org.nullversionnova.IntegerVector3
+import org.nullversionnova.data.IntegerVector3
 import org.nullversionnova.server.base.Base
 import org.nullversionnova.server.base.entities.MobileEntity
 

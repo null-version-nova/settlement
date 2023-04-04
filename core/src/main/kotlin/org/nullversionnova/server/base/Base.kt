@@ -1,6 +1,6 @@
 package org.nullversionnova.server.base
 
-import org.nullversionnova.Identifier
+import org.nullversionnova.data.Identifier
 import org.nullversionnova.server.ServerRegistry
 import org.nullversionnova.server.base.tiles.BaseTiles
 

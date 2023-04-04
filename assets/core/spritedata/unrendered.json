@@ -1,6 +1,6 @@
 {
-  "top": {
+  "sprites": [{
     "pack": "core",
     "name": "unrendered"
-  }
+  }]
 }

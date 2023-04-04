@@ -1,6 +1,6 @@
 package org.nullversionnova.server
 
-import org.nullversionnova.Identifier
+import org.nullversionnova.data.Identifier
 import tiles.Tile
 
 class ServerRegistry {

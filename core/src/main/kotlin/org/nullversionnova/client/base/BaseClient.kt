@@ -1,6 +1,6 @@
 package org.nullversionnova.client.base
 
-import org.nullversionnova.Identifier
+import org.nullversionnova.data.Identifier
 import org.nullversionnova.client.ClientRegistry
 import org.nullversionnova.server.base.Base
 
