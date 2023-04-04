@@ -47,7 +47,7 @@ data class TileGroup2(val cornerA: IntegerVector2, val cornerB: IntegerVector2, 
             group2[2] = cornerB.y
             group2[3] = cornerA.y
         }
-        return group1.contentEquals(group2)
+        return (group1.contentEquals(group2) && identifier == other.identifier)
     }
     override fun hashCode(): Int {
         var result = cornerA.hashCode()
