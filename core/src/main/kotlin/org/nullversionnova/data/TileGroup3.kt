@@ -1,18 +1,7 @@
 package org.nullversionnova.data
 
-data class TileGroup3(val cornerA: IntegerVector3, val cornerB: IntegerVector3, val identifier: Identifier) {
-    fun getGreaterOnAxis(axis: Int) : IntegerVector3 {
-        return if (cornerA.getAxisFromInt(axis) > cornerB.getAxisFromInt(axis)) {
-            cornerA
-        } else {
-            cornerB
-        }
-    }
-    fun getLesserOnAxis(axis: Int) : IntegerVector3 {
-        return if (cornerA.getAxisFromInt(axis) < cornerB.getAxisFromInt(axis)) {
-            cornerA
-        } else {
-            cornerB
-        }
+data class TileGroup3(val location: IntegerVector3, val scale: IntegerVector3, val identifier: Identifier) {
+    fun checkInBoundsOnAxis(axis: Int, depth: Int) : Boolean {
+        return depth >= location.getAxisFromInt(axis) && depth <= location.getAxisFromInt(axis) + scale.getAxisFromInt(axis)
     }
 }

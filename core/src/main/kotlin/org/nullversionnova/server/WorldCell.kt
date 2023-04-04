@@ -20,9 +20,9 @@ class WorldCell {
     fun checkAllInBounds(tileGroup: TileGroup3) : MutableSet<IntegerVector3> {
         val set = mutableSetOf<IntegerVector3>()
         for (i in 0 until CELL_SIZE_X) {
-            if (i > tileGroup.getLesserOnAxis(0).x && i < tileGroup.getGreaterOnAxis(0).x) {
+            if (tileGroup.checkInBoundsOnAxis(0,i)) {
                 for (j in 0 until CELL_SIZE_Y) {
-                    if (j > tileGroup.getLesserOnAxis(1).y && j < tileGroup.getGreaterOnAxis(1).y) {
+                    if (tileGroup.checkInBoundsOnAxis(1,j)) {
                         for (k in 0 until CELL_SIZE_Z) {
                             set.add(IntegerVector3(i,j,k))
                         }
@@ -33,29 +33,29 @@ class WorldCell {
         return set
     }
     fun slice(tileGroup: TileGroup3, direction: Int) : TileGroup2 {
-        val cornerA = IntegerVector2(0,0)
-        val cornerB = IntegerVector2(0,0)
+        val location = IntegerVector2(0,0)
+        val scale = IntegerVector2(0,0)
         when (direction) {
             0 -> {
-                cornerA.x = tileGroup.cornerA.y
-                cornerA.y = tileGroup.cornerA.z
-                cornerB.x = tileGroup.cornerB.y
-                cornerB.y = tileGroup.cornerB.z
+                location.x = tileGroup.location.y
+                location.y = tileGroup.location.z
+                scale.x = tileGroup.scale.y
+                scale.y = tileGroup.scale.z
             }
             1 -> {
-                cornerA.x = tileGroup.cornerA.x
-                cornerA.y = tileGroup.cornerA.z
-                cornerB.x = tileGroup.cornerB.x
-                cornerB.y = tileGroup.cornerB.z
+                location.x = tileGroup.location.x
+                location.y = tileGroup.location.z
+                scale.x = tileGroup.scale.x
+                scale.y = tileGroup.scale.z
             }
             else -> {
-                cornerA.x = tileGroup.cornerA.x
-                cornerA.y = tileGroup.cornerA.y
-                cornerB.x = tileGroup.cornerB.x
-                cornerB.y = tileGroup.cornerB.y
+                location.x = tileGroup.location.x
+                location.y = tileGroup.location.y
+                scale.x = tileGroup.scale.x
+                scale.y = tileGroup.scale.y
             }
         }
-        return TileGroup2(cornerA, cornerB, tileGroup.identifier)
+        return TileGroup2(location, scale, tileGroup.identifier)
     }
 
     // Companions

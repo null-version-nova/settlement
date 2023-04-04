@@ -7,18 +7,18 @@ data class TileGroups3(val group: MutableList<TileGroup3>) {
             candidates.add(i)
         }
         for (i in group) {
-            if (position.y < i.getLesserOnAxis(1).y || position.y > i.getGreaterOnAxis(1).y) { candidates.remove(i) }
+            if (!i.checkInBoundsOnAxis(1,position.y)) { candidates.remove(i) }
         }
         for (i in group) {
-            if (position.z < i.getLesserOnAxis(2).z || position.z > i.getGreaterOnAxis(2).z) { candidates.remove(i) }
+            if (!i.checkInBoundsOnAxis(2,position.z)) { candidates.remove(i) }
         }
         return candidates.first()
     }
     fun findAllInPlane(axis: Int, depth: Int) : MutableSet<TileGroup3> {
         val candidates = mutableSetOf<TileGroup3>()
-        for (j in group) {
-            if (depth >= j.getLesserOnAxis(axis).getAxisFromInt(axis) && depth <= j.getGreaterOnAxis(axis).getAxisFromInt(axis)) {
-                candidates.add(j)
+        for (i in group) {
+            if (i.checkInBoundsOnAxis(axis,depth)) {
+                candidates.add(i)
             }
         }
         return candidates
