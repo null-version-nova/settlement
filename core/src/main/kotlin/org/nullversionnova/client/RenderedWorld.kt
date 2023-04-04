@@ -37,7 +37,7 @@ class RenderedWorld {
         val preLayer = mutableListOf<TileGroup3>()
         val cell = cells[cellCoordinates] ?: return TileGroups2(layer)
         preLayer.addAll(cell.tilemap.findAllInPlane(affectedAxis(direction), depth))
-        for (i in preLayer) { layer.add(cell.slice(i, affectedAxis(direction))) }
+        for (i in preLayer) { layer.add(i.slice(affectedAxis(direction))) }
         return TileGroups2(layer)
     }
     private fun getTileLayer(layer: TileGroups2, map: TiledMap, axis : Int) : TiledMapTileLayer {
