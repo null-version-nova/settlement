@@ -13,6 +13,7 @@ import com.beust.klaxon.Klaxon
 import org.nullversionnova.data.Identifier
 import org.nullversionnova.data.IntegerVector3
 import org.nullversionnova.client.base.BaseClient
+import org.nullversionnova.client.core.CoreClient
 import org.nullversionnova.server.Server
 
 class Client : ApplicationListener, InputProcessor {
@@ -34,6 +35,7 @@ class Client : ApplicationListener, InputProcessor {
         h = Gdx.graphics.height
         registry.initialize()
         BaseClient.loadAssets(registry)
+        CoreClient.loadAssets(registry)
         server.loadPacks()
         server.loadCell(IntegerVector3(0,0,0))
         world.initialize(registry)
