@@ -40,6 +40,7 @@ class Client : ApplicationListener, InputProcessor {
         server.loadCell(IntegerVector3(0,0,0))
         world.initialize(registry)
         camera.setToOrtho(false, 30f, 30f)
+        server.loadedCells[IntegerVector3(0,0,0)]?.generate()
         renderer = OrthogonalTiledMapRenderer(world.reloadMap(server.loadedCells), (1f / scale.toFloat()))
     }
 
