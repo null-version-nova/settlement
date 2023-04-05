@@ -52,7 +52,7 @@ class RenderedWorld {
         }
         for (i in 0 until tileLayer.width) {
             for (j in 0 until tileLayer.height) {
-                tileLayer.setCell(i,j, allTiles[layer.findTileGroup(IntegerVector2(i,j)).identifier])
+                tileLayer.setCell(i,j, allTiles[layer.findTileGroup(IntegerVector2(i,j))?.identifier])
             }
         }
         return tileLayer
