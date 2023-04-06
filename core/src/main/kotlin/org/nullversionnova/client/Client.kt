@@ -59,9 +59,7 @@ class Client : ApplicationListener, InputProcessor {
         camera.update()
 
         renderer.setView(camera)
-        for (i in renderer.map.layers.size()..0) {
-            renderer.render(intArrayOf(i))
-        }
+        renderer.render()
     }
 
     override fun pause() {

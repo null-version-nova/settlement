@@ -65,7 +65,7 @@ class RenderedWorld {
         println("Beginning reload.")
         val map = TiledMap()
         map.tileSets.addTileSet(tileSet)
-        for (i in 0..renderDistance) {
+        for (i in renderDistance downTo 0) {
             val displacement = floor(depthDirection(depth,direction,i).toFloat() / WorldCell.CELL_SIZE_X.toFloat()).toInt()
             val newCameraPosition = when (affectedAxis(direction)) {
                 0 -> IntegerVector3(cameraCellCoordinates.x + displacement,cameraCellCoordinates.y,cameraCellCoordinates.z)
