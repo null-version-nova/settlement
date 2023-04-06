@@ -75,6 +75,14 @@ class Client : ApplicationListener, InputProcessor {
             Input.Keys.UP -> camera.translate(0f,0.5f)
             Input.Keys.RIGHT -> camera.translate(0.5f,0f)
             Input.Keys.DOWN -> camera.translate(0f,-0.5f)
+            Input.Keys.PAGE_DOWN -> {
+                world.depth--
+                renderer.map = world.reloadMap(server.loadedCells)
+            }
+            Input.Keys.PAGE_UP -> {
+                world.depth++
+                renderer.map = world.reloadMap(server.loadedCells)
+            }
             else -> return false
         }
         return true

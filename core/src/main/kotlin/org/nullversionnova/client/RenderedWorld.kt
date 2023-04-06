@@ -57,8 +57,6 @@ class RenderedWorld {
         }
         return tileLayer
     }
-
-    // Getters
     fun reloadMap(cells: MutableMap<IntegerVector3, WorldCell>) : TiledMap {
         println("Beginning reload.")
         val map = TiledMap()
