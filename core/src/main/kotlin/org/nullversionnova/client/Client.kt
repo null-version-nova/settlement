@@ -58,7 +58,7 @@ class Client : ApplicationListener, InputProcessor {
         camera.update()
         renderer.setView(camera)
         for (i in renderer.map.layers) {
-            renderer.renderTileLayer(i as TiledMapTileLayer?)
+            renderer.renderTileLayer(i as TiledMapTileLayer)
         }
     }
 
