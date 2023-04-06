@@ -201,6 +201,9 @@ class Client : ApplicationListener, InputProcessor {
 
     override fun scrolled(amountX: Float, amountY: Float): Boolean {
         camera.zoom += amountY / 4
+        if (camera.zoom.isNaN()) {
+            camera.zoom = 0f
+        }
         return true
     }
 
