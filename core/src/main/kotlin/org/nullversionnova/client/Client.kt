@@ -78,8 +78,16 @@ class Client : ApplicationListener, InputProcessor {
                     world.direction = 3
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
-                1, 2, 3 -> {
-                    world.direction--
+                1 -> {
+                    world.direction = 2
+                    renderer.map = world.reloadMap(server.loadedCells)
+                     }
+                2 -> {
+                    world.direction = 0
+                    renderer.map = world.reloadMap(server.loadedCells)
+                }
+                3 -> {
+                    world.direction = 1
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
             }
