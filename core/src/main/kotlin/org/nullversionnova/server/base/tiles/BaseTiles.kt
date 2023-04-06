@@ -7,12 +7,10 @@ object BaseTiles {
     // Tiles
     val ROCK = BaseTileMaterials.ROCK()
     val SAND = BaseTileMaterials.SOIL()
-    val AIR = BaseTileMaterials.ATMOSPHERE()
 
     // Functions
     fun registerTiles(registry: ServerRegistry) {
         registry.addTile(Base.getId("rock"), ROCK)
         registry.addTile(Base.getId("sand"), SAND)
-        registry.addTile(Base.getId("air"), AIR)
     }
 }

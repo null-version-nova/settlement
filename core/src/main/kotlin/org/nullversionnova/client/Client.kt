@@ -188,6 +188,7 @@ class Client : ApplicationListener, InputProcessor {
             'a' -> camera.translate(-0.5f,0f)
             's' -> camera.translate(0f,-0.5f)
             'd' -> camera.translate(0.5f,0f)
+            'm' -> server.loadedCells[IntegerVector3()]?.generate()
             else -> return false
         }
         return true
