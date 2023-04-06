@@ -64,8 +64,11 @@ class Client : ApplicationListener, InputProcessor {
 
         for (i in 0 until renderer.map.layers.count) {
             renderer.setView(camera)
+            batch.begin()
+            batch.draw(registry.getTexture(Identifier("core","fog")),0f,0f,w.toFloat(),h.toFloat())
+            batch.end()
             renderer.render(intArrayOf(i))
-            camera.zoom -= 0.02f
+            camera.zoom -= 0.01f
             camera.update()
         }
 
