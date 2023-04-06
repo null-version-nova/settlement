@@ -96,6 +96,7 @@ class Client : ApplicationListener, InputProcessor {
                         camera.rotate(90f)
                     }
                     world.direction = 4
+                    renderer.map = world.reloadMap(server.loadedCells)
                 }
                 5 -> {
                     world.direction = cameraDirection
@@ -110,6 +111,7 @@ class Client : ApplicationListener, InputProcessor {
                         camera.rotate(90f)
                     }
                     world.direction = 5
+                    renderer.map = world.reloadMap(server.loadedCells)
                 }
                 4 -> {
                     world.direction = cameraDirection
