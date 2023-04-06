@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
@@ -14,7 +15,6 @@ import org.nullversionnova.client.core.CoreClient
 import org.nullversionnova.data.Identifier
 import org.nullversionnova.data.IntegerVector3
 import org.nullversionnova.server.Server
-import kotlin.math.PI
 
 class Client : ApplicationListener, InputProcessor {
     // Members
@@ -57,7 +57,9 @@ class Client : ApplicationListener, InputProcessor {
         ScreenUtils.clear(100f / 255f, 100f / 255f, 250f / 255f, 1f)
         camera.update()
         renderer.setView(camera)
-        renderer.render()
+        for (i in renderer.map.layers) {
+            renderer.renderTileLayer(i as TiledMapTileLayer?)
+        }
     }
 
     override fun pause() {
