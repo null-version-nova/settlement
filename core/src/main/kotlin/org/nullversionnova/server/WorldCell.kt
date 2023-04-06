@@ -2,19 +2,24 @@ package org.nullversionnova.server
 
 import org.nullversionnova.data.Identifier
 import org.nullversionnova.data.IntegerVector3
-import org.nullversionnova.data.TileGroup3
-import org.nullversionnova.data.TileGroups3
+import org.nullversionnova.data.Tile
 import org.nullversionnova.server.base.entities.StaticEntity
 
-class WorldCell {
+class WorldCell (location: IntegerVector3) {
     // Members
-    val tilemap = TileGroups3()
+    val tilemap = mutableSetOf<Tile>()
+    val generator = Generator(location)
     var loadedStaticEntities = mutableListOf<StaticEntity>()
 
     // Methods
     fun generate() {
-        tilemap.group.add(TileGroup3(IntegerVector3(), IntegerVector3(64,32,64),Identifier("rock")))
-        tilemap.group.add(TileGroup3(IntegerVector3(0,32,0), IntegerVector3(CELL_SIZE_X, CELL_SIZE_Y/2, 60), Identifier("sand")))
+        for (i in 0..CELL_SIZE_X) {
+            for (j in 0..CELL_SIZE_Y) {
+                for (k in 0..(CELL_SIZE_Z.toDouble() * generator.getHeight(i.toDouble(),j.toDouble())).toInt()/2 + 10) {
+                    tilemap.add(Tile(IntegerVector3(i,j,k),Identifier("sand")))
+                }
+            }
+        }
     }
 
     // Companions

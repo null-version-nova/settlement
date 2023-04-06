@@ -15,6 +15,6 @@ class Server {
         Base.load(registry)
     }
     fun loadCell(location: IntegerVector3) {
-        loadedCells[location] = WorldCell()
+        loadedCells[location] = WorldCell(location)
     }
 }

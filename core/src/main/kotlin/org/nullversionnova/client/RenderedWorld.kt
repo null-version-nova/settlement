@@ -7,12 +7,9 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 import org.nullversionnova.data.Identifier
-import org.nullversionnova.data.IntegerVector2
 import org.nullversionnova.data.IntegerVector3
 import org.nullversionnova.client.Client.Global.getTileTexture
-import org.nullversionnova.data.TileGroup2
-import org.nullversionnova.data.TileGroup3
-import org.nullversionnova.data.TileGroups2
+import org.nullversionnova.data.Tile
 import org.nullversionnova.server.WorldCell
 import kotlin.math.floor
 
@@ -32,32 +29,58 @@ class RenderedWorld {
     var direction = 0
     var depth = 0
 
-    private fun getCellLayer(cellCoordinates: IntegerVector3, cells: MutableMap<IntegerVector3,WorldCell>, direction: Int, depth: Int): TileGroups2 {
-        val layer = mutableListOf<TileGroup2>()
-        val preLayer = mutableListOf<TileGroup3>()
-        val cell = cells[cellCoordinates] ?: return TileGroups2(layer)
-        preLayer.addAll(cell.tilemap.findAllInPlane(affectedAxis(direction), depth))
-        for (i in preLayer) { layer.add(i.slice(affectedAxis(direction))) }
-        return if (direction % 2 == 0) {
-            TileGroups2(layer)
-        } else {
-            TileGroups2(layer).reflect(64)
+    private fun getCellLayer(cellCoordinates: IntegerVector3, cells: MutableMap<IntegerVector3,WorldCell>, direction: Int, depth: Int): MutableSet<Tile> {
+        val layer = mutableSetOf<Tile>()
+        if (cells[cellCoordinates] == null) {
+            return layer
         }
+        for (i in cells[cellCoordinates]!!.tilemap) {
+            when (affectedAxis(direction)) {
+                0 -> if (i.location.x == depth) { layer.add(i) }
+                1 -> if (i.location.y == depth) { layer.add(i) }
+                2 -> if (i.location.z == depth) { layer.add(i) }
+            }
+        }
+        if (direction % 2 != 0) {
+            for (i in cells[cellCoordinates]?.tilemap!!) {
+                when (affectedAxis(direction)) {
+                    0 -> i.location.x = WorldCell.CELL_SIZE_X - i.location.x
+                    1 -> i.location.y = WorldCell.CELL_SIZE_Y - i.location.y
+                    2 -> i.location.z = WorldCell.CELL_SIZE_Z - i.location.z
+                }
+            }
+        }
+        return layer
     }
-    private fun getTileLayer(layer: TileGroups2, map: TiledMap, axis : Int) : TiledMapTileLayer {
+    private fun getTileLayer(layer: MutableSet<Tile>, map: TiledMap, axis : Int) : TiledMapTileLayer {
         val tileLayer : TiledMapTileLayer = when(axis) {
             0 -> TiledMapTileLayer(WorldCell.CELL_SIZE_Y,WorldCell.CELL_SIZE_Z, Client.scale, Client.scale)
             1 -> TiledMapTileLayer(WorldCell.CELL_SIZE_X,WorldCell.CELL_SIZE_Z, Client.scale, Client.scale)
             else -> TiledMapTileLayer(WorldCell.CELL_SIZE_X,WorldCell.CELL_SIZE_Y, Client.scale, Client.scale)
         }
+        if (layer.isEmpty()) {
+            return tileLayer
+        }
         val allTiles = mutableMapOf<Identifier,Cell>()
-        for (i in layer.listAllTilesInGroup()) { // What a lifesaver!
+        val allTileKeys = mutableSetOf<Identifier>()
+        for (i in layer) { // What a lifesaver!
+            allTileKeys.add(i.identifier)
+        }
+        for (i in allTileKeys) {
             allTiles[i] = Cell().setTile(textureIds[getTileTexture(axis,i)]?.let { map.tileSets.getTile(it) })
         }
-        for (i in 0 until tileLayer.width) {
-            for (j in 0 until tileLayer.height) {
-                tileLayer.setCell(i,j, allTiles[layer.findTileGroup(IntegerVector2(i,j))?.identifier])
+        for (i in layer) {
+            val x = when (axis) {
+                0 -> i.location.y
+                1 -> i.location.x
+                else -> i.location.x
             }
+            val y = when (axis) {
+                0 -> i.location.z
+                1 -> i.location.z
+                else -> i.location.y
+            }
+            tileLayer.setCell(x,y, allTiles[i.identifier])
         }
         return tileLayer
     }
@@ -79,11 +102,11 @@ class RenderedWorld {
     }
 
     companion object Global {
-        const val renderDistance = 16
+        const val renderDistance = 32
         fun depthDirection(depth: Int, direction: Int, increase: Int) : Int {
             return depth + if (direction % 2 == 0) {
                 increase
-            } else { // wretched code. i hate this
+            } else {
                 -increase
             }
         }
