@@ -14,6 +14,7 @@ import org.nullversionnova.client.core.CoreClient
 import org.nullversionnova.data.Identifier
 import org.nullversionnova.data.IntegerVector3
 import org.nullversionnova.server.Server
+import kotlin.math.PI
 
 class Client : ApplicationListener, InputProcessor {
     // Members
@@ -22,6 +23,7 @@ class Client : ApplicationListener, InputProcessor {
     private val registry = ClientRegistry()
     private val camera = OrthographicCamera()
     private lateinit var renderer : OrthogonalTiledMapRenderer
+    var cameraDirection = 0
     var w = 0
     var h = 0
 
@@ -71,8 +73,35 @@ class Client : ApplicationListener, InputProcessor {
     // Input
     override fun keyDown(keycode: Int): Boolean {
         when (keycode) {
-            Input.Keys.LEFT -> camera.translate(-0.5f,0f)
-            Input.Keys.UP -> camera.translate(0f,0.5f)
+            Input.Keys.LEFT -> when (world.direction) {
+                0 -> {
+                    world.direction = 3
+                    renderer.map = world.reloadMap(server.loadedCells)
+                }
+                1, 2, 3 -> {
+                    world.direction--
+                    renderer.map = world.reloadMap(server.loadedCells)
+                }
+                4, 5 -> {
+                    world.direction--
+                    if (world.direction == -1) { world.direction = 3 }
+                    camera.rotate(90f)
+                    renderer.map = world.reloadMap(server.loadedCells)
+                }
+            }
+            Input.Keys.UP -> when (world.direction) {
+                0, 1, 2, 3 -> {
+                    cameraDirection = world.direction
+                    for (i in 0 until world.direction) {
+                        camera.rotate(PI.toFloat()/2)
+                    }
+                    world.direction = 4
+                }
+                4 -> {
+                    world.direction = cameraDirection
+                    renderer.map = world.reloadMap(server.loadedCells)
+                }
+            }
             Input.Keys.RIGHT -> camera.translate(0.5f,0f)
             Input.Keys.DOWN -> camera.translate(0f,-0.5f)
             Input.Keys.PAGE_DOWN -> {
@@ -93,7 +122,14 @@ class Client : ApplicationListener, InputProcessor {
     }
 
     override fun keyTyped(character: Char): Boolean {
-        return false
+        when (character) {
+            'w' -> camera.translate(0f,0.5f)
+            'a' -> camera.translate(-0.5f,0f)
+            's' -> camera.translate(0f,-0.5f)
+            'd' -> camera.translate(0.5f,0f)
+            else -> return false
+        }
+        return true
     }
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
