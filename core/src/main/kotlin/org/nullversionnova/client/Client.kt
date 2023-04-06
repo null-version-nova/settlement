@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector3
@@ -56,9 +57,10 @@ class Client : ApplicationListener, InputProcessor {
     override fun render() {
         ScreenUtils.clear(100f / 255f, 100f / 255f, 250f / 255f, 1f)
         camera.update()
+
         renderer.setView(camera)
-        for (i in renderer.map.layers) {
-            renderer.renderTileLayer(i as TiledMapTileLayer)
+        for (i in renderer.map.layers.size()..0) {
+            renderer.render(intArrayOf(i))
         }
     }
 
