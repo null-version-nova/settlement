@@ -2,7 +2,7 @@ package org.nullversionnova.data
 
 import com.badlogic.gdx.math.Vector3
 
-data class IntegerVector3(val x: Int, var y: Int, val z: Int) {
+data class IntegerVector3(val x: Int = 0, var y: Int = 0, val z: Int = 0) {
     constructor(xf : Float, yf: Float, zf : Float) : this(xf.toInt(),yf.toInt(),zf.toInt())
     constructor(vector: Vector3) : this(vector.x,vector.y,vector.z)
     fun toVector3() : Vector3 {

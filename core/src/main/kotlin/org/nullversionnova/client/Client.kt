@@ -30,7 +30,7 @@ class Client : ApplicationListener, InputProcessor {
 
     // Application
     override fun create() {
-        Gdx.input.inputProcessor = OrthoCamController(camera)
+        Gdx.input.inputProcessor = this
         w = Gdx.graphics.width
         h = Gdx.graphics.height
         registry.initialize()
