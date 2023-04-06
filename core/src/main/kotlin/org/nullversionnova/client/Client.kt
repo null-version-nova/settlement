@@ -24,7 +24,7 @@ class Client : ApplicationListener, InputProcessor {
     private val registry = ClientRegistry()
     private val camera = OrthographicCamera()
     private lateinit var renderer : OrthogonalTiledMapRenderer
-    var cameraDirection = 0
+    var buffer = 0
     var w = 0
     var h = 0
 
@@ -78,22 +78,30 @@ class Client : ApplicationListener, InputProcessor {
             Input.Keys.LEFT -> when (world.direction) {
                 0 -> {
                     world.direction = 3
-                    world.depth = camera.position.x.toInt()
+                    buffer = camera.position.x.toInt()
+                    camera.position.x = world.depth.toFloat()
+                    world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 1 -> {
                     world.direction = 2
-                    world.depth = 64 - camera.position.x.toInt()
+                    buffer = 64 - camera.position.x.toInt()
+                    camera.position.x = 64 - world.depth.toFloat()
+                    world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
                      }
                 2 -> {
                     world.direction = 0
-                    world.depth = camera.position.x.toInt()
+                    buffer = camera.position.x.toInt()
+                    camera.position.x = world.depth.toFloat()
+                    world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 3 -> {
                     world.direction = 1
-                    world.depth = 64 - camera.position.x.toInt()
+                    buffer = 64 - camera.position.x.toInt()
+                    camera.position.x = 64 - world.depth.toFloat()
+                    world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
             }
@@ -127,15 +135,11 @@ class Client : ApplicationListener, InputProcessor {
             }
             Input.Keys.DOWN -> when (world.direction) {
                 0, 1, 2, 3 -> {
-                    cameraDirection = world.direction
-                    for (i in 0 until world.direction) {
-                        camera.rotate(90f)
-                    }
                     world.direction = 5
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 4 -> {
-                    world.direction = cameraDirection
+                    world.direction = 0
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
             }
