@@ -13,7 +13,7 @@ data class TileGroups2(val group: MutableList<TileGroup2>) {
     fun findTileGroup(position: IntegerVector2) : TileGroup2? {
         val candidates = mutableSetOf<TileGroup2>()
         for (i in findAllInPlane(0, position.x)) { candidates.add(i) }
-        for (i in candidates) { if (!i.checkInBoundsOnAxis(1,position.y)) { candidates.remove(i) } }
+        candidates.removeIf { !it.checkInBoundsOnAxis(1,position.y) }
         if (candidates.isEmpty()) { return null }
         return candidates.first()
     }
