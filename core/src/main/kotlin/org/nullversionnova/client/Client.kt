@@ -93,17 +93,29 @@ class Client : ApplicationListener, InputProcessor {
                 0, 1, 2, 3 -> {
                     cameraDirection = world.direction
                     for (i in 0 until world.direction) {
-                        camera.rotate(PI.toFloat()/2)
+                        camera.rotate(90f)
                     }
                     world.direction = 4
+                }
+                5 -> {
+                    world.direction = cameraDirection
+                    renderer.map = world.reloadMap(server.loadedCells)
+                }
+            }
+            Input.Keys.RIGHT -> camera.translate(0.5f,0f)
+            Input.Keys.DOWN -> when (world.direction) {
+                0, 1, 2, 3 -> {
+                    cameraDirection = world.direction
+                    for (i in 0 until world.direction) {
+                        camera.rotate(90f)
+                    }
+                    world.direction = 5
                 }
                 4 -> {
                     world.direction = cameraDirection
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
             }
-            Input.Keys.RIGHT -> camera.translate(0.5f,0f)
-            Input.Keys.DOWN -> camera.translate(0f,-0.5f)
             Input.Keys.PAGE_DOWN -> {
                 world.depth--
                 renderer.map = world.reloadMap(server.loadedCells)
