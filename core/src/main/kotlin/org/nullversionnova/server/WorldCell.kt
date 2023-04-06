@@ -18,7 +18,7 @@ class WorldCell {
     fun generate() {
         tilemap.group[0].scale.y = CELL_SIZE_Y / 2
         tilemap.group[0].identifier = Identifier("rock")
-        tilemap.group.add(TileGroup3(IntegerVector3(0,32,0), IntegerVector3(CELL_SIZE_X, CELL_SIZE_Y/2, CELL_SIZE_Z), Identifier("sand")))
+        tilemap.group.add(TileGroup3(IntegerVector3(0,32,0), IntegerVector3(CELL_SIZE_X, CELL_SIZE_Y/2, 60), Identifier("sand")))
     }
 
     // Companions
