@@ -83,23 +83,15 @@ class Client : ApplicationListener, InputProcessor {
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 4, 5 -> {
-                    world.direction--
-                    if (world.direction == -1) { world.direction = 3 }
-                    camera.rotate(90f)
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
             }
             Input.Keys.UP -> when (world.direction) {
                 0, 1, 2, 3 -> {
-                    cameraDirection = world.direction
-                    for (i in 0 until world.direction) {
-                        camera.rotate(90f)
-                    }
                     world.direction = 4
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 5 -> {
-                    world.direction = cameraDirection
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
             }
