@@ -101,7 +101,24 @@ class Client : ApplicationListener, InputProcessor {
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
             }
-            Input.Keys.RIGHT -> camera.translate(0.5f,0f)
+            Input.Keys.RIGHT -> when (world.direction) {
+                0 -> {
+                    world.direction = 2
+                    renderer.map = world.reloadMap(server.loadedCells)
+                }
+                1 -> {
+                    world.direction = 3
+                    renderer.map = world.reloadMap(server.loadedCells)
+                }
+                2 -> {
+                    world.direction = 1
+                    renderer.map = world.reloadMap(server.loadedCells)
+                }
+                3 -> {
+                    world.direction = 0
+                    renderer.map = world.reloadMap(server.loadedCells)
+                }
+            }
             Input.Keys.DOWN -> when (world.direction) {
                 0, 1, 2, 3 -> {
                     cameraDirection = world.direction
