@@ -1,19 +1,17 @@
 package org.nullversionnova.client
 
-import OrthoCamController
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
 import com.beust.klaxon.Klaxon
-import org.nullversionnova.data.Identifier
-import org.nullversionnova.data.IntegerVector3
 import org.nullversionnova.client.base.BaseClient
 import org.nullversionnova.client.core.CoreClient
+import org.nullversionnova.data.Identifier
+import org.nullversionnova.data.IntegerVector3
 import org.nullversionnova.server.Server
 
 class Client : ApplicationListener, InputProcessor {
@@ -27,6 +25,10 @@ class Client : ApplicationListener, InputProcessor {
     private var touchPoint = Vector3(0f,0f,0f)
     var w = 0
     var h = 0
+
+    val current = Vector3()
+    val last = Vector3(-1f,-1f,-1f)
+    val delta = Vector3()
 
     // Application
     override fun create() {
@@ -88,20 +90,23 @@ class Client : ApplicationListener, InputProcessor {
     }
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        if (button != Input.Buttons.LEFT || pointer > 0) return false
-        camera.unproject(touchPoint.set(screenX.toFloat(), screenY.toFloat(), 0f))
-        dragging = true
-        return true
-    }
-
-    override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         return false
     }
 
-    override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
-        if (!dragging) return false
-        camera.unproject(touchPoint.set(screenX.toFloat(), screenY.toFloat(), 0f))
-        return true
+    override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        last[-1f, -1f] = -1f
+        return false
+    }
+
+    override fun touchDragged(x: Int, y: Int, pointer: Int): Boolean {
+        camera.unproject(current.set(x.toFloat(), y.toFloat(), 0f))
+        if (!(last.x == -1f && last.y == -1f && last.z == -1f)) {
+            camera.unproject(delta.set(last.x, last.y, 0f))
+            delta.sub(current)
+            camera.position.add(delta.x, delta.y, 0f)
+        }
+        last.set(x.toFloat(), y.toFloat(), 0f)
+        return false
     }
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
