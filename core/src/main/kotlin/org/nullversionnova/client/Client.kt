@@ -21,14 +21,12 @@ class Client : ApplicationListener, InputProcessor {
     private val registry = ClientRegistry()
     private val camera = OrthographicCamera()
     private lateinit var renderer : OrthogonalTiledMapRenderer
-    private var dragging = false
-    private var touchPoint = Vector3(0f,0f,0f)
     var w = 0
     var h = 0
 
-    val current = Vector3()
-    val last = Vector3(-1f,-1f,-1f)
-    val delta = Vector3()
+    private val current = Vector3()
+    private val last = Vector3(-1f,-1f,-1f)
+    private val delta = Vector3()
 
     // Application
     override fun create() {
@@ -75,7 +73,10 @@ class Client : ApplicationListener, InputProcessor {
             37 -> camera.translate(-0.5f,0f)
             38 -> camera.translate(0f,0.5f)
             39 -> camera.translate(0.5f,0f)
-            40 -> camera.translate(0f,-0.5f)
+            40 -> {
+                camera.translate(0f,-0.5f)
+                println("check")
+            }
             else -> return false
         }
         return true
