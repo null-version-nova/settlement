@@ -200,7 +200,7 @@ class Client : ApplicationListener, InputProcessor {
     }
 
     override fun scrolled(amountX: Float, amountY: Float): Boolean {
-        camera.zoom += amounty
+        camera.zoom += amountY
         return true
     }
 
