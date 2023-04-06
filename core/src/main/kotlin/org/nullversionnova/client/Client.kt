@@ -79,28 +79,28 @@ class Client : ApplicationListener, InputProcessor {
                 0 -> {
                     world.direction = 3
                     buffer = camera.position.x.toInt()
-                    camera.position.x = world.depth.toFloat()
+                    camera.position.x = 64 - world.depth.toFloat()
                     world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 1 -> {
                     world.direction = 2
                     buffer = 64 - camera.position.x.toInt()
-                    camera.position.x = 64 - world.depth.toFloat()
+                    camera.position.x = world.depth.toFloat()
                     world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
                      }
                 2 -> {
                     world.direction = 0
                     buffer = camera.position.x.toInt()
-                    camera.position.x = world.depth.toFloat()
+                    camera.position.x = 64 - world.depth.toFloat()
                     world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 3 -> {
                     world.direction = 1
                     buffer = 64 - camera.position.x.toInt()
-                    camera.position.x = 64 - world.depth.toFloat()
+                    camera.position.x = world.depth.toFloat()
                     world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
