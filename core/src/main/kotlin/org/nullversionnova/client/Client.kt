@@ -76,18 +76,22 @@ class Client : ApplicationListener, InputProcessor {
             Input.Keys.LEFT -> when (world.direction) {
                 0 -> {
                     world.direction = 3
+                    world.depth = camera.position.x.toInt()
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 1 -> {
                     world.direction = 2
+                    world.depth = 64 - camera.position.x.toInt()
                     renderer.map = world.reloadMap(server.loadedCells)
                      }
                 2 -> {
                     world.direction = 0
+                    world.depth = camera.position.x.toInt()
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 3 -> {
                     world.direction = 1
+                    world.depth = 64 - camera.position.x.toInt()
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
             }
