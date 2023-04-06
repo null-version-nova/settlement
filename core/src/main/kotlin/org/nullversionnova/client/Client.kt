@@ -2,6 +2,7 @@ package org.nullversionnova.client
 
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
@@ -70,13 +71,10 @@ class Client : ApplicationListener, InputProcessor {
     // Input
     override fun keyDown(keycode: Int): Boolean {
         when (keycode) {
-            37 -> camera.translate(-0.5f,0f)
-            38 -> camera.translate(0f,0.5f)
-            39 -> camera.translate(0.5f,0f)
-            40 -> {
-                camera.translate(0f,-0.5f)
-                println("check")
-            }
+            Input.Keys.LEFT -> camera.translate(-0.5f,0f)
+            Input.Keys.UP -> camera.translate(0f,0.5f)
+            Input.Keys.RIGHT -> camera.translate(0.5f,0f)
+            Input.Keys.DOWN -> camera.translate(0f,-0.5f)
             else -> return false
         }
         return true
