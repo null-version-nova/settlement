@@ -118,6 +118,8 @@ class Client : ApplicationListener, InputProcessor {
             }
             else -> return false
         }
+        println(world.direction)
+        println(world.depth)
         return true
     }
 
