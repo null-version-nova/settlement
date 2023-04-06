@@ -169,6 +169,8 @@ class Client : ApplicationListener, InputProcessor {
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         last[-1f, -1f] = -1f
+        println(camera.position.x)
+        println(camera.position.y)
         return false
     }
 
