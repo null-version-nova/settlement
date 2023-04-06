@@ -3,10 +3,9 @@ package org.nullversionnova.client
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.Input.Buttons
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
@@ -24,9 +23,9 @@ class Client : ApplicationListener, InputProcessor {
     private val registry = ClientRegistry()
     private val camera = OrthographicCamera()
     private lateinit var renderer : OrthogonalTiledMapRenderer
-    var buffer = 0
-    var w = 0
-    var h = 0
+    private var buffer = 0
+    private var w = 0
+    private var h = 0
 
     private val current = Vector3()
     private val last = Vector3(-1f,-1f,-1f)
@@ -41,10 +40,10 @@ class Client : ApplicationListener, InputProcessor {
         BaseClient.loadAssets(registry)
         CoreClient.loadAssets(registry)
         server.loadPacks()
-        server.loadCell(IntegerVector3(0,0,0))
+        server.loadCell(IntegerVector3())
         world.initialize(registry)
         camera.setToOrtho(false, 30f, 30f)
-        server.loadedCells[IntegerVector3(0,0,0)]?.generate()
+        server.loadedCells[IntegerVector3()]?.generate()
         renderer = OrthogonalTiledMapRenderer(world.reloadMap(server.loadedCells), (1f / scale.toFloat()))
     }
 
@@ -111,25 +110,37 @@ class Client : ApplicationListener, InputProcessor {
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 5 -> {
-                    world.direction = 0
+                    world.direction = 2
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
             }
             Input.Keys.RIGHT -> when (world.direction) {
                 0 -> {
                     world.direction = 2
+                    buffer = camera.position.x.toInt()
+                    camera.position.x = 64 - world.depth.toFloat()
+                    world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 1 -> {
                     world.direction = 3
+                    buffer = 64 - camera.position.x.toInt()
+                    camera.position.x = world.depth.toFloat()
+                    world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 2 -> {
                     world.direction = 1
+                    buffer = camera.position.x.toInt()
+                    camera.position.x = 64 - world.depth.toFloat()
+                    world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 3 -> {
                     world.direction = 0
+                    buffer = 64 - camera.position.x.toInt()
+                    camera.position.x = world.depth.toFloat()
+                    world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
             }
@@ -139,7 +150,7 @@ class Client : ApplicationListener, InputProcessor {
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 4 -> {
-                    world.direction = 0
+                    world.direction = 2
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
             }
@@ -153,7 +164,6 @@ class Client : ApplicationListener, InputProcessor {
             }
             else -> return false
         }
-        println(world.direction)
         println(world.depth)
         return true
     }
@@ -174,13 +184,41 @@ class Client : ApplicationListener, InputProcessor {
     }
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        when (button) {
+            Buttons.RIGHT -> {
+                camera.unproject(current.set(screenX.toFloat(), screenY.toFloat(), 0f))
+                val x = current.x.toInt()
+                val y = current.y.toInt()
+                when (world.direction) {
+                    0 -> {
+                        println(server.loadedCells[IntegerVector3()]?.tilemap?.changeTile(IntegerVector3(world.depth,x,y), Identifier("sand")))
+                    }
+                    1 -> {
+                        server.loadedCells[IntegerVector3()]?.tilemap?.changeTile(IntegerVector3(world.depth,64 - x,64 - y),Identifier("sand"))
+                    }
+                    2 -> {
+                        server.loadedCells[IntegerVector3()]?.tilemap?.changeTile(IntegerVector3(x,world.depth,y), Identifier("sand"))
+                    }
+                    3 -> {
+                        server.loadedCells[IntegerVector3()]?.tilemap?.changeTile(IntegerVector3(64 - x,world.depth,64 - y),Identifier("sand"))
+                    }
+                    4 -> {
+                        server.loadedCells[IntegerVector3()]?.tilemap?.changeTile(IntegerVector3(x,y,world.depth), Identifier("sand"))
+                    }
+                    5 -> {
+                        server.loadedCells[IntegerVector3()]?.tilemap?.changeTile(IntegerVector3(64 - x,64 - y,world.depth), Identifier("sand"))
+                    }
+                }
+                renderer.map = world.reloadMap(server.loadedCells)
+                return true
+            }
+
+        }
         return false
     }
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         last[-1f, -1f] = -1f
-        println(camera.position.x)
-        println(camera.position.y)
         return false
     }
 
@@ -200,7 +238,7 @@ class Client : ApplicationListener, InputProcessor {
     }
 
     override fun scrolled(amountX: Float, amountY: Float): Boolean {
-        camera.zoom += amountY / 4
+        camera.zoom += amountY / 5
         if (camera.zoom.isNaN()) {
             camera.zoom = 0f
         }

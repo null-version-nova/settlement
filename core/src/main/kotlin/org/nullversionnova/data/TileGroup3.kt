@@ -4,7 +4,7 @@ import org.nullversionnova.server.WorldCell
 
 data class TileGroup3(val location: IntegerVector3, val scale: IntegerVector3, var identifier: Identifier) {
     fun checkInBoundsOnAxis(axis: Int, depth: Int) : Boolean {
-        return depth >= location.getAxisFromInt(axis) && depth <= location.getAxisFromInt(axis) + scale.getAxisFromInt(axis)
+        return depth >= location.getAxisFromInt(axis) && depth <= location.getAxisFromInt(axis) + scale.getAxisFromInt(axis) - 1
     }
     fun checkAllInBounds() : MutableSet<IntegerVector3> {
         val set = mutableSetOf<IntegerVector3>()

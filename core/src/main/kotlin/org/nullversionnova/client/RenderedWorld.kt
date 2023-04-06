@@ -28,7 +28,7 @@ class RenderedWorld {
     // Members
     private val textureIds = mutableMapOf<Identifier,Int>()
     private val tileSet = TiledMapTileSet()
-    var cameraCellCoordinates = IntegerVector3(0,0,0)
+    var cameraCellCoordinates = IntegerVector3()
     var direction = 0
     var depth = 0
 
