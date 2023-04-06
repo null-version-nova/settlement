@@ -38,7 +38,11 @@ class RenderedWorld {
         val cell = cells[cellCoordinates] ?: return TileGroups2(layer)
         preLayer.addAll(cell.tilemap.findAllInPlane(affectedAxis(direction), depth))
         for (i in preLayer) { layer.add(i.slice(affectedAxis(direction))) }
-        return TileGroups2(layer)
+        return if (direction % 2 == 0) {
+            TileGroups2(layer)
+        } else {
+            TileGroups2(layer).reflect(64)
+        }
     }
     private fun getTileLayer(layer: TileGroups2, map: TiledMap, axis : Int) : TiledMapTileLayer {
         val tileLayer : TiledMapTileLayer = when(axis) {

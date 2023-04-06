@@ -82,9 +82,6 @@ class Client : ApplicationListener, InputProcessor {
                     world.direction--
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
-                4, 5 -> {
-                    renderer.map = world.reloadMap(server.loadedCells)
-                }
             }
             Input.Keys.UP -> when (world.direction) {
                 0, 1, 2, 3 -> {
@@ -92,6 +89,7 @@ class Client : ApplicationListener, InputProcessor {
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 5 -> {
+                    world.direction = 0
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
             }
