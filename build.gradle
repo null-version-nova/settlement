@@ -45,4 +45,4 @@ subprojects {
   }
 }
 
-eclipse.project.name = 'settlement-kotlin' + '-parent'
+eclipse.project.name = 'settlement' + '-parent'
