@@ -6,10 +6,8 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
-import org.nullversionnova.data.Identifier
-import org.nullversionnova.data.IntegerVector3
 import org.nullversionnova.client.Client.Global.getTileTexture
-import org.nullversionnova.data.Tile
+import org.nullversionnova.data.*
 import org.nullversionnova.server.WorldCell
 import kotlin.math.floor
 
@@ -26,63 +24,30 @@ class RenderedWorld {
     private val textureIds = mutableMapOf<Identifier,Int>()
     private val tileSet = TiledMapTileSet()
     var cameraCellCoordinates = IntegerVector3()
-    var direction = 0
+    var direction = Direction.NORTH
     var depth = 0
 
     // Methods
-    private fun getCellLayer(cellCoordinates: IntegerVector3, cells: MutableMap<IntegerVector3,WorldCell>, direction: Int, depth: Int): MutableSet<Tile> {
+    private fun getCellLayer(cellCoordinates: IntegerVector3, cells: MutableMap<IntegerVector3,WorldCell>, depth: Int): Set<Tile> {
         val layer = mutableSetOf<Tile>()
-        if (cells[cellCoordinates] == null) {
-            return layer
-        }
-        for (i in cells[cellCoordinates]!!.tilemap) {
-            when (affectedAxis(direction)) {
-                0 -> if (i.location.x == depth) { layer.add(i) }
-                1 -> if (i.location.y == depth) { layer.add(i) }
-                2 -> if (i.location.z == depth) { layer.add(i) }
-            }
-        }
-        if (direction % 2 != 0) {
-            for (i in cells[cellCoordinates]?.tilemap!!) {
-                when (affectedAxis(direction)) {
-                    0 -> i.location.x = WorldCell.CELL_SIZE_X - i.location.x
-                    1 -> i.location.y = WorldCell.CELL_SIZE_Y - i.location.y
-                    2 -> i.location.z = WorldCell.CELL_SIZE_Z - i.location.z
-                }
-            }
-        }
-        return layer
+        if (cells[cellCoordinates] == null) { return layer }
+        for (i in cells[cellCoordinates]!!.tilemap) { if (i.location.getAxis(direction.axis()) == depth) { layer.add(i) } }
+        if (!direction.polarity()) { for (i in layer) { i.location.setAxis(WorldCell.getSizeFromAxis(direction.axis()) - i.location.getAxis(direction.axis()),direction.axis()) } }
+        return layer.toSet()
     }
-    private fun getTileLayer(layer: MutableSet<Tile>, map: TiledMap, axis : Int) : TiledMapTileLayer {
-        val tileLayer : TiledMapTileLayer = when(axis) {
-            0 -> TiledMapTileLayer(WorldCell.CELL_SIZE_Y * 3,WorldCell.CELL_SIZE_Z * 3, Client.scale, Client.scale)
-            1 -> TiledMapTileLayer(WorldCell.CELL_SIZE_X * 3,WorldCell.CELL_SIZE_Z * 3, Client.scale, Client.scale)
-            else -> TiledMapTileLayer(WorldCell.CELL_SIZE_X * 3,WorldCell.CELL_SIZE_Y * 3, Client.scale, Client.scale)
-        }
-        if (layer.isEmpty()) {
-            return tileLayer
-        }
+    private fun getTileLayer(layer: Set<Tile>, map: TiledMap) : TiledMapTileLayer {
+        val tileLayer = TiledMapTileLayer(WorldCell.getSizeFromAxis(direction.getOtherPair().first),WorldCell.getSizeFromAxis(direction.getOtherPair().second), Client.scale, Client.scale)
         val allTiles = mutableMapOf<Identifier,Cell>()
         val allTileKeys = mutableSetOf<Identifier>()
-        for (i in layer) { // What a lifesaver!
-            allTileKeys.add(i.identifier)
-        }
-        for (i in allTileKeys) {
-            allTiles[i] = Cell().setTile(textureIds[getTileTexture(axis,i)]?.let { map.tileSets.getTile(it) })
-        }
+        if (layer.isEmpty()) { return tileLayer }
+        for (i in layer) { allTileKeys.add(i.identifier) }
+        for (i in allTileKeys) { allTiles[i] = Cell().setTile(textureIds[getTileTexture(direction,i)]?.let { map.tileSets.getTile(it) }) }
         for (i in layer) {
-            val x = when (axis) {
-                0 -> i.location.y
-                1 -> i.location.x
-                else -> i.location.x
-            }
-            val y = when (axis) {
-                0 -> i.location.z
-                1 -> i.location.z
-                else -> i.location.y
-            }
+            val x = i.location.getAxis(direction.getOtherPair().first)
+            val y = i.location.getAxis(direction.getOtherPair().second)
             tileLayer.setCell(x,y, allTiles[i.identifier])
         }
+
         return tileLayer
     }
     fun reloadMap(cells: MutableMap<IntegerVector3, WorldCell>) : TiledMap {
@@ -91,12 +56,8 @@ class RenderedWorld {
         map.tileSets.addTileSet(tileSet)
         for (i in renderDistance downTo 0) {
             val displacement = floor(depthDirection(depth,direction,i).toFloat() / WorldCell.CELL_SIZE_X.toFloat()).toInt()
-            val newCameraPosition = when (affectedAxis(direction)) {
-                0 -> IntegerVector3(cameraCellCoordinates.x + displacement,cameraCellCoordinates.y,cameraCellCoordinates.z)
-                1 -> IntegerVector3(cameraCellCoordinates.x, cameraCellCoordinates.y + displacement,cameraCellCoordinates.z)
-                else -> IntegerVector3(cameraCellCoordinates.x,cameraCellCoordinates.y,cameraCellCoordinates.z + displacement)
-            }
-            map.layers.add(getTileLayer(getCellLayer(newCameraPosition, cells, direction, depthDirection(depth,direction,i)),map, affectedAxis(direction)))
+            val newCameraPosition = cameraCellCoordinates.getNewWithSetAxis(cameraCellCoordinates.getAxis(direction.axis()) + displacement,direction.axis())
+            map.layers.add(getTileLayer(getCellLayer(newCameraPosition, cells, depthDirection(depth,direction,i)),map))
         }
         println("Reloaded!")
         return map
@@ -105,18 +66,11 @@ class RenderedWorld {
     // Companions
     companion object Global {
         const val renderDistance = 32
-        fun depthDirection(depth: Int, direction: Int, increase: Int) : Int {
-            return depth + if (direction % 2 == 0) {
+        fun depthDirection(depth: Int, direction: Direction, increase: Int) : Int {
+            return depth + if (direction.polarity()) {
                 increase
             } else {
                 -increase
-            }
-        }
-        fun affectedAxis(direction: Int) : Int {
-            return when (direction) {
-                0, 1 -> { 0 }
-                2, 3 -> { 1 }
-                else -> { 2 }
             }
         }
     }

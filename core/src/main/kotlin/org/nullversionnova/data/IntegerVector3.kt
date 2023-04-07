@@ -1,6 +1,7 @@
 package org.nullversionnova.data
 
 import com.badlogic.gdx.math.Vector3
+import org.nullversionnova.server.WorldCell
 
 data class IntegerVector3(var x: Int = 0, var y: Int = 0, var z: Int = 0) {
     constructor(xf : Float, yf: Float, zf : Float) : this(xf.toInt(),yf.toInt(),zf.toInt())
@@ -8,17 +9,24 @@ data class IntegerVector3(var x: Int = 0, var y: Int = 0, var z: Int = 0) {
     fun toVector3() : Vector3 {
         return Vector3(x.toFloat(),y.toFloat(),z.toFloat())
     }
-    fun getAxisFromInt(axis: Int) : Int {
+    fun getAxis(axis: Axis) : Int {
         return when (axis) {
-            0 -> {
-                x
-            }
-            1 -> {
-                y
-            }
-            else -> {
-                z
-            }
+            Axis.X -> x
+            Axis.Y -> y
+            Axis.Z -> z
         }
     }
+    fun setAxis(newValue : Int, axis: Axis) {
+        when (axis) {
+            Axis.X -> x = newValue
+            Axis.Y -> y = newValue
+            Axis.Z -> z = newValue
+        }
+    }
+    fun getNewWithSetAxis(newValue: Int, axis: Axis) : IntegerVector3 {
+        val vector = this.copy()
+        vector.setAxis(newValue, axis)
+        return vector
+    }
+    fun reflectAcrossCell(axis: Axis) { setAxis(WorldCell.getSizeFromAxis(axis) - getAxis(axis),axis) }
 }
