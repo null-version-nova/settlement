@@ -32,7 +32,7 @@ class ClientRegistry {
 
     // Retrieving
     fun getTexture(identifier: Identifier) : Texture {
-        return if (textureSet[identifier] == null) { getTexture(Identifier("core","default")) }
+        return if (textureSet[identifier] == null) { getTexture(Identifier("system","default")) }
         else { textureSet[identifier]!! }
     }
 

@@ -1,7 +1,7 @@
 package org.nullversionnova.server
 
 import org.nullversionnova.data.Identifier
-import tiles.Tile
+import org.nullversionnova.server.base.tiles.Tile
 
 class ServerRegistry {
     // Members

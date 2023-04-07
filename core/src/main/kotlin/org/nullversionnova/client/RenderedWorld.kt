@@ -29,6 +29,7 @@ class RenderedWorld {
     var direction = 0
     var depth = 0
 
+    // Methods
     private fun getCellLayer(cellCoordinates: IntegerVector3, cells: MutableMap<IntegerVector3,WorldCell>, direction: Int, depth: Int): MutableSet<Tile> {
         val layer = mutableSetOf<Tile>()
         if (cells[cellCoordinates] == null) {
@@ -54,9 +55,9 @@ class RenderedWorld {
     }
     private fun getTileLayer(layer: MutableSet<Tile>, map: TiledMap, axis : Int) : TiledMapTileLayer {
         val tileLayer : TiledMapTileLayer = when(axis) {
-            0 -> TiledMapTileLayer(WorldCell.CELL_SIZE_Y,WorldCell.CELL_SIZE_Z, Client.scale, Client.scale)
-            1 -> TiledMapTileLayer(WorldCell.CELL_SIZE_X,WorldCell.CELL_SIZE_Z, Client.scale, Client.scale)
-            else -> TiledMapTileLayer(WorldCell.CELL_SIZE_X,WorldCell.CELL_SIZE_Y, Client.scale, Client.scale)
+            0 -> TiledMapTileLayer(WorldCell.CELL_SIZE_Y * 3,WorldCell.CELL_SIZE_Z * 3, Client.scale, Client.scale)
+            1 -> TiledMapTileLayer(WorldCell.CELL_SIZE_X * 3,WorldCell.CELL_SIZE_Z * 3, Client.scale, Client.scale)
+            else -> TiledMapTileLayer(WorldCell.CELL_SIZE_X * 3,WorldCell.CELL_SIZE_Y * 3, Client.scale, Client.scale)
         }
         if (layer.isEmpty()) {
             return tileLayer
@@ -101,6 +102,7 @@ class RenderedWorld {
         return map
     }
 
+    // Companions
     companion object Global {
         const val renderDistance = 32
         fun depthDirection(depth: Int, direction: Int, increase: Int) : Int {

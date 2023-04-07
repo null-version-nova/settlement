@@ -37,11 +37,11 @@ class WorldCell (val location: IntegerVector3) {
 
     // Companions
     companion object Global {
-        const val CELL_SIZE_X = 64
+        const val CELL_SIZE_X = 128
         const val CELL_SIZE_Y = CELL_SIZE_X
         const val CELL_SIZE_Z = CELL_SIZE_X
-        const val H_SCALE : Double = 50.0
-        const val V_SCALE : Double = 4.0
+        const val H_SCALE : Double = 200.0
+        const val V_SCALE : Double = 10.0
         const val Y_OFFSET : Int = 20
         const val SOIL_DEPTH : Int = 3
     }

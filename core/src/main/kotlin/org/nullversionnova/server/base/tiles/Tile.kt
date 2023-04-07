@@ -1,4 +1,4 @@
-package tiles
+package org.nullversionnova.server.base.tiles
 
 class Tile(var type: String) {
     var isFluid = false

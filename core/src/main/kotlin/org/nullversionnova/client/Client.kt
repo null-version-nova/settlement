@@ -11,10 +11,11 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
 import com.beust.klaxon.Klaxon
 import org.nullversionnova.client.base.BaseClient
-import org.nullversionnova.client.core.CoreClient
+import org.nullversionnova.client.core.SystemClient
 import org.nullversionnova.data.Identifier
 import org.nullversionnova.data.IntegerVector3
 import org.nullversionnova.server.Server
+import org.nullversionnova.server.WorldCell
 
 class Client : ApplicationListener, InputProcessor {
     // Members
@@ -23,7 +24,7 @@ class Client : ApplicationListener, InputProcessor {
     private val registry = ClientRegistry()
     private val camera = OrthographicCamera()
     private lateinit var renderer : OrthogonalTiledMapRenderer
-    lateinit var batch : SpriteBatch
+    private lateinit var batch : SpriteBatch
     private var buffer = 0
     private var w = 0
     private var h = 0
@@ -40,7 +41,7 @@ class Client : ApplicationListener, InputProcessor {
         h = Gdx.graphics.height
         registry.initialize()
         BaseClient.loadAssets(registry)
-        CoreClient.loadAssets(registry)
+        SystemClient.loadAssets(registry)
         server.loadPacks()
         server.loadCell(IntegerVector3())
         world.initialize(registry)
@@ -60,18 +61,15 @@ class Client : ApplicationListener, InputProcessor {
         ScreenUtils.clear(100f / 255f, 100f / 255f, 250f / 255f, 1f)
         camera.zoom = zoom
         camera.update()
-
-
         for (i in 0 until renderer.map.layers.count) {
             renderer.setView(camera)
             batch.begin()
-            batch.draw(registry.getTexture(Identifier("core","fog")),0f,0f,w.toFloat(),h.toFloat())
+            batch.draw(registry.getTexture(Identifier("system","fog")),0f,0f,w.toFloat(),h.toFloat())
             batch.end()
             renderer.render(intArrayOf(i))
             camera.zoom -= 0.01f
             camera.update()
         }
-
     }
 
     override fun pause() {
@@ -91,13 +89,13 @@ class Client : ApplicationListener, InputProcessor {
                 0 -> {
                     world.direction = 3
                     buffer = camera.position.x.toInt()
-                    camera.position.x = 64 - world.depth.toFloat()
+                    camera.position.x = WorldCell.CELL_SIZE_Y - world.depth.toFloat()
                     world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 1 -> {
                     world.direction = 2
-                    buffer = 64 - camera.position.x.toInt()
+                    buffer = WorldCell.CELL_SIZE_Y - camera.position.x.toInt()
                     camera.position.x = world.depth.toFloat()
                     world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
@@ -105,13 +103,13 @@ class Client : ApplicationListener, InputProcessor {
                 2 -> {
                     world.direction = 0
                     buffer = camera.position.x.toInt()
-                    camera.position.x = 64 - world.depth.toFloat()
+                    camera.position.x = WorldCell.CELL_SIZE_X - world.depth.toFloat()
                     world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 3 -> {
                     world.direction = 1
-                    buffer = 64 - camera.position.x.toInt()
+                    buffer = WorldCell.CELL_SIZE_X - camera.position.x.toInt()
                     camera.position.x = world.depth.toFloat()
                     world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
@@ -131,13 +129,13 @@ class Client : ApplicationListener, InputProcessor {
                 0 -> {
                     world.direction = 2
                     buffer = camera.position.x.toInt()
-                    camera.position.x = 64 - world.depth.toFloat()
+                    camera.position.x = WorldCell.CELL_SIZE_Y - world.depth.toFloat()
                     world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 1 -> {
                     world.direction = 3
-                    buffer = 64 - camera.position.x.toInt()
+                    buffer = WorldCell.CELL_SIZE_Y - camera.position.x.toInt()
                     camera.position.x = world.depth.toFloat()
                     world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
@@ -145,13 +143,13 @@ class Client : ApplicationListener, InputProcessor {
                 2 -> {
                     world.direction = 1
                     buffer = camera.position.x.toInt()
-                    camera.position.x = 64 - world.depth.toFloat()
+                    camera.position.x = WorldCell.CELL_SIZE_X - world.depth.toFloat()
                     world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)
                 }
                 3 -> {
                     world.direction = 0
-                    buffer = 64 - camera.position.x.toInt()
+                    buffer = WorldCell.CELL_SIZE_X - camera.position.x.toInt()
                     camera.position.x = world.depth.toFloat()
                     world.depth = buffer
                     renderer.map = world.reloadMap(server.loadedCells)

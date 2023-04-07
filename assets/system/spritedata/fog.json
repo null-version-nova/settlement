@@ -1,6 +1,6 @@
 {
   "sprites": [{
-    "pack": "core",
+    "pack": "system",
     "name": "fog"
   }]
 }

@@ -16,5 +16,6 @@ class Server {
     }
     fun loadCell(location: IntegerVector3) {
         loadedCells[location] = WorldCell(location)
+        loadedCells[location]?.generate()
     }
 }
