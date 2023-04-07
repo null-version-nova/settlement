@@ -1,7 +1,10 @@
 package org.nullversionnova.server
 
 import org.nullversionnova.SimplexNoise
-import org.nullversionnova.data.*
+import org.nullversionnova.data.Axis
+import org.nullversionnova.data.Identifier
+import org.nullversionnova.data.IntegerVector3
+import org.nullversionnova.data.Tile
 import org.nullversionnova.server.base.entities.StaticEntity
 
 class WorldCell (val location: IntegerVector3) {
@@ -42,7 +45,7 @@ class WorldCell (val location: IntegerVector3) {
         const val V_SCALE : Double = 10.0
         const val Y_OFFSET : Int = 20
         const val SOIL_DEPTH : Int = 3
-        fun getSizeFromAxis(axis : Axis) : Int {
+        fun getSizeFromAxis(axis: Axis) : Int {
             return when (axis) {
                 Axis.X -> CELL_SIZE_X
                 Axis.Y -> CELL_SIZE_Y

@@ -29,8 +29,8 @@ configure(subprojects) {
 }
 
 subprojects {
-  version = '1.0.0'
-  ext.appName = 'settlement-kotlin'
+  version = '0.0.0'
+  ext.appName = 'settlement'
   repositories {
     mavenCentral()
     maven { url 'https://s01.oss.sonatype.org' }

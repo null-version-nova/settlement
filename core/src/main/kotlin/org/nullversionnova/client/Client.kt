@@ -13,6 +13,7 @@ import com.beust.klaxon.Klaxon
 import org.nullversionnova.client.base.BaseClient
 import org.nullversionnova.client.core.SystemClient
 import org.nullversionnova.data.Direction
+import org.nullversionnova.data.Direction.*
 import org.nullversionnova.data.Identifier
 import org.nullversionnova.data.IntegerVector3
 import org.nullversionnova.server.Server
@@ -86,56 +87,81 @@ class Client : ApplicationListener, InputProcessor {
     // Input
     override fun keyDown(keycode: Int): Boolean {
         when (keycode) {
-            Input.Keys.LEFT -> {
-                if (world.direction.polarity()) {
-                    world.direction = world.direction.counterClockwise()
+            Input.Keys.LEFT -> if (world.direction == NORTH || world.direction == EAST) {
+                world.direction = world.direction.counterClockwise()
+                buffer = camera.position.x.toInt()
+                camera.position.x = WorldCell.getSizeFromAxis(world.direction.counterClockwise().axis()) - world.depth.toFloat()
+                world.depth = buffer
+                renderer.map = world.reloadMap(server.loadedCells)
+            }
+            else if (world.direction == SOUTH || world.direction == WEST) {
+                world.direction = world.direction.counterClockwise()
+                buffer = WorldCell.getSizeFromAxis(world.direction.counterClockwise().axis()) - camera.position.x.toInt()
+                camera.position.x = world.depth.toFloat()
+                world.depth = buffer
+                renderer.map = world.reloadMap(server.loadedCells)
+            }
+            Input.Keys.UP -> if (!world.direction.isVertical()) {
+                world.direction = UP
+                renderer.map = world.reloadMap(server.loadedCells)
+            }
+            else if (world.direction == DOWN) {
+                world.direction = NORTH
+                renderer.map = world.reloadMap(server.loadedCells)
+            }
+            Input.Keys.RIGHT -> when (world.direction) {
+                EAST -> {
+                    world.direction = NORTH
                     buffer = camera.position.x.toInt()
-                    camera.position.x = WorldCell.getSizeFromAxis(world.direction.counterClockwise().axis()) - world.depth.toFloat()
+                    camera.position.x = WorldCell.CELL_SIZE_Y - world.depth.toFloat()
                     world.depth = buffer
-                } else {
-                    world.direction = world.direction.counterClockwise()
-                    buffer = WorldCell.getSizeFromAxis(world.direction.counterClockwise().axis()) - camera.position.x.toInt()
+                    renderer.map = world.reloadMap(server.loadedCells)
+                }
+                WEST -> {
+                    world.direction = SOUTH
+                    buffer = WorldCell.CELL_SIZE_Y - camera.position.x.toInt()
                     camera.position.x = world.depth.toFloat()
                     world.depth = buffer
+                    renderer.map = world.reloadMap(server.loadedCells)
                 }
-                renderer.map = world.reloadMap(server.loadedCells)
-            }
-            Input.Keys.UP -> {
-                if (!world.direction.isVertical()) { world.direction = Direction.UP }
-                else if (world.direction == Direction.DOWN) { world.direction = Direction.NORTH }
-                renderer.map = world.reloadMap(server.loadedCells)
-            }
-            Input.Keys.RIGHT -> {
-                if (world.direction.polarity()) {
-                    world.direction = world.direction.clockwise()
+                NORTH -> {
+                    world.direction = WEST
                     buffer = camera.position.x.toInt()
-                    camera.position.x = WorldCell.getSizeFromAxis(world.direction.clockwise().axis()) - world.depth.toFloat()
+                    camera.position.x = WorldCell.CELL_SIZE_X - world.depth.toFloat()
                     world.depth = buffer
-                } else {
-                    world.direction = world.direction.clockwise()
-                    buffer = WorldCell.getSizeFromAxis(world.direction.clockwise().axis()) - camera.position.x.toInt()
+                    renderer.map = world.reloadMap(server.loadedCells)
+                }
+                SOUTH -> {
+                    world.direction = EAST
+                    buffer = WorldCell.CELL_SIZE_X - camera.position.x.toInt()
                     camera.position.x = world.depth.toFloat()
                     world.depth = buffer
+                    renderer.map = world.reloadMap(server.loadedCells)
                 }
-                renderer.map = world.reloadMap(server.loadedCells)
+                else -> return false
             }
-            Input.Keys.DOWN -> {
-                if (!world.direction.isVertical()) { world.direction = Direction.DOWN }
-                else if (world.direction == Direction.UP) { world.direction = Direction.NORTH }
-                renderer.map = world.reloadMap(server.loadedCells)
+            Input.Keys.DOWN -> when (world.direction) {
+                EAST, WEST, NORTH, SOUTH -> {
+                    world.direction = DOWN
+                    renderer.map = world.reloadMap(server.loadedCells)
+                }
+                UP -> {
+                    world.direction = NORTH
+                    renderer.map = world.reloadMap(server.loadedCells)
+                }
+                DOWN -> return false
             }
             Input.Keys.PAGE_DOWN -> {
-                world.depth = RenderedWorld.depthDirection(world.depth,world.direction,-1)
-                println(world.depth)
+                world.depth--
                 renderer.map = world.reloadMap(server.loadedCells)
             }
             Input.Keys.PAGE_UP -> {
-                world.depth = RenderedWorld.depthDirection(world.depth,world.direction,1)
-                println(world.depth)
+                world.depth++
                 renderer.map = world.reloadMap(server.loadedCells)
             }
             else -> return false
         }
+        println(world.depth)
         return true
     }
 
@@ -149,7 +175,7 @@ class Client : ApplicationListener, InputProcessor {
             'a' -> camera.translate(-0.5f,0f)
             's' -> camera.translate(0f,-0.5f)
             'd' -> camera.translate(0.5f,0f)
-            'm' -> camera.position.set(Vector3())
+            'm' -> server.loadedCells[IntegerVector3()]?.generate()
             else -> return false
         }
         return true
@@ -223,10 +249,10 @@ class Client : ApplicationListener, InputProcessor {
         fun getTileTexture(direction: Direction, identifier: Identifier): Identifier {
             val data = Klaxon().parse<TileTextureData>(Gdx.files.internal("${identifier.pack}/models/tiles/${identifier.name}.json").readString())
                 ?: return Identifier("core","default")
-            if (direction == Direction.UP) {
+            if (direction == UP) {
                 return data.bottom
             }
-            if (direction == Direction.DOWN) {
+            if (direction == DOWN) {
                 return data.top
             }
             return data.side
