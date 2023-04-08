@@ -40,7 +40,7 @@ add_library(GLAD "thirdparty/glad.c")
 set(LIBS glfw3 opengl32 GLAD raylib)
 
 include_directories(
-        "${CMAKE_SOURCE_DIR}/src"
+        "${CMAKE_SOURCE_DIR}/cside/src"
         "${CMAKE_SOURCE_DIR}/include"
 )
 

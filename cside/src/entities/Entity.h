@@ -4,37 +4,24 @@
 
 #ifndef SETTLEMENT_BUILDER_NVN_ENTITY_H
 #define SETTLEMENT_BUILDER_NVN_ENTITY_H
-#include "raylib.h"
+
+#include "data/Identifier.h"
 #include <string>
 using namespace std;
 
 class Entity {
-protected:
-    int health;
 public:
     // Constructors
-    Entity() = default;
+    Entity() = delete;
     ~Entity() = default;
 
     // Members
-    Image sprite;
-    string entitytypename;
-    string personalname;
+    Identifier identifier;
+    int health;
 
     // Virtual Methods
     virtual void tick() = 0;
-
-    // Methods
-    /**
-     * @param alterAmount
-     * @return new health value
-     */
-    int alterHealth(int alterAmount);
-
-    /**
-     * @return health value
-     */
-    int getHealth() const;
+    virtual void die() = 0;
 };
 
 

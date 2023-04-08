@@ -5,16 +5,18 @@
 #ifndef SETTLEMENT_BUILDER_NVN_STATICENTITY_H
 #define SETTLEMENT_BUILDER_NVN_STATICENTITY_H
 
-#include "src/entities/Entity.h"
-#include "src/entities/mobile/ItemEntity.h"
 #include <map>
+#include "entities/Entity.h"
+#include "entities/mobile/ItemEntity.h"
+#include "data/IntVector3.h"
+
 using namespace std;
 
 class StaticEntity : public Entity {
 public:
     // Members
-    int location[128][128][128];
-    map<string,string> materials;
+    IntVector3 location;
+    map<Identifier,Identifier> materials;
 
     // Methods
     ItemEntity remove();

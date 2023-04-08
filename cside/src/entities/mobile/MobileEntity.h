@@ -5,12 +5,13 @@
 #ifndef SETTLEMENT_BUILDER_NVN_MOBILEENTITY_H
 #define SETTLEMENT_BUILDER_NVN_MOBILEENTITY_H
 
-#include "src/entities/Entity.h"
+#include <raylib.h>
+#include "entities/Entity.h"
 
 class MobileEntity : public Entity {
 private:
-    double GRAVITY = 1;
-    double TERMINAL_VELOCITY = -1;
+    constexpr static const double GRAVITY = 1;
+    constexpr static const double TERMINAL_VELOCITY = -1;
 
 public:
     // Members

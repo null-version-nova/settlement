@@ -12,5 +12,5 @@ ItemEntity StaticEntity::remove() {
     for (pair<string, string> i: materials) {
         item.data[i.first] = i.second;
     }
-    return ItemEntity();
+    return item;
 }

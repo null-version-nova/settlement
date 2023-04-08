@@ -1,7 +1,6 @@
 //
-// Created by TheAviary on 3/19/2023.
+// Created by TheAviary on 4/7/2023.
 //
-
 #include "Entity.h"
 
 int Entity::alterHealth(int alterAmount) {
@@ -12,3 +11,4 @@ int Entity::alterHealth(int alterAmount) {
 int Entity::getHealth() const {
     return health;
 }
+
