@@ -4,12 +4,12 @@ project(settlement)
 set(CMAKE_CXX_STANDARD 23)
 
 file(GLOB_RECURSE SOURCE_FILES
-        ${CMAKE_SOURCE_DIR}/src/*.c
-        ${CMAKE_SOURCE_DIR}/src/*.cpp)
+        ${CMAKE_SOURCE_DIR}/cside/src/*.c
+        ${CMAKE_SOURCE_DIR}/cside/src/*.cpp)
 
 file(GLOB_RECURSE HEADER_FILES
-        ${CMAKE_SOURCE_DIR}/src/*.h
-        ${CMAKE_SOURCE_DIR}/src/*.hpp)
+        ${CMAKE_SOURCE_DIR}/cside/src/*.h
+        ${CMAKE_SOURCE_DIR}/cside/src/*.hpp)
 
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 

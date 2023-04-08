@@ -5,7 +5,7 @@
 #ifndef SETTLEMENT_BUILDER_NVN_MOBILEENTITY_H
 #define SETTLEMENT_BUILDER_NVN_MOBILEENTITY_H
 
-#include "entities/Entity.h"
+#include "src/entities/Entity.h"
 
 class MobileEntity : public Entity {
 private:

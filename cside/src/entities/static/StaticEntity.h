@@ -5,8 +5,8 @@
 #ifndef SETTLEMENT_BUILDER_NVN_STATICENTITY_H
 #define SETTLEMENT_BUILDER_NVN_STATICENTITY_H
 
-#include "entities/Entity.h"
-#include "entities/mobile/ItemEntity.h"
+#include "src/entities/Entity.h"
+#include "src/entities/mobile/ItemEntity.h"
 #include <map>
 using namespace std;
 

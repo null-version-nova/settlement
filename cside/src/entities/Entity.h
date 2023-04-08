@@ -4,7 +4,7 @@
 
 #ifndef SETTLEMENT_BUILDER_NVN_ENTITY_H
 #define SETTLEMENT_BUILDER_NVN_ENTITY_H
-#include <raylib.h>
+#include "raylib.h"
 #include <string>
 using namespace std;
 
