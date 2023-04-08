@@ -38,17 +38,5 @@ enum class Direction {
     fun isVertical() : Boolean {
         return this.axis() == Axis.Z
     }
-    fun getOtherPair() : Pair<Axis,Axis> {
-        val first = when (this.axis()) {
-            Axis.X -> Axis.Y
-            Axis.Y -> Axis.X
-            Axis.Z -> Axis.X
-        }
-        val second = when (this.axis()) {
-            Axis.X -> Axis.Z
-            Axis.Y -> Axis.Z
-            Axis.Z -> Axis.Y
-        }
-        return if (this.polarity()) { Pair(first,second) } else { Pair(second,first) }
-    }
+
 }

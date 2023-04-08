@@ -9,4 +9,17 @@ enum class Axis {
             Z -> if (polarity) { Direction.UP } else { Direction.DOWN }
         }
     }
+    fun getOtherPair() : Pair<Axis,Axis> {
+        val first = when (this) {
+            X -> Y
+            Y -> X
+            Z -> X
+        }
+        val second = when (this) {
+            X -> Z
+            Y -> Z
+            Z -> Y
+        }
+        return Pair(first,second)
+    }
 }

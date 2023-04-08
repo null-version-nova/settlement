@@ -11,7 +11,6 @@ import org.nullversionnova.data.*
 import org.nullversionnova.data.Direction.*
 import org.nullversionnova.data.Axis.*
 import org.nullversionnova.server.WorldCell
-import kotlin.math.floor
 
 class RenderedWorld {
     // Initialize
@@ -31,72 +30,74 @@ class RenderedWorld {
 
     // Methods
     private fun getCellLayer(cellCoordinates: IntegerVector3, cells: MutableMap<IntegerVector3,WorldCell>, depth: Int): MutableSet<Tile> {
+        val displacement = depth % WorldCell.CELL_SIZE_X
         val layer = mutableSetOf<Tile>()
         if (cells[cellCoordinates] == null) {
             return layer
         }
         for (i in cells[cellCoordinates]!!.tilemap) {
             when (direction.axis()) {
-                X -> if (i.location.x == depth) { layer.add(i) }
-                Y -> if (i.location.y == depth) { layer.add(i) }
-                Z -> if (i.location.z == depth) { layer.add(i) }
-            }
-        }
-        if (!direction.polarity()) {
-            for (i in cells[cellCoordinates]?.tilemap!!) {
-                when (direction.axis()) {
-                    X -> i.location.x = WorldCell.CELL_SIZE_X - i.location.x
-                    Y -> i.location.y = WorldCell.CELL_SIZE_Y - i.location.y
-                    Z -> i.location.z = WorldCell.CELL_SIZE_Z - i.location.z
-                }
+                X -> if (i.location.x == displacement) { layer.add(i) }
+                Y -> if (i.location.y == displacement) { layer.add(i) }
+                Z -> if (i.location.z == displacement) { layer.add(i) }
             }
         }
         return layer
     }
-    private fun getTileLayer(layer: MutableSet<Tile>, map: TiledMap) : TiledMapTileLayer {
+    private fun getTileLayer(loadedCells: MutableSet<IntegerVector3>, cells: MutableMap<IntegerVector3, WorldCell>, depth: Int, map: TiledMap) : TiledMapTileLayer {
         val tileLayer : TiledMapTileLayer = when(direction.axis()) {
-            X -> TiledMapTileLayer(WorldCell.CELL_SIZE_Y,WorldCell.CELL_SIZE_Z, Client.scale, Client.scale)
-            Y -> TiledMapTileLayer(WorldCell.CELL_SIZE_X,WorldCell.CELL_SIZE_Z, Client.scale, Client.scale)
-            Z -> TiledMapTileLayer(WorldCell.CELL_SIZE_X,WorldCell.CELL_SIZE_Y, Client.scale, Client.scale)
+            X -> TiledMapTileLayer(WorldCell.CELL_SIZE_Y * 3,WorldCell.CELL_SIZE_Z * 3, Client.scale, Client.scale)
+            Y -> TiledMapTileLayer(WorldCell.CELL_SIZE_X * 3,WorldCell.CELL_SIZE_Z * 3, Client.scale, Client.scale)
+            Z -> TiledMapTileLayer(WorldCell.CELL_SIZE_X * 3,WorldCell.CELL_SIZE_Y * 3, Client.scale, Client.scale)
         }
-        if (layer.isEmpty()) {
-            return tileLayer
+        val layers = mutableMapOf<IntegerVector2,MutableSet<Tile>>()
+        val displacement = if (depth > WorldCell.getSizeFromAxis(direction.axis())) { 1 } else if (depth < 0) { -1 } else { 0 }
+        for (i in loadedCells) {
+            if (i.getAxis(direction.axis()) == cameraCellCoordinates.getAxis(direction.axis()) + displacement) {
+                if (displacement == 1) {
+                }
+                layers[IntegerVector2(i,direction.axis())] = getCellLayer(i.getNewWithSetAxis(displacement,direction.axis()), cells, depth - displacement * WorldCell.getSizeFromAxis(direction.axis()))
+            }
         }
         val allTiles = mutableMapOf<Identifier,Cell>()
         val allTileKeys = mutableSetOf<Identifier>()
-        for (i in layer) { // What a lifesaver!
-            allTileKeys.add(i.identifier)
+        for (i in layers) { // What a lifesaver!
+            for (j in i.value) {
+                allTileKeys.add(j.identifier)
+            }
         }
         for (i in allTileKeys) {
             allTiles[i] = Cell().setTile(textureIds[getTileTexture(direction,i)]?.let { map.tileSets.getTile(it) })
         }
-        for (i in layer) {
-            val x = when (direction.axis()) {
-                X -> i.location.y
-                Y -> i.location.x
-                Z -> i.location.x
+        for (i in layers.keys) {
+            for (j in layers[i]!!) {
+                val vector = IntegerVector2(cameraCellCoordinates,direction.axis())
+                var x = when (direction) {
+                    NORTH, SOUTH -> j.location.x + i.x * WorldCell.CELL_SIZE_Y + WorldCell.CELL_SIZE_Y + WorldCell.CELL_SIZE_Y * -vector.x
+                    EAST, WEST -> j.location.y + i.x * WorldCell.CELL_SIZE_X + WorldCell.CELL_SIZE_X + WorldCell.CELL_SIZE_X * -vector.x
+                    UP, DOWN -> j.location.x + i.x * WorldCell.CELL_SIZE_X + WorldCell.CELL_SIZE_X + WorldCell.CELL_SIZE_X * -vector.x
+                }
+                var y = when (direction) {
+                    NORTH, SOUTH, EAST, WEST -> j.location.z + i.y * WorldCell.CELL_SIZE_Z + -vector.y * WorldCell.CELL_SIZE_Z + WorldCell.CELL_SIZE_Z
+                    DOWN, UP -> j.location.y + i.y * WorldCell.CELL_SIZE_Y + WorldCell.CELL_SIZE_Y + WorldCell.CELL_SIZE_Y * -vector.y
+                }
+                when (direction) {
+                    SOUTH -> x = WorldCell.CELL_SIZE_Y * 3 - x
+                    WEST -> x = WorldCell.CELL_SIZE_X * 3 - x
+                    UP -> y = WorldCell.CELL_SIZE_Y * 3 - y
+                    else -> {}
+                }
+                tileLayer.setCell(x,y, allTiles[j.identifier])
             }
-            val y = when (direction.axis()) {
-                X -> i.location.z
-                Y -> i.location.z
-                Z -> i.location.y
-            }
-            tileLayer.setCell(x,y, allTiles[i.identifier])
         }
         return tileLayer
     }
-    fun reloadMap(cells: MutableMap<IntegerVector3, WorldCell>) : TiledMap {
+    fun reloadMap(cells: MutableMap<IntegerVector3, WorldCell>, loadedCells: MutableSet<IntegerVector3>) : TiledMap {
         println("Beginning reload.")
         val map = TiledMap()
         map.tileSets.addTileSet(tileSet)
         for (i in renderDistance downTo 0) {
-            val displacement = floor(depthDirection(depth,direction,i).toFloat() / WorldCell.CELL_SIZE_X.toFloat()).toInt()
-            val newCameraPosition = when (direction.axis()) {
-                X -> IntegerVector3(cameraCellCoordinates.x + displacement,cameraCellCoordinates.y,cameraCellCoordinates.z)
-                Y -> IntegerVector3(cameraCellCoordinates.x, cameraCellCoordinates.y + displacement,cameraCellCoordinates.z)
-                Z -> IntegerVector3(cameraCellCoordinates.x,cameraCellCoordinates.y,cameraCellCoordinates.z + displacement)
-            }
-            map.layers.add(getTileLayer(getCellLayer(newCameraPosition, cells, depthDirection(depth,direction,i)),map))
+            map.layers.add(getTileLayer(loadedCells,cells,depthDirection(depth,direction,i),map))
         }
         println("Reloaded!")
         return map

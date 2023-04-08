@@ -25,7 +25,7 @@ data class IntegerVector3(var x: Int = 0, var y: Int = 0, var z: Int = 0) {
     }
     fun getNewWithSetAxis(newValue: Int, axis: Axis) : IntegerVector3 {
         val vector = this.copy()
-        vector.setAxis(newValue, axis)
+        vector.setAxis(vector.getAxis(axis) + newValue, axis)
         return vector
     }
     fun reflectAcrossCell(axis: Axis) { setAxis(WorldCell.getSizeFromAxis(axis) - getAxis(axis),axis) }
