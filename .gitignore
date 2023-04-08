@@ -143,3 +143,10 @@ Thumbs.db
 *~
 *.*#
 *#*#
+
+# Project exclude paths
+/cmake-build-debug
+/include
+/lib
+/thirdparty
+/.idea
