@@ -1,7 +1,7 @@
 package org.nullversionnova.server.base.tiles
 
 object BaseTileMaterials {
-    fun ROCK() : Tile { return Tile("rock").setHardness(10) }
-    fun SOIL() : Tile { return Tile("soil").setHardness(1) }
-    fun ATMOSPHERE() : Tile { return Tile("atmosphere").isGas() }
+    fun ROCK() : TileProperties { return TileProperties("rock").setHardness(10) }
+    fun SOIL() : TileProperties { return TileProperties("soil").setHardness(1) }
+    fun ATMOSPHERE() : TileProperties { return TileProperties("atmosphere").isGas() }
 }

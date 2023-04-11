@@ -28,5 +28,5 @@ data class IntegerVector3(var x: Int = 0, var y: Int = 0, var z: Int = 0) {
         vector.setAxis(vector.getAxis(axis) + newValue, axis)
         return vector
     }
-    fun reflectAcrossCell(axis: Axis) { setAxis(WorldCell.getSizeFromAxis(axis) - getAxis(axis),axis) }
+    fun reflectAcrossCell(axis: Axis) { setAxis(WorldCell.CELL_SIZE - getAxis(axis),axis) }
 }

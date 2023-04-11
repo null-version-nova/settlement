@@ -63,6 +63,7 @@ class Client : ApplicationListener, InputProcessor {
     }
 
     override fun render() {
+        // World Rendering
         ScreenUtils.clear(100f / 255f, 100f / 255f, 250f / 255f, 1f)
         camera.zoom = zoom
         camera.update()
@@ -75,6 +76,9 @@ class Client : ApplicationListener, InputProcessor {
             camera.zoom -= 0.01f
             camera.update()
         }
+
+        // Game Processing
+        changeCameraPosition()
     }
 
     override fun pause() {
@@ -93,14 +97,14 @@ class Client : ApplicationListener, InputProcessor {
             Input.Keys.LEFT -> if (world.direction == NORTH || world.direction == EAST) {
                 world.direction = world.direction.counterClockwise()
                 buffer = camera.position.x.toInt()
-                camera.position.x = WorldCell.getSizeFromAxis(world.direction.counterClockwise().axis()) - world.depth.toFloat()
+                camera.position.x = WorldCell.CELL_SIZE - world.depth.toFloat()
                 world.depth = buffer
                 loadedCellAddresses = getLoadedCellsNearCamera()
                 changeDepth()
             }
             else if (world.direction == SOUTH || world.direction == WEST) {
                 world.direction = world.direction.counterClockwise()
-                buffer = WorldCell.getSizeFromAxis(world.direction.counterClockwise().axis()) - camera.position.x.toInt()
+                buffer = WorldCell.CELL_SIZE - camera.position.x.toInt()
                 camera.position.x = world.depth.toFloat()
                 world.depth = buffer
                 loadedCellAddresses = getLoadedCellsNearCamera()
@@ -120,14 +124,14 @@ class Client : ApplicationListener, InputProcessor {
                 EAST -> {
                     world.direction = NORTH
                     buffer = camera.position.x.toInt()
-                    camera.position.x = WorldCell.CELL_SIZE_Y - world.depth.toFloat()
+                    camera.position.x = WorldCell.CELL_SIZE - world.depth.toFloat()
                     world.depth = buffer
                     loadedCellAddresses = getLoadedCellsNearCamera()
                     changeDepth()
                 }
                 WEST -> {
                     world.direction = SOUTH
-                    buffer = WorldCell.CELL_SIZE_Y - camera.position.x.toInt()
+                    buffer = WorldCell.CELL_SIZE - camera.position.x.toInt()
                     camera.position.x = world.depth.toFloat()
                     world.depth = buffer
                     loadedCellAddresses = getLoadedCellsNearCamera()
@@ -136,14 +140,14 @@ class Client : ApplicationListener, InputProcessor {
                 NORTH -> {
                     world.direction = WEST
                     buffer = camera.position.x.toInt()
-                    camera.position.x = WorldCell.CELL_SIZE_X - world.depth.toFloat()
+                    camera.position.x = WorldCell.CELL_SIZE - world.depth.toFloat()
                     world.depth = buffer
                     loadedCellAddresses = getLoadedCellsNearCamera()
                     changeDepth()
                 }
                 SOUTH -> {
                     world.direction = EAST
-                    buffer = WorldCell.CELL_SIZE_X - camera.position.x.toInt()
+                    buffer = WorldCell.CELL_SIZE - camera.position.x.toInt()
                     camera.position.x = world.depth.toFloat()
                     world.depth = buffer
                     loadedCellAddresses = getLoadedCellsNearCamera()
@@ -228,20 +232,7 @@ class Client : ApplicationListener, InputProcessor {
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         last[-1f, -1f] = -1f
-        if (camera.position.x < 32) {
-            camera.position.x += 32
-            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.axis().getOtherPair().first) - 1,world.direction.axis().getOtherPair().first)
-        } else if (camera.position.x > 64) {
-            camera.position.x -= 32
-            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.axis().getOtherPair().first) + 1,world.direction.axis().getOtherPair().first)
-        }
-        if (camera.position.y < 32) {
-            camera.position.y += 32
-            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.axis().getOtherPair().second) - 1,world.direction.axis().getOtherPair().second)
-        } else if (camera.position.y > 64) {
-            camera.position.y -= 32
-            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.axis().getOtherPair().second) + 1,world.direction.axis().getOtherPair().second)
-        }
+        changeCameraPosition()
         changeDepth()
         return true
     }
@@ -266,8 +257,8 @@ class Client : ApplicationListener, InputProcessor {
         if (camera.zoom.isNaN()) {
             camera.zoom = zoom
         }
-        if (zoom > 2) {
-            zoom = 2f
+        if (zoom > 1.5) {
+            zoom = 1.5f
         }
         return true
     }
@@ -295,27 +286,58 @@ class Client : ApplicationListener, InputProcessor {
         return set
     }
     fun changeDepth() {
-        if (world.depth >= WorldCell.CELL_SIZE_X && world.direction.axis() == Axis.X) {
+        if (world.depth >= WorldCell.CELL_SIZE && world.direction.axis() == Axis.X) {
             world.cameraCellCoordinates.x += 1
-            world.depth -= WorldCell.CELL_SIZE_X
+            world.depth -= WorldCell.CELL_SIZE
         } else if (world.depth < 0 && world.direction.axis() == Axis.X) {
             world.cameraCellCoordinates.x -= 1
-            world.depth += WorldCell.CELL_SIZE_X
-        } else if (world.depth >= WorldCell.CELL_SIZE_Y && world.direction.axis() == Axis.Y) {
+            world.depth += WorldCell.CELL_SIZE
+        } else if (world.depth >= WorldCell.CELL_SIZE && world.direction.axis() == Axis.Y) {
             world.cameraCellCoordinates.y += 1
-            world.depth -= WorldCell.CELL_SIZE_Y
+            world.depth -= WorldCell.CELL_SIZE
         } else if (world.depth < 0 && world.direction.axis() == Axis.Y) {
             world.cameraCellCoordinates.y -= 1
-            world.depth += WorldCell.CELL_SIZE_Y
-        } else if (world.depth >= WorldCell.CELL_SIZE_Z && world.direction.axis() == Axis.Z) {
+            world.depth += WorldCell.CELL_SIZE
+        } else if (world.depth >= WorldCell.CELL_SIZE && world.direction.axis() == Axis.Z) {
             world.cameraCellCoordinates.z += 1
-            world.depth -= WorldCell.CELL_SIZE_Z
+            world.depth -= WorldCell.CELL_SIZE
         } else if (world.depth < 0 && world.direction.axis() == Axis.Z) {
             world.cameraCellCoordinates.z -= 1
-            world.depth += WorldCell.CELL_SIZE_Z
+            world.depth += WorldCell.CELL_SIZE
         }
         loadedCellAddresses = getLoadedCellsNearCamera()
         renderer.map = world.reloadMap(server.loadedCells,loadedCellAddresses)
+    }
+
+    fun changeCameraPosition() {
+        val increasex = when (world.direction) {
+            SOUTH, WEST -> -1
+            else -> 1
+        }
+        val increasey = if (world.direction == UP) { -1 } else { 1 }
+        var isChange = false
+        if (camera.position.x < 32) {
+            camera.position.x += 32
+            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.axis().getOtherPair().first) - increasex,world.direction.axis().getOtherPair().first)
+            isChange = true
+        } else if (camera.position.x > 64) {
+            camera.position.x -= 32
+            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.axis().getOtherPair().first) + increasex,world.direction.axis().getOtherPair().first)
+            isChange = true
+        }
+        if (camera.position.y < 32) {
+            camera.position.y += 32
+            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.axis().getOtherPair().second) - increasey,world.direction.axis().getOtherPair().second)
+            isChange = true
+        } else if (camera.position.y > 64) {
+            camera.position.y -= 32
+            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.axis().getOtherPair().second) + increasey,world.direction.axis().getOtherPair().second)
+            isChange = true
+        }
+        if (isChange) {
+            changeDepth()
+            println("Triggered!")
+        }
     }
 
     // Companions

@@ -2,22 +2,14 @@ package org.nullversionnova.server.base.entities
 
 import org.nullversionnova.data.Identifier
 
-abstract class Entity(val identifier: Identifier) {
+interface Entity {
     // Members
-    var tickable = false
-    var maxHealth = 1
-    private var health = maxHealth
+    var identifier: Identifier
+    var tickable: Boolean
+    var maxHealth : Int
+    var health : Int
 
     // Methods
-    open fun tick() {}
-    abstract fun die()
-    fun alterHealth(amount: Int) : Int {
-        health -= amount
-        if (health <= 0) { die() }
-        if (health > maxHealth) { health = maxHealth }
-        return health
-    }
-    fun getHealth() : Int {
-        return health
-    }
+    fun tick()
+    fun die()
 }

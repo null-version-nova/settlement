@@ -1,14 +1,14 @@
 package org.nullversionnova.server
 
 import org.nullversionnova.data.Identifier
-import org.nullversionnova.server.base.tiles.Tile
+import org.nullversionnova.server.base.tiles.TileProperties
 
 class ServerRegistry {
     // Members
-    private val tileSet = mutableMapOf<Identifier, Tile>()
+    private val tileSet = mutableMapOf<Identifier, TileProperties>()
 
     // Loading
-    fun addTile(identifier: Identifier, properties: Tile) : Tile {
+    fun addTile(identifier: Identifier, properties: TileProperties) : TileProperties {
         return if (tileSet[identifier] == null) {
             tileSet[identifier] = properties
             properties
@@ -18,9 +18,9 @@ class ServerRegistry {
     }
 
     // Retrieving
-    fun accessTile(identifier: Identifier) : Tile {
+    fun accessTile(identifier: Identifier) : TileProperties {
         if (tileSet[identifier] == null) {
-            tileSet[identifier] = Tile("default")
+            tileSet[identifier] = TileProperties("default")
         }
         return tileSet[identifier]!!
     }

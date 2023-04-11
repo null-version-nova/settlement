@@ -3,17 +3,13 @@ package org.nullversionnova.server.base.entities
 import com.badlogic.gdx.math.Vector3
 import org.nullversionnova.data.Identifier
 
-class MobileEntity(identifier: Identifier, var position: Vector3) : Entity(identifier) {
-
-    // Constructors
-    init {
-        tickable = true
-    }
-
+class MobileEntity(override var identifier: Identifier, var position: Vector3, override var maxHealth: Int = 1) : Entity {
     // Members
     var velocity: Vector3 = Vector3(0f,0f,0f)
     var adjacentSurfaces = BooleanArray(6)
     var isGravityAffected = true
+    override var health: Int = maxHealth
+    override var tickable: Boolean = true
 
     // Methods
     override fun tick() {
