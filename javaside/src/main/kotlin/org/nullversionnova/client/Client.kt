@@ -99,26 +99,26 @@ class Client : ApplicationListener, InputProcessor {
                 buffer = camera.position.x.toInt()
                 camera.position.x = WorldCell.CELL_SIZE - world.depth.toFloat()
                 world.depth = buffer
-                loadedCellAddresses = getLoadedCellsNearCamera()
                 changeDepth()
+                resetMap()
             }
             else if (world.direction == SOUTH || world.direction == WEST) {
                 world.direction = world.direction.counterClockwise()
                 buffer = WorldCell.CELL_SIZE - camera.position.x.toInt()
                 camera.position.x = world.depth.toFloat()
                 world.depth = buffer
-                loadedCellAddresses = getLoadedCellsNearCamera()
                 changeDepth()
+                resetMap()
             }
             Input.Keys.UP -> if (!world.direction.isVertical()) {
                 world.direction = UP
-                loadedCellAddresses = getLoadedCellsNearCamera()
                 changeDepth()
+                resetMap()
             }
             else if (world.direction == DOWN) {
                 world.direction = NORTH
-                loadedCellAddresses = getLoadedCellsNearCamera()
                 changeDepth()
+                resetMap()
             }
             Input.Keys.RIGHT -> when (world.direction) {
                 EAST -> {
@@ -126,32 +126,32 @@ class Client : ApplicationListener, InputProcessor {
                     buffer = camera.position.x.toInt()
                     camera.position.x = WorldCell.CELL_SIZE - world.depth.toFloat()
                     world.depth = buffer
-                    loadedCellAddresses = getLoadedCellsNearCamera()
                     changeDepth()
+                    resetMap()
                 }
                 WEST -> {
                     world.direction = SOUTH
                     buffer = WorldCell.CELL_SIZE - camera.position.x.toInt()
                     camera.position.x = world.depth.toFloat()
                     world.depth = buffer
-                    loadedCellAddresses = getLoadedCellsNearCamera()
                     changeDepth()
+                    resetMap()
                 }
                 NORTH -> {
                     world.direction = WEST
                     buffer = camera.position.x.toInt()
                     camera.position.x = WorldCell.CELL_SIZE - world.depth.toFloat()
                     world.depth = buffer
-                    loadedCellAddresses = getLoadedCellsNearCamera()
                     changeDepth()
+                    resetMap()
                 }
                 SOUTH -> {
                     world.direction = EAST
                     buffer = WorldCell.CELL_SIZE - camera.position.x.toInt()
                     camera.position.x = world.depth.toFloat()
                     world.depth = buffer
-                    loadedCellAddresses = getLoadedCellsNearCamera()
                     changeDepth()
+                    resetMap()
                 }
                 else -> return false
             }
@@ -159,24 +159,27 @@ class Client : ApplicationListener, InputProcessor {
                 EAST, WEST, NORTH, SOUTH -> {
                     world.direction = DOWN
                     changeDepth()
+                    resetMap()
                 }
                 UP -> {
                     world.direction = NORTH
                     changeDepth()
+                    resetMap()
                 }
                 DOWN -> return false
             }
             Input.Keys.PAGE_DOWN -> {
                 world.depth = RenderedWorld.depthDirection(world.depth,world.direction,-1)
                 changeDepth()
+                resetMapViaDepth(!world.direction.polarity())
             }
             Input.Keys.PAGE_UP -> {
                 world.depth = RenderedWorld.depthDirection(world.depth,world.direction,1)
                 changeDepth()
+                resetMapViaDepth(!world.direction.polarity())
             }
             else -> return false
         }
-        println(world.depth)
         return true
     }
 
@@ -190,7 +193,23 @@ class Client : ApplicationListener, InputProcessor {
             'a' -> camera.translate(-0.5f,0f)
             's' -> camera.translate(0f,-0.5f)
             'd' -> camera.translate(0.5f,0f)
-            'm' -> server.loadedCells[IntegerVector3()]?.generate()
+            'm' -> {
+                val setToUnload = mutableSetOf<IntegerVector3>()
+                if (loadedCellAddresses.isEmpty()) {
+                    loadedCellAddresses = getLoadedCellsNearCamera()
+                } else {
+                    for (i in server.loadedCells.keys) {
+                        server.unloadCell(i)
+                        setToUnload.add(i)
+                    }
+                    for (i in setToUnload) {
+                        server.loadedCells.remove(i)
+                    }
+                    loadedCellAddresses.clear()
+                }
+                renderer.map.dispose()
+                renderer.map = world.reloadMap(server.loadedCells,loadedCellAddresses)
+            }
             else -> return false
         }
         return true
@@ -234,6 +253,7 @@ class Client : ApplicationListener, InputProcessor {
         last[-1f, -1f] = -1f
         changeCameraPosition()
         changeDepth()
+        resetMap()
         return true
     }
 
@@ -266,6 +286,7 @@ class Client : ApplicationListener, InputProcessor {
     // Auxiliary
     fun getLoadedCellsNearCamera(cameraCoordinates: IntegerVector3 = world.cameraCellCoordinates) : MutableSet<IntegerVector3> {
         val set = mutableSetOf<IntegerVector3>()
+        val setToUnload = mutableSetOf<IntegerVector3>()
         for (i in -1..1) {
             for (j in -1..1) {
                 for (k in -1..1) {
@@ -280,8 +301,19 @@ class Client : ApplicationListener, InputProcessor {
         for (i in set) {
             if (server.loadedCells[i] == null) {
                 server.loadCell(i)
+            }
+            if (server.loadedCells[i]?.loaded == false) {
                 server.loadedCells[i]?.generate()
             }
+        }
+        for (i in server.loadedCells.keys) {
+            if (!set.contains(i)) {
+                server.unloadCell(i)
+                setToUnload.add(i)
+            }
+        }
+        for (i in setToUnload) {
+            server.loadedCells.remove(i)
         }
         return set
     }
@@ -305,10 +337,20 @@ class Client : ApplicationListener, InputProcessor {
             world.cameraCellCoordinates.z -= 1
             world.depth += WorldCell.CELL_SIZE
         }
+    }
+    fun resetMapViaDepth(polarity: Boolean) {
         loadedCellAddresses = getLoadedCellsNearCamera()
+        if (polarity) {
+            renderer.map = world.advanceDepth(server.loadedCells,loadedCellAddresses,renderer.map)
+        } else {
+            renderer.map = world.recedeDepth(server.loadedCells,loadedCellAddresses,renderer.map)
+        }
+    }
+    fun resetMap() {
+        loadedCellAddresses = getLoadedCellsNearCamera()
+        renderer.map.dispose()
         renderer.map = world.reloadMap(server.loadedCells,loadedCellAddresses)
     }
-
     fun changeCameraPosition() {
         val increasex = when (world.direction) {
             SOUTH, WEST -> -1
@@ -336,7 +378,7 @@ class Client : ApplicationListener, InputProcessor {
         }
         if (isChange) {
             changeDepth()
-            println("Triggered!")
+            resetMap()
         }
     }
 

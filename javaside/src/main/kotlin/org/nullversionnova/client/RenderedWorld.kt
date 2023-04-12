@@ -9,9 +9,9 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 import org.nullversionnova.client.Client.Global.getTileTexture
 import org.nullversionnova.data.*
 import org.nullversionnova.data.Direction.*
-import org.nullversionnova.data.Axis.*
 import org.nullversionnova.server.WorldCell
-import org.nullversionnova.server.base.tiles.TileInstance
+import org.nullversionnova.server.base.tiles.TileColumn
+import org.nullversionnova.server.base.tiles.TileUnit
 
 class RenderedWorld {
     // Initialize
@@ -30,24 +30,31 @@ class RenderedWorld {
     var depth = 0
 
     // Methods
-    private fun getCellLayer(cellCoordinates: IntegerVector3, cells: MutableMap<IntegerVector3,WorldCell>, depth: Int): MutableSet<TileInstance> {
+    private fun getCellLayer(cellCoordinates: IntegerVector3, cells: MutableMap<IntegerVector3,WorldCell>, depth: Int): MutableSet<TileUnit> {
         val displacement = depth % WorldCell.CELL_SIZE
-        val layer = mutableSetOf<TileInstance>()
+        val layer = mutableSetOf<TileUnit>()
         if (cells[cellCoordinates] == null) {
             return layer
         }
         for (i in cells[cellCoordinates]!!.tilemap) {
-            when (direction.axis()) {
-                X -> if (i.location.x == displacement) { layer.add(i) }
-                Y -> if (i.location.y == displacement) { layer.add(i) }
-                Z -> if (i.location.z == displacement) { layer.add(i) }
+            if (i is TileColumn) {
+                for (j in i.split()) {
+                    if (j.location.getAxis(direction.axis()) == displacement) {
+                        layer.add(j)
+                    }
+                }
+            }
+            if (i is TileUnit) {
+                if (i.location.getAxis(direction.axis()) == displacement) {
+                    layer.add(i)
+                }
             }
         }
         return layer
     }
     private fun getTileLayer(loadedCells: MutableSet<IntegerVector3>, cells: MutableMap<IntegerVector3, WorldCell>, depth: Int, map: TiledMap) : TiledMapTileLayer {
         val tileLayer = TiledMapTileLayer(WorldCell.CELL_SIZE * 3,WorldCell.CELL_SIZE * 3, Client.scale, Client.scale)
-        val layers = mutableMapOf<IntegerVector2,MutableSet<TileInstance>>()
+        val layers = mutableMapOf<IntegerVector2,MutableSet<TileUnit>>()
         val displacement = if (depth >= WorldCell.CELL_SIZE) { 1 } else if (depth < 0) { -1 } else { 0 }
         for (i in loadedCells) {
             if (i.getAxis(direction.axis()) == cameraCellCoordinates.getAxis(direction.axis()) + displacement) {
@@ -58,7 +65,7 @@ class RenderedWorld {
         val allTileKeys = mutableSetOf<Identifier>()
         for (i in layers) { // What a lifesaver!
             for (j in i.value) {
-                allTileKeys.add(j.identifier)
+                allTileKeys.add(j.tile.identifier)
             }
         }
         for (i in allTileKeys) {
@@ -82,22 +89,48 @@ class RenderedWorld {
                     UP -> y = WorldCell.CELL_SIZE * 3 - y
                     else -> {}
                 }
-                tileLayer.setCell(x,y, allTiles[j.identifier])
+                tileLayer.setCell(x,y, allTiles[j.tile.identifier])
             }
         }
+        allTiles.clear()
+        allTileKeys.clear()
+        layers.clear()
         return tileLayer
     }
 
     fun reloadMap(cells: MutableMap<IntegerVector3, WorldCell>, loadedCells: MutableSet<IntegerVector3>) : TiledMap {
-            println("Beginning reload.")
-            val map = TiledMap()
-            map.tileSets.addTileSet(tileSet)
-            for (i in renderDistance downTo 0) {
-                map.layers.add(getTileLayer(loadedCells, cells, depthDirection(depth, direction, i), map))
-            }
-            println("Reloaded!")
-            return map
-
+        println("Beginning reload.")
+        val map = TiledMap()
+        map.tileSets.addTileSet(tileSet)
+        for (i in renderDistance downTo 0) {
+            map.layers.add(getTileLayer(loadedCells, cells, depthDirection(depth, direction, i), map))
+        }
+        println("Reloaded!")
+        return map
+    }
+    fun advanceDepth(cells: MutableMap<IntegerVector3, WorldCell>, loadedCells: MutableSet<IntegerVector3>, oldMap: TiledMap) : TiledMap {
+        println("Beginning reload.")
+        val map = TiledMap()
+        map.tileSets.addTileSet(tileSet)
+        map.layers.add(getTileLayer(loadedCells, cells, depthDirection(depth, direction, renderDistance), map))
+        for (i in renderDistance - 1 downTo 0) {
+            map.layers.add(oldMap.layers[i])
+        }
+        println("Reloaded!")
+        oldMap.dispose()
+        return map
+    }
+    fun recedeDepth(cells: MutableMap<IntegerVector3, WorldCell>, loadedCells: MutableSet<IntegerVector3>, oldMap: TiledMap) : TiledMap {
+        println("Beginning reload.")
+        val map = TiledMap()
+        map.tileSets.addTileSet(tileSet)
+        map.layers.add(getTileLayer(loadedCells, cells, depth, map))
+        for (i in 1..renderDistance) {
+            map.layers.add(oldMap.layers[i])
+        }
+        println("Reloaded!")
+        oldMap.dispose()
+        return map
     }
 
     // Companions
