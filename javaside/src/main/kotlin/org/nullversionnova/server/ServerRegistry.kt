@@ -1,7 +1,7 @@
 package org.nullversionnova.server
 
-import org.nullversionnova.data.Identifier
-import org.nullversionnova.server.base.tiles.TileProperties
+import org.nullversionnova.common.Identifier
+import org.nullversionnova.server.engine.tiles.TileProperties
 
 class ServerRegistry {
     // Members

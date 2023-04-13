@@ -3,7 +3,7 @@ package org.nullversionnova.client
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.beust.klaxon.Klaxon
-import org.nullversionnova.data.Identifier
+import org.nullversionnova.common.Identifier
 
 class ClientRegistry {
     // Initializing and Finalizing

@@ -7,11 +7,11 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 import org.nullversionnova.client.Client.Global.getTileTexture
-import org.nullversionnova.data.*
-import org.nullversionnova.data.Direction.*
+import org.nullversionnova.common.*
+import org.nullversionnova.common.Direction.*
 import org.nullversionnova.server.WorldCell
-import org.nullversionnova.server.base.tiles.TileColumn
-import org.nullversionnova.server.base.tiles.TileUnit
+import org.nullversionnova.server.engine.tiles.TileColumn
+import org.nullversionnova.server.engine.tiles.TileUnit
 
 class RenderedWorld {
     // Initialize

@@ -10,13 +10,13 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
 import com.beust.klaxon.Klaxon
-import org.nullversionnova.client.base.BaseClient
-import org.nullversionnova.client.core.SystemClient
-import org.nullversionnova.data.Axis
-import org.nullversionnova.data.Direction
-import org.nullversionnova.data.Direction.*
-import org.nullversionnova.data.Identifier
-import org.nullversionnova.data.IntegerVector3
+import org.nullversionnova.client.settlement.SettlementClient
+import org.nullversionnova.client.engine.EngineClient
+import org.nullversionnova.common.Axis
+import org.nullversionnova.common.Direction
+import org.nullversionnova.common.Direction.*
+import org.nullversionnova.common.Identifier
+import org.nullversionnova.common.IntegerVector3
 import org.nullversionnova.server.Server
 import org.nullversionnova.server.WorldCell
 
@@ -45,8 +45,8 @@ class Client : ApplicationListener, InputProcessor {
         w = Gdx.graphics.width
         h = Gdx.graphics.height
         registry.initialize()
-        BaseClient.loadAssets(registry)
-        SystemClient.loadAssets(registry)
+        SettlementClient.loadAssets(registry)
+        EngineClient.loadAssets(registry)
         server.loadPacks()
         loadedCellAddresses = getLoadedCellsNearCamera()
         world.initialize(registry)
@@ -70,7 +70,7 @@ class Client : ApplicationListener, InputProcessor {
         for (i in 0 until renderer.map.layers.count) {
             renderer.setView(camera)
             batch.begin()
-            batch.draw(registry.getTexture(Identifier("system","fog")),0f,0f,w.toFloat(),h.toFloat())
+            batch.draw(registry.getTexture(Identifier(EngineClient.pack_identifier,"fog")),0f,0f,w.toFloat(),h.toFloat())
             batch.end()
             renderer.render(intArrayOf(i))
             camera.zoom -= 0.01f

@@ -1,11 +1,14 @@
 package org.nullversionnova.server
 
 import org.nullversionnova.SimplexNoise
-import org.nullversionnova.data.Axis
-import org.nullversionnova.data.Axis.*
-import org.nullversionnova.data.Identifier
-import org.nullversionnova.data.IntegerVector3
-import org.nullversionnova.server.base.tiles.*
+import org.nullversionnova.common.Axis
+import org.nullversionnova.common.Axis.*
+import org.nullversionnova.common.Identifier
+import org.nullversionnova.common.IntegerVector3
+import org.nullversionnova.server.settlement.tiles.*
+import org.nullversionnova.server.engine.tiles.TileColumn
+import org.nullversionnova.server.engine.tiles.TileInstance
+import org.nullversionnova.server.engine.tiles.TileStorage
 
 class WorldCell (private val location: IntegerVector3) {
     // Members

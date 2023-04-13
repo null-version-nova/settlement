@@ -1,8 +1,8 @@
 package org.nullversionnova.server
 
-import org.nullversionnova.data.IntegerVector3
-import org.nullversionnova.server.base.Base
-import org.nullversionnova.server.base.entities.MobileEntity
+import org.nullversionnova.common.IntegerVector3
+import org.nullversionnova.server.settlement.Settlement
+import org.nullversionnova.server.engine.entities.MobileEntity
 
 class Server {
     // Members
@@ -12,7 +12,7 @@ class Server {
 
     // Methods
     fun loadPacks() {
-        Base.load(registry)
+        Settlement.load(registry)
     }
     fun loadCell(location: IntegerVector3) {
         loadedCells[location] = WorldCell(location)
