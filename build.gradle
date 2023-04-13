@@ -29,7 +29,7 @@ configure(subprojects) {
 }
 
 subprojects {
-  version = '0.0.0'
+  version = '0.0.1'
   ext.appName = 'settlement'
   repositories {
     mavenCentral()
