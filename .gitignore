@@ -151,3 +151,4 @@ Thumbs.db
 /thirdparty
 /.idea
 /javaside/build/
+/lib-rust/target/

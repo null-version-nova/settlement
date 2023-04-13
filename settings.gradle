@@ -1,2 +1,2 @@
-include 'lwjgl3', 'javaside'
+include 'lwjgl3', 'core'
 
