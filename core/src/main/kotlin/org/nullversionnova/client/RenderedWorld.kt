@@ -12,8 +12,6 @@ import org.nullversionnova.common.Direction.*
 import org.nullversionnova.server.WorldCell
 import org.nullversionnova.server.engine.tiles.TileColumn
 import org.nullversionnova.server.engine.tiles.TileUnit
-import kotlin.time.ExperimentalTime
-import kotlin.time.measureTime
 
 class RenderedWorld {
     // Initialize
@@ -23,7 +21,6 @@ class RenderedWorld {
             tileSet.putTile(counter, StaticTiledMapTile(TextureRegion(registry.getTexture(i))))
         }
     }
-
     // Members
     private val textureIds = mutableMapOf<Identifier,Int>()
     private val tileSet = TiledMapTileSet()
@@ -32,30 +29,27 @@ class RenderedWorld {
     var depth = 0
 
     // Methods
-    @OptIn(ExperimentalTime::class)
     private fun getCellLayer(cellCoordinates: IntVector3, cells: MutableMap<IntVector3,WorldCell>, depth: Int): MutableSet<TileUnit> {
         val displacement = depth % WorldCell.CELL_SIZE
         val layer = mutableSetOf<TileUnit>()
         if (cells[cellCoordinates] == null) {
             return layer
         }
-        println(measureTime {
-            for (i in cells[cellCoordinates]!!.tilemap) {
-                if (i is TileColumn) {
-                    for (j in i.split()) {
-                        if (j.location.getAxis(direction.axis()) == displacement) {
-                            layer.add(j)
-                        }
-                    }
-                }
-                if (i is TileUnit) {
-                    if (i.location.getAxis(direction.axis()) == displacement) {
-                        layer.add(i)
+
+        for (i in cells[cellCoordinates]!!.tilemap) {
+            if (i is TileColumn) {
+                for (j in i.split()) {
+                    if (j.location.getAxis(direction.axis()) == displacement) {
+                        layer.add(j)
                     }
                 }
             }
-        })
-
+            if (i is TileUnit) {
+                if (i.location.getAxis(direction.axis()) == displacement) {
+                    layer.add(i)
+                }
+            }
+        }
         return layer
     }
     private fun getTileLayer(loadedCells: MutableSet<IntVector3>, cells: MutableMap<IntVector3, WorldCell>, depth: Int, map: TiledMap) : TiledMapTileLayer {
