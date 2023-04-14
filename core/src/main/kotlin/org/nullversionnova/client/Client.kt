@@ -19,6 +19,7 @@ import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.Server
 import org.nullversionnova.server.WorldCell
+import java.nio.file.FileSystems
 
 class Client : ApplicationListener, InputProcessor {
     // Members
@@ -41,6 +42,7 @@ class Client : ApplicationListener, InputProcessor {
 
     // Application
     override fun create() {
+        System.load(FileSystems.getDefault().getPath("target/release/rust_interop.dll").toAbsolutePath().toString())
         Gdx.input.inputProcessor = this
         w = Gdx.graphics.width
         h = Gdx.graphics.height
