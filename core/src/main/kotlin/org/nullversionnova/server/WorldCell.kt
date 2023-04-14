@@ -7,7 +7,7 @@ import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.settlement.tiles.*
 import org.nullversionnova.server.engine.tiles.TileColumn
-import org.nullversionnova.server.engine.tiles.TileInstance
+import org.nullversionnova.server.engine.GameObject
 import org.nullversionnova.server.engine.tiles.TileStorage
 
 class WorldCell (private val location: IntVector3) {
@@ -35,7 +35,7 @@ class WorldCell (private val location: IntVector3) {
         val offset = yoff.toInt() + Y_OFFSET - location.z * CELL_SIZE
         return (SimplexNoise.noise((xin.toDouble() + location.x * CELL_SIZE) / H_SCALE, (yin.toDouble() + location.y * CELL_SIZE) / H_SCALE ) / V_SCALE * CELL_SIZE + offset )
     }
-    private fun addColumn(location: IntVector3, height: Int, axis: Axis, tile: TileInstance) {
+    private fun addColumn(location: IntVector3, height: Int, axis: Axis, tile: GameObject) {
         if (height < 0) return
         if (location.getAxis(axis) < 0) {
             if (location.getAxis(axis) + height > 0) {

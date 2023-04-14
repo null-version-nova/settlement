@@ -149,7 +149,3 @@ Thumbs.db
 /javaside/build/
 /rust-interop/target/
 /assets/target/
-/assets/target/debug/
-/assets/target/debug/.fingerprint/
-/assets/target/debug/build/
-/assets/target/debug/deps/

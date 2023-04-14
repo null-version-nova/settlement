@@ -1,7 +1,7 @@
 package org.nullversionnova.common
 
-import org.nullversionnova.server.settlement.Settlement
+import org.nullversionnova.server.engine.Engine
 
-data class Identifier(val pack: String = Settlement.pack_identifier, val name: String) {
-    constructor(name: String) : this(Settlement.pack_identifier,name)
+data class Identifier(val pack: String? = Engine.pack_identifier, val name: String = "default") {
+    constructor(name: String) : this(null,name)
 }

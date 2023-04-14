@@ -1,0 +1,9 @@
+{
+  "properties":
+  [
+    {
+      "pack": "settlement",
+      "name": "flammable"
+    }
+  ]
+}

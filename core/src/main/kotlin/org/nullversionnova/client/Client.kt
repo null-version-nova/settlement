@@ -385,7 +385,7 @@ class Client : ApplicationListener, InputProcessor {
     companion object Global {
         const val scale = 8
         fun getTileTexture(direction: Direction, identifier: Identifier): Identifier {
-            val data = Klaxon().parse<TileTextureData>(Gdx.files.internal("${identifier.pack}/models/tiles/${identifier.name}.json").readString())
+            val data = Klaxon().parse<TileTextureData>(Gdx.files.internal("client/${identifier.pack}/models/tiles/${identifier.name}.json").readString())
                 ?: return Identifier("core","default")
             if (direction == UP) {
                 return data.bottom

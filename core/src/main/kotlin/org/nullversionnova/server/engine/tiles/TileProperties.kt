@@ -1,6 +1,8 @@
 package org.nullversionnova.server.engine.tiles
 
-class TileProperties(var type: String) {
+import org.nullversionnova.common.Identifier
+
+class TileProperties(var type: Identifier) {
     var isFluid = false
     var isGas = false
     var hardness : Int = 0

@@ -3,8 +3,7 @@ package org.nullversionnova.server.engine.entities
 import com.badlogic.gdx.math.Vector3
 import org.nullversionnova.common.Identifier
 
-class MobileEntity(override var identifier: Identifier, var position: Vector3, override var maxHealth: Int = 1) :
-    Entity {
+class MobileEntity(override var identifier: Identifier, var position: Vector3, override var maxHealth: Int = 1) : Entity {
     // Members
     var velocity: Vector3 = Vector3(0f,0f,0f)
     var adjacentSurfaces = BooleanArray(6)

@@ -1,6 +1,7 @@
 package org.nullversionnova.server
 
 import org.nullversionnova.common.IntVector3
+import org.nullversionnova.server.engine.Engine
 import org.nullversionnova.server.settlement.Settlement
 import org.nullversionnova.server.engine.entities.MobileEntity
 
@@ -12,6 +13,7 @@ class Server {
 
     // Methods
     fun loadPacks() {
+        Engine.load(registry)
         Settlement.load(registry)
     }
     fun loadCell(location: IntVector3) {
