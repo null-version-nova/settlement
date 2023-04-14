@@ -145,10 +145,8 @@ Thumbs.db
 *#*#
 
 # Project exclude paths
-/cmake-build-debug
-/include
-/lib
-/thirdparty
 /.idea
 /javaside/build/
-/lib-rust/target/
+/rust-interop/target/
+/assets/target/
+/assets/target/debug/
