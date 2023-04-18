@@ -4,6 +4,7 @@ import org.nullversionnova.common.Identifier
 
 class Material {
     val valueProperties = mutableMapOf<Identifier,Number>()
-    val properties = mutableSetOf<Identifier>()
+    val propertyAffirmation = mutableSetOf<Identifier>()
+    val propertyNegation = mutableSetOf<Identifier>()
     var parent : Identifier? = null
 }

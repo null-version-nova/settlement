@@ -2,7 +2,7 @@ package org.nullversionnova.server.engine.tiles
 
 import org.nullversionnova.common.Identifier
 
-class TileProperties(var type: Identifier) {
+class TileProperties(var material: Identifier = Identifier()) {
     var isFluid = false
     var isGas = false
     var hardness : Int = 0
@@ -17,6 +17,10 @@ class TileProperties(var type: Identifier) {
     }
     fun isGas() : TileProperties {
         isGas = true
+        return this
+    }
+    fun material(identifier: Identifier) : TileProperties {
+        material = identifier
         return this
     }
 }

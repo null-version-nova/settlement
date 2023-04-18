@@ -7,9 +7,8 @@ import org.nullversionnova.server.settlement.Settlement
 
 object SettlementTiles {
     // Templates
-    fun ROCK() : TileProperties { return TileProperties(Identifier("settlement","rock")).setHardness(10) }
-    fun SOIL() : TileProperties { return TileProperties(Identifier("settlement","soil")).setHardness(1) }
-    fun ATMOSPHERE() : TileProperties { return TileProperties(Identifier("settlement","atmosphere")).isGas() }
+    fun ROCK() : TileProperties { return TileProperties(Identifier("settlement","rock")) }
+    fun SOIL() : TileProperties { return TileProperties(Identifier("settlement","soil")) }
 
     // Tiles
     val ROCK = ROCK()

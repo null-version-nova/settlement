@@ -1,0 +1,10 @@
+{
+  "parent": "settlement:plant",
+  "values": [{
+    "property": "settlement:flammability",
+    "value": 2
+  }, {
+    "property": "settlement:hardness",
+    "value": 4
+  }]
+}

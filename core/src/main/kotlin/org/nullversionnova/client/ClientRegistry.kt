@@ -20,11 +20,22 @@ class ClientRegistry {
 
     // Loading
     fun loadTexture(identifier: Identifier) {
-        val data = Klaxon().parse<SpriteAnimation>(Gdx.files.internal("${identifier.pack}/spritedata/${identifier.name}.json").readString())
+        val data = try {
+            Klaxon().parse<SpriteAnimation>(Gdx.files.internal("client/${identifier.pack}/spritedata/${identifier.name}.json").readString())
+        } catch (e: Exception) {
+            println("Warning: Exception while loading JSON associated with identifier $identifier")
+            println(e)
+            null
+        }
         if (data != null) {
             for (i in data.sprites) {
-                if (textureSet[i] == null) {
-                    textureSet[i] = Texture("${i.pack}/sprites/${i.name}.png")
+                if (textureSet[Identifier(i)] == null) {
+                    try {
+                        textureSet[Identifier(i)] = Texture("client/${Identifier(i).pack}/sprites/${Identifier(i).name}.png")
+                    } catch (e: Exception) {
+                        println("Error: Exception while loading texture $i")
+                        println(e)
+                    }
                 }
             }
         }

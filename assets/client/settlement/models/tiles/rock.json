@@ -1,5 +1,3 @@
 {
-  "top": {
-      "name": "rock"
-    }
+  "top": "settlement:rock"
 }

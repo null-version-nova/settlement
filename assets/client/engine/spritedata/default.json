@@ -1,6 +1,5 @@
 {
-  "sprites": [{
-      "pack": "engine",
-      "name": "default"
-    }]
+  "sprites": [
+    "engine:default"
+  ]
 }

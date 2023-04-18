@@ -1,5 +1,3 @@
 package org.nullversionnova.client
 
-import org.nullversionnova.common.Identifier
-
-data class TileTextureData(val top: Identifier, val side: Identifier = top, val bottom: Identifier = side)
+data class TileTextureData(val top: String, val side: String = top, val bottom: String = side)

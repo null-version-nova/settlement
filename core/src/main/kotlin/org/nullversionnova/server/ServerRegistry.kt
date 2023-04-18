@@ -11,9 +11,9 @@ import org.nullversionnova.server.engine.tiles.TileProperties
 class ServerRegistry {
     // Members
     private val tiles = mutableMapOf<Identifier, TileProperties>()
-    private val materials = mutableMapOf<Identifier,Material>()
     private val valueProperties = mutableMapOf<Identifier,Number>()
     private val properties = mutableSetOf<Identifier>()
+    private val materials = mutableMapOf<Identifier,Material>()
 
     // Loading
     fun addTile(identifier: Identifier, properties: TileProperties) : TileProperties {
@@ -27,22 +27,30 @@ class ServerRegistry {
     fun addValueProperty(identifier: Identifier, default: Number) { valueProperties[identifier] = default }
     fun addMaterial(identifier: Identifier) {
         val material = Material()
-        val data = Klaxon().parse<Properties>(Gdx.files.internal("server/${identifier.pack}/materials/${identifier.name}.json").readString())
+        val data = try {
+            Klaxon().parse<Properties>(Gdx.files.internal("server/${identifier.pack}/materials/${identifier.name}.json").readString())
+        } catch (e: Exception) {
+            println("Warning: Exception while loading JSON associated with identifier $identifier")
+            println(e)
+            null
+        }
         if (data != null) {
             if (identifier != Identifier()) {
                 if (data.parent == null) { material.parent = Identifier() }
-                else if (materials.contains(data.parent)) { material.parent = data.parent }
+                else if (materials.contains(Identifier(data.parent))) { material.parent = Identifier(data.parent) }
                 else { println("Error: Invalid parent") }
             }
             for (i in data.values) {
-                if (valueProperties.contains(i.first)) { material.valueProperties[i.first] = i.second }
+                if (valueProperties.contains(Identifier(i.property))) { material.valueProperties[Identifier(i.property)] = i.value }
                 else { println("Error: Invalid property") }
             }
-            for (i in data.properties) {
-                material.properties.add(i)
+            for (i in data.propertyAffirmation) {
+                material.propertyAffirmation.add(i)
                 properties.add(i)
             }
-        } else { println("Error: Invalid identifier") }
+        } else {
+            if (identifier != Identifier()) { material.parent = Identifier() }
+        }
         materials[identifier] = material
     }
 
@@ -51,7 +59,7 @@ class ServerRegistry {
         if (tiles[tile] == null) { tiles[tile] = NULL_TILE }
         return tiles[tile]!!
     }
-    fun getDefaultValue(property: Identifier) : Number? { return getMaterialValueProperty(Identifier(),property) }
+    fun getDefaultValue(property: Identifier) : Number { return getMaterialValueProperty(Identifier(),property) }
     fun getMaterialValueProperty(material: Identifier, property: Identifier) : Number {
         return if (!materials.contains(material) || !valueProperties.contains(property)) {
             println("Error: Invalid identifier")
@@ -63,7 +71,13 @@ class ServerRegistry {
     }
     fun isMaterial(material: Identifier, property: Identifier) : Boolean {
         return if (materials.contains(material) && properties.contains(property)) {
-            materials[material]!!.properties.contains(property)
+            if (materials[material]!!.propertyAffirmation.contains(property)) {
+                true
+            } else if (materials[material]!!.propertyNegation.contains(property) || material == Identifier()) {
+                false
+            } else {
+                isMaterial(materials[material]!!.parent!!,property)
+            }
         } else {
             println("Invalid identifier")
             false

@@ -1,5 +1,5 @@
 {
-  "sprites": [{
-    "name": "sand"
-  }]
+  "sprites": [
+    "settlement:sand"
+  ]
 }

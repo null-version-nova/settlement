@@ -22,8 +22,8 @@ class WorldCell (private val location: IntVector3) {
         for (i in 0 until CELL_SIZE) {
             for (j in 0 until CELL_SIZE) {
                 val height = getHeight(i.toDouble(),j.toDouble())
-                addColumn(IntVector3(i,j,0), height.toInt(), Z, SolidTile(Identifier("rock")))
-                addColumn(IntVector3(i,j,height.toInt()+1), SOIL_DEPTH, Z, SolidTile(Identifier("sand")))
+                addColumn(IntVector3(i,j,0), height.toInt(), Z, SolidTile(Identifier("settlement","rock")))
+                addColumn(IntVector3(i,j,height.toInt()+1), SOIL_DEPTH, Z, SolidTile(Identifier("settlement","sand")))
             }
         }
     }
