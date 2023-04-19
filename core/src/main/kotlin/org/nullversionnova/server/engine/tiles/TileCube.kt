@@ -4,15 +4,16 @@ import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.Server
 import org.nullversionnova.server.engine.GameObject
 
-data class TileUnit(override val location : IntVector3, override val tile: GameObject) : TileStorage {
+data class TileCube(override val location : IntVector3, val height : Int, val width : Int, val depth: Int, override val tile : GameObject) : TileStorage {
     override fun tick(server: Server) {
-        val tile = tile.getTile(server.registry) as TickableTile
-        tile.tick(location, server)
+        TODO("Not yet implemented")
     }
+
     override fun overlap(position: IntVector3): Boolean {
-        return position == location
+        TODO("Not yet implemented")
     }
+
     override fun overlap(item: TileStorage): Boolean {
-        return item.overlap(location)
+        TODO("Not yet implemented")
     }
 }

@@ -8,6 +8,7 @@ import org.nullversionnova.server.engine.entities.MobileEntity
 class Server {
     // Members
     val loadedCells = mutableMapOf<IntVector3,WorldCell>()
+    val cellsToLoad = mutableListOf<IntVector3>()
     val loadedMobileEntities = mutableListOf<MobileEntity>()
     val registry = ServerRegistry()
 
@@ -16,14 +17,17 @@ class Server {
         Engine.load(registry)
         Settlement.load(registry)
     }
-    fun loadCell(location: IntVector3) {
+    private fun loadCell(location: IntVector3) {
         loadedCells[location] = WorldCell(location)
         loadedCells[location]?.generate(registry)
+//        loadedCells[location]?.optimize(registry)
+        cellsToLoad.removeAt(0)
     }
     fun unloadCell(location: IntVector3) {
         loadedCells[location]?.unload()
     }
     fun tick() {
+        if (cellsToLoad.isNotEmpty()) { loadCell(cellsToLoad.first()) }
         for (i in loadedCells.values) {
             for (j in i.tickableTileMap) {
                 j.tick(this)
