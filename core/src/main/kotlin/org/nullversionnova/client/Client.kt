@@ -10,6 +10,8 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
 import com.beust.klaxon.Klaxon
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.nullversionnova.client.settlement.SettlementClient
 import org.nullversionnova.client.engine.EngineClient
 import org.nullversionnova.common.Axis
@@ -54,7 +56,11 @@ class Client : ApplicationListener, InputProcessor {
         world.initialize(registry)
         batch = SpriteBatch()
         camera.setToOrtho(false, 30f, 30f)
-        renderer = OrthogonalTiledMapRenderer(world.reloadMap(server.loadedCells,loadedCellAddresses), (1f / scale.toFloat()))
+        runBlocking {
+            launch {
+                renderer = OrthogonalTiledMapRenderer(world.reloadMap(server.loadedCells,loadedCellAddresses), (1f / scale.toFloat()))
+            }
+        }
         camera.position.set(1000f,1000f,0f)
     }
 
@@ -64,7 +70,7 @@ class Client : ApplicationListener, InputProcessor {
         camera.setToOrtho(false, 30f * (w.toFloat() / h.toFloat()), 30f)
     }
 
-    override fun render() {
+    override fun render() = runBlocking {
         // World Rendering
         ScreenUtils.clear(100f / 255f, 100f / 255f, 250f / 255f, 1f)
         camera.zoom = zoom
@@ -81,6 +87,7 @@ class Client : ApplicationListener, InputProcessor {
 
         // Game Processing
         changeCameraPosition()
+        server.tick()
     }
 
     override fun pause() {
@@ -195,23 +202,6 @@ class Client : ApplicationListener, InputProcessor {
             'a' -> camera.translate(-0.5f,0f)
             's' -> camera.translate(0f,-0.5f)
             'd' -> camera.translate(0.5f,0f)
-            'm' -> {
-                val setToUnload = mutableSetOf<IntVector3>()
-                if (loadedCellAddresses.isEmpty()) {
-                    loadedCellAddresses = getLoadedCellsNearCamera()
-                } else {
-                    for (i in server.loadedCells.keys) {
-                        server.unloadCell(i)
-                        setToUnload.add(i)
-                    }
-                    for (i in setToUnload) {
-                        server.loadedCells.remove(i)
-                    }
-                    loadedCellAddresses.clear()
-                }
-                renderer.map.dispose()
-                renderer.map = world.reloadMap(server.loadedCells,loadedCellAddresses)
-            }
             else -> return false
         }
         return true
@@ -302,7 +292,7 @@ class Client : ApplicationListener, InputProcessor {
                 server.loadCell(i)
             }
             if (server.loadedCells[i]?.loaded == false) {
-                server.loadedCells[i]?.generate()
+                server.loadedCells[i]?.generate(server.registry)
             }
         }
         for (i in server.loadedCells.keys) {
@@ -347,8 +337,7 @@ class Client : ApplicationListener, InputProcessor {
     }
     fun resetMap() {
         loadedCellAddresses = getLoadedCellsNearCamera()
-        renderer.map.dispose()
-        renderer.map = world.reloadMap(server.loadedCells,loadedCellAddresses)
+        renderer.map = world.reloadMap(server.loadedCells,loadedCellAddresses,renderer.map)
     }
     fun changeCameraPosition() {
         val increasex = when (world.direction) {

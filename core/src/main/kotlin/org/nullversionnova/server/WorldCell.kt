@@ -5,37 +5,39 @@ import org.nullversionnova.common.Axis
 import org.nullversionnova.common.Axis.*
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3
-import org.nullversionnova.server.settlement.tiles.*
 import org.nullversionnova.server.engine.tiles.TileColumn
 import org.nullversionnova.server.engine.GameObject
+import org.nullversionnova.server.engine.tiles.SolidTile
+import org.nullversionnova.server.engine.tiles.TickableTile
 import org.nullversionnova.server.engine.tiles.TileStorage
 
 class WorldCell (private val location: IntVector3) {
     // Members
-    val tilemap = mutableSetOf<TileStorage>()
+    val tileMap = mutableSetOf<TileStorage>()
+    val tickableTileMap = mutableSetOf<TileStorage>()
     var loaded = false
 
     // Methods
-    fun generate() {
+    fun generate(registry: ServerRegistry) {
         loaded = true
-        tilemap.clear()
+        tileMap.clear()
         for (i in 0 until CELL_SIZE) {
             for (j in 0 until CELL_SIZE) {
-                val height = getHeight(i.toDouble(),j.toDouble())
-                addColumn(IntVector3(i,j,0), height.toInt(), Z, SolidTile(Identifier("settlement","rock")))
-                addColumn(IntVector3(i,j,height.toInt()+1), SOIL_DEPTH, Z, SolidTile(Identifier("settlement","sand")))
+                val height = getHeight(i.toDouble(),j.toDouble()).toInt()
+                addColumn(IntVector3(i,j,0), height, Z, SolidTile(Identifier("settlement","rock")),registry)
+                addColumn(IntVector3(i,j,height+1), SOIL_DEPTH, Z, SolidTile(Identifier("settlement","sand")),registry)
             }
         }
     }
     fun unload() {
         loaded = false
-        tilemap.clear()
+        tileMap.clear()
     }
     private fun getHeight(xin : Number, yin : Number, yoff : Number = 0) : Double {
         val offset = yoff.toInt() + Y_OFFSET - location.z * CELL_SIZE
         return (SimplexNoise.noise((xin.toDouble() + location.x * CELL_SIZE) / H_SCALE, (yin.toDouble() + location.y * CELL_SIZE) / H_SCALE ) / V_SCALE * CELL_SIZE + offset )
     }
-    private fun addColumn(location: IntVector3, height: Int, axis: Axis, tile: GameObject) {
+    private fun addColumn(location: IntVector3, height: Int, axis: Axis, tile: GameObject, registry: ServerRegistry) {
         if (height < 0) return
         if (location.getAxis(axis) < 0) {
             if (location.getAxis(axis) + height > 0) {
@@ -43,7 +45,9 @@ class WorldCell (private val location: IntVector3) {
                 return
             }
         } else if (location.getAxis(axis) < CELL_SIZE) {
-            tilemap.add(TileColumn(location,height,axis,tile))
+            val column = TileColumn(location,height,axis,tile)
+            if (tile.getTile(registry) is TickableTile) { tickableTileMap.add(column) }
+            else { tileMap.add(column) }
             return
         }
     }

@@ -18,9 +18,16 @@ class Server {
     }
     fun loadCell(location: IntVector3) {
         loadedCells[location] = WorldCell(location)
-        loadedCells[location]?.generate()
+        loadedCells[location]?.generate(registry)
     }
     fun unloadCell(location: IntVector3) {
         loadedCells[location]?.unload()
+    }
+    fun tick() {
+        for (i in loadedCells.values) {
+            for (j in i.tickableTileMap) {
+                j.tick(this)
+            }
+        }
     }
 }

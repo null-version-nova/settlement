@@ -6,17 +6,17 @@ import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.Properties
 import org.nullversionnova.server.engine.Material
 import org.nullversionnova.server.engine.tiles.EngineTiles.NULL_TILE
-import org.nullversionnova.server.engine.tiles.TileProperties
+import org.nullversionnova.server.engine.tiles.Tile
 
 class ServerRegistry {
     // Members
-    private val tiles = mutableMapOf<Identifier, TileProperties>()
+    private val tiles = mutableMapOf<Identifier, Tile>()
     private val valueProperties = mutableMapOf<Identifier,Number>()
     private val properties = mutableSetOf<Identifier>()
     private val materials = mutableMapOf<Identifier,Material>()
 
     // Loading
-    fun addTile(identifier: Identifier, properties: TileProperties) : TileProperties {
+    fun addTile(identifier: Identifier, properties: Tile) : Tile {
         return if (tiles[identifier] == null) {
             tiles[identifier] = properties
             properties
@@ -55,19 +55,19 @@ class ServerRegistry {
     }
 
     // Retrieving
-    fun accessTile(tile: Identifier) : TileProperties {
+    fun accessTile(tile: Identifier) : Tile {
         if (tiles[tile] == null) { tiles[tile] = NULL_TILE }
         return tiles[tile]!!
     }
-    fun getDefaultValue(property: Identifier) : Number { return getMaterialValueProperty(Identifier(),property) }
-    fun getMaterialValueProperty(material: Identifier, property: Identifier) : Number {
+    fun getDefaultValue(property: Identifier) : Number { return getMaterialValue(Identifier(),property) }
+    fun getMaterialValue(material: Identifier, property: Identifier) : Number {
         return if (!materials.contains(material) || !valueProperties.contains(property)) {
             println("Error: Invalid identifier")
             0
         } else if (materials[material]!!.valueProperties[property] != null) {
             materials[material]!!.valueProperties[property]!!
         } else if (material == Identifier()) { valueProperties[property]!! }
-        else { getMaterialValueProperty(materials[material]!!.parent!!, property) }
+        else { getMaterialValue(materials[material]!!.parent!!, property) }
     }
     fun isMaterial(material: Identifier, property: Identifier) : Boolean {
         return if (materials.contains(material) && properties.contains(property)) {
@@ -91,8 +91,8 @@ class ServerRegistry {
     fun getMaterials() : Set<Identifier> { return materials.keys }
 
     // Alternative Calls
-    fun addTile(pack: String, name: String, properties: TileProperties) : TileProperties { return addTile(Identifier(pack,name),properties) }
+    fun addTile(pack: String, name: String, properties: Tile) : Tile { return addTile(Identifier(pack,name),properties) }
     fun addValueProperty(pack: String, name: String, default: Number) { addValueProperty(Identifier(pack,name),default) }
     fun addMaterial(pack: String, name: String) { addMaterial(Identifier(pack,name)) }
-    fun accessTile(pack: String, name: String) : TileProperties { return accessTile(Identifier(pack,name)) }
+    fun accessTile(pack: String, name: String) : Tile { return accessTile(Identifier(pack,name)) }
 }

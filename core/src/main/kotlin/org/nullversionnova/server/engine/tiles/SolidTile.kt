@@ -1,4 +1,4 @@
-package org.nullversionnova.server.settlement.tiles
+package org.nullversionnova.server.engine.tiles
 
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.server.engine.GameObject

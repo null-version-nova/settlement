@@ -5,7 +5,7 @@ import org.nullversionnova.server.ServerRegistry
 
 object EngineTiles {
     // Tiles
-    val NULL_TILE = TileProperties(Identifier())
+    val NULL_TILE = Tile()
 
     // Functions
     fun registerTiles(registry: ServerRegistry) {
