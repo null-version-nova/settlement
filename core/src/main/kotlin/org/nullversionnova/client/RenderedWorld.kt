@@ -8,10 +8,12 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileSet
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 import kotlinx.coroutines.runBlocking
 import org.nullversionnova.client.Client.Global.getTileTexture
-import org.nullversionnova.common.*
+import org.nullversionnova.common.Direction
 import org.nullversionnova.common.Direction.*
+import org.nullversionnova.common.Identifier
+import org.nullversionnova.common.IntVector2
+import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.WorldCell
-import org.nullversionnova.server.engine.tiles.TileColumn
 import org.nullversionnova.server.engine.tiles.TileUnit
 
 class RenderedWorld {
@@ -36,34 +38,32 @@ class RenderedWorld {
         if (cells[cellCoordinates] == null) {
             return layer
         }
-        for (i in cells[cellCoordinates]!!.tileMap) {
-            if (i is TileColumn) {
-                for (j in i.split()) {
-                    if (j.location.getAxis(direction.axis()) == displacement) {
-                        layer.add(j)
-                    }
+        val scan = IntVector3()
+        scan.setAxis(displacement,direction.axis())
+        for (i in 0 until WorldCell.CELL_SIZE) {
+            for (j in 0 until WorldCell.CELL_SIZE) {
+                val landing = scan.getNewWithSetAxis(i,direction.axis().getOtherPair().first).getNewWithSetAxis(j,direction.axis().getOtherPair().second)
+                val result = cells[cellCoordinates]!!.findTile(landing)
+                if (result != null) {
+                    layer.add(TileUnit(landing,result.tile))
                 }
-            }
-            if (i is TileUnit) {
-                if (i.location.getAxis(direction.axis()) == displacement) {
-                    layer.add(i)
-                }
+
             }
         }
-        for (i in cells[cellCoordinates]!!.tickableTileMap) {
-            if (i is TileColumn) {
-                for (j in i.split()) {
-                    if (j.location.getAxis(direction.axis()) == displacement) {
-                        layer.add(j)
-                    }
-                }
-            }
-            if (i is TileUnit) {
-                if (i.location.getAxis(direction.axis()) == displacement) {
-                    layer.add(i)
-                }
-            }
-        }
+//        for (i in cells[cellCoordinates]!!.tileMap) {
+//            if (i is TileColumn) {
+//                for (j in i.split()) {
+//                    if (j.location.getAxis(direction.axis()) == displacement) {
+//                        layer.add(j)
+//                    }
+//                }
+//            }
+//            if (i is TileUnit) {
+//                if (i.location.getAxis(direction.axis()) == displacement) {
+//                    layer.add(i)
+//                }
+//            }
+//        }
         return layer
     }
     private fun getTileLayer(map: TiledMap, layers : MutableMap<IntVector2,MutableSet<TileUnit>>) : TiledMapTileLayer {
@@ -102,6 +102,16 @@ class RenderedWorld {
         allTiles.clear()
         allTileKeys.clear()
         layers.clear()
+        return tileLayer
+    }
+    private fun adjustTileLayer(oldLayer: TiledMapTileLayer, newCameraPosition: IntVector3, loadedCells: MutableSet<IntVector3>, cells: MutableMap<IntVector3, WorldCell>, depth: Int) : TiledMapTileLayer {
+        val tileLayer = TiledMapTileLayer(WorldCell.CELL_SIZE * 3,WorldCell.CELL_SIZE * 3, Client.scale, Client.scale)
+        val layerSize = WorldCell.CELL_SIZE * 3 - 1
+        for (i in 0 until layerSize) {
+            for (j in 0 until layerSize) {
+
+            }
+        }
         return tileLayer
     }
     private fun getLayers(loadedCells: MutableSet<IntVector3>, cells: MutableMap<IntVector3, WorldCell>, depth: Int) : MutableMap<IntVector2,MutableSet<TileUnit>> {
@@ -150,7 +160,7 @@ class RenderedWorld {
 
     // Companions
     companion object Global {
-        const val renderDistance = 32
+        const val renderDistance = 16
         fun depthDirection(depth: Int, direction: Direction, increase: Int) : Int {
             return depth + if (direction.polarity()) {
                 increase

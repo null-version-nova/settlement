@@ -3,9 +3,8 @@ package org.nullversionnova.server.engine.tiles
 import org.nullversionnova.common.Axis
 import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.Server
-import org.nullversionnova.server.engine.GameObject
 
-data class TilePlane(override val location : IntVector3, var height : Int, var width : Int, val axis: Axis, override val tile : GameObject) : TileStorage {
+data class TilePlane(override val location : IntVector3, var height : Int, var width : Int, val axis: Axis, override val tile : TileInstance) : TileStorage {
     override fun tick(server: Server) {
         TODO("Not yet implemented")
     }

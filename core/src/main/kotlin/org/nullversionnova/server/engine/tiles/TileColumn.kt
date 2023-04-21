@@ -3,9 +3,8 @@ package org.nullversionnova.server.engine.tiles
 import org.nullversionnova.common.Axis
 import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.Server
-import org.nullversionnova.server.engine.GameObject
 
-data class TileColumn(override val location : IntVector3, var height : Int, val axis: Axis, override val tile : GameObject) :
+data class TileColumn(override val location : IntVector3, var height : Int, val axis: Axis, override val tile : TileInstance) :
     TileStorage {
     fun split() : MutableSet<TileUnit> {
         val set = mutableSetOf(TileUnit(location,tile))
@@ -25,7 +24,9 @@ data class TileColumn(override val location : IntVector3, var height : Int, val 
         return location.getAxis(axis.getOtherPair().first) == position.getAxis(axis.getOtherPair().first) && location.getAxis(axis.getOtherPair().second) == position.getAxis(axis.getOtherPair().second) && position.getAxis(axis) >= location.getAxis(axis) && position.getAxis(axis) < location.getAxis(axis) + height
     }
     override fun tick(server: Server) {
-        val tile = tile.getTile(server.registry) as TickableTile
-        for (i in 0 until height) { tile.tick(location.getNewWithSetAxis(i,axis),server) }
+        val tile = tile.getTile(server.registry)
+        if (tile is TickableTile) {
+            for (i in 0 until height) { tile.tick(location.getNewWithSetAxis(i,axis),server) }
+        }
     }
 }

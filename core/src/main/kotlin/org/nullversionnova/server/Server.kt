@@ -17,11 +17,13 @@ class Server {
         Engine.load(registry)
         Settlement.load(registry)
     }
-    private fun loadCell(location: IntVector3) {
+    fun loadCell(location: IntVector3) {
         loadedCells[location] = WorldCell(location)
         loadedCells[location]?.generate(registry)
 //        loadedCells[location]?.optimize(registry)
-        cellsToLoad.removeAt(0)
+        try {
+            cellsToLoad.removeAt(0)
+        } catch (e: Exception) {}
     }
     fun unloadCell(location: IntVector3) {
         loadedCells[location]?.unload()
@@ -29,7 +31,7 @@ class Server {
     fun tick() {
         if (cellsToLoad.isNotEmpty()) { loadCell(cellsToLoad.first()) }
         for (i in loadedCells.values) {
-            for (j in i.tickableTileMap) {
+            for (j in i.tileMap.values) {
                 j.tick(this)
             }
         }

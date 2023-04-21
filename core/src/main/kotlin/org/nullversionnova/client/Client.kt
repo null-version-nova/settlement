@@ -291,7 +291,7 @@ class Client : ApplicationListener, InputProcessor {
         }
         for (i in set) {
             if (server.loadedCells[i] == null) {
-                server.cellsToLoad.add(i)
+                server.loadCell(i)
             }
         }
         for (i in server.loadedCells.keys) {
