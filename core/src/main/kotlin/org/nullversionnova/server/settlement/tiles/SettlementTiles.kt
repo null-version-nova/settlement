@@ -1,6 +1,6 @@
 package org.nullversionnova.server.settlement.tiles
 
-import org.nullversionnova.server.ServerRegistry
+import org.nullversionnova.server.engine.ServerRegistry
 import org.nullversionnova.server.engine.tiles.Tile
 import org.nullversionnova.server.settlement.Settlement
 

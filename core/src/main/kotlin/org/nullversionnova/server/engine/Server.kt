@@ -1,8 +1,7 @@
-package org.nullversionnova.server
+package org.nullversionnova.server.engine
 
 import org.nullversionnova.common.IntVector3
-import org.nullversionnova.server.cell.WorldCell
-import org.nullversionnova.server.engine.Engine
+import org.nullversionnova.server.engine.cell.WorldCell
 import org.nullversionnova.server.settlement.Settlement
 import org.nullversionnova.server.engine.entities.MobileEntity
 
@@ -24,7 +23,7 @@ class Server {
 //        loadedCells[location]?.optimize(registry)
         try {
             cellsToLoad.removeAt(0)
-        } catch (e: Exception) {}
+        } catch (_: Exception) {}
     }
     fun unloadCell(location: IntVector3) {
         loadedCells[location]?.unload()
@@ -33,7 +32,7 @@ class Server {
         if (cellsToLoad.isNotEmpty()) { loadCell(cellsToLoad.first()) }
         for (i in loadedCells.values) {
             for (j in i.tileMap.values) {
-                j.tick(this)
+//                j.tick(this)
             }
         }
     }

@@ -1,4 +1,4 @@
-package org.nullversionnova.client
+package org.nullversionnova.client.engine
 
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
@@ -10,18 +10,15 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
 import com.beust.klaxon.Klaxon
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import org.nullversionnova.client.TileTextureData
 import org.nullversionnova.client.settlement.SettlementClient
-import org.nullversionnova.client.engine.EngineClient
 import org.nullversionnova.common.Axis
 import org.nullversionnova.common.Direction
 import org.nullversionnova.common.Direction.*
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3
-import org.nullversionnova.server.Server
-import org.nullversionnova.server.cell.WorldCell
-import java.nio.file.FileSystems
+import org.nullversionnova.server.engine.Server
+import org.nullversionnova.server.engine.cell.WorldCell
 
 class Client : ApplicationListener, InputProcessor {
     // Members
@@ -45,23 +42,18 @@ class Client : ApplicationListener, InputProcessor {
 
     // Application
     override fun create() {
-        System.load(FileSystems.getDefault().getPath("target/release/rust_interop.dll").toAbsolutePath().toString())
         Gdx.input.inputProcessor = this
         w = Gdx.graphics.width
         h = Gdx.graphics.height
         registry.initialize()
-        SettlementClient.loadAssets(registry)
         EngineClient.loadAssets(registry)
+        SettlementClient.loadAssets(registry)
         server.loadPacks()
         loadedCellAddresses = getLoadedCellsNearCamera()
         world.initialize(registry)
         batch = SpriteBatch()
         camera.setToOrtho(false, 30f, 30f)
-        runBlocking {
-            launch {
-                renderer = OrthogonalTiledMapRenderer(world.reloadMap(server.loadedCells,loadedCellAddresses), (1f / scale.toFloat()))
-            }
-        }
+        renderer = OrthogonalTiledMapRenderer(world.reloadMap(server.loadedCells,loadedCellAddresses), (1f / scale.toFloat()))
         camera.position.set(1000f,1000f,0f)
     }
 
@@ -71,7 +63,7 @@ class Client : ApplicationListener, InputProcessor {
         camera.setToOrtho(false, 30f * (w.toFloat() / h.toFloat()), 30f)
     }
 
-    override fun render(): Unit = runBlocking {
+    override fun render() {
         // World Rendering
         if (reloadNecessary && server.cellsToLoad.isEmpty()) { resetMap() }
         ScreenUtils.clear(100f / 255f, 100f / 255f, 250f / 255f, 1f)
@@ -180,12 +172,12 @@ class Client : ApplicationListener, InputProcessor {
                 DOWN -> return false
             }
             Input.Keys.PAGE_DOWN -> {
-                world.depth = RenderedWorld.depthDirection(world.depth,world.direction,-1)
+                world.depth = RenderedWorld.depthDirection(world.depth, world.direction, -1)
                 changeDepth()
                 resetMapViaDepth(false)
             }
             Input.Keys.PAGE_UP -> {
-                world.depth = RenderedWorld.depthDirection(world.depth,world.direction,1)
+                world.depth = RenderedWorld.depthDirection(world.depth, world.direction, 1)
                 changeDepth()
                 resetMapViaDepth(true)
             }
@@ -204,6 +196,7 @@ class Client : ApplicationListener, InputProcessor {
             'a' -> camera.translate(-0.5f,0f)
             's' -> camera.translate(0f,-0.5f)
             'd' -> camera.translate(0.5f,0f)
+            'm' -> registry.isTexture(Identifier())
             else -> return false
         }
         return true
@@ -374,7 +367,6 @@ class Client : ApplicationListener, InputProcessor {
     companion object Global {
         const val scale = 8
         fun getTileTexture(direction: Direction, identifier: Identifier): Identifier {
-            if (identifier.pack == null) { return Identifier("engine","default") }
             val data = Klaxon().parse<TileTextureData>(Gdx.files.internal("client/${identifier.pack}/models/tiles/${identifier.name}.json").readString())
                 ?: return Identifier("engine","default")
             if (direction == UP) {

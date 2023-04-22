@@ -1,8 +1,9 @@
-package org.nullversionnova.client
+package org.nullversionnova.client.engine
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.beust.klaxon.Klaxon
+import org.nullversionnova.client.SpriteAnimation
 import org.nullversionnova.common.Identifier
 
 class ClientRegistry {
@@ -31,7 +32,9 @@ class ClientRegistry {
             for (i in data.sprites) {
                 if (textureSet[Identifier(i)] == null) {
                     try {
+                        println("$i got in!")
                         textureSet[Identifier(i)] = Texture("client/${Identifier(i).pack}/sprites/${Identifier(i).name}.png")
+                        println("${textureSet[Identifier(i)] != null}")
                     } catch (e: Exception) {
                         println("Error: Exception while loading texture $i")
                         println(e)
@@ -43,9 +46,19 @@ class ClientRegistry {
 
     // Retrieving
     fun getTexture(identifier: Identifier) : Texture {
-        return if (textureSet[identifier] == null) {
-            getTexture(Identifier("engine","default")) }
+        return if (!textureSet.contains(identifier)) {
+            if (textureSet[Identifier()] == null) {
+                throw Exception("Imminent stack overflow. Offending identifier $identifier. texture set has ${textureSet.keys.size} elements.")
+            }
+            getTexture(Identifier())
+        }
         else { textureSet[identifier]!! }
+    }
+    fun isTexture(identifier: Identifier) {
+        println("Texture selected for test: $identifier")
+        println("Texture key in set: ${textureSet.keys.contains(identifier)}")
+        println("Texture in set: ${textureSet[identifier] != null}")
+        println("Textures in set: $textureSet")
     }
 
     // Getting

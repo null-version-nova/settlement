@@ -1,7 +1,7 @@
-package org.nullversionnova.server.cell
+package org.nullversionnova.server.engine.cell
 
 import org.nullversionnova.common.IntVector3
-import org.nullversionnova.server.Server
+import org.nullversionnova.server.engine.Server
 import org.nullversionnova.server.engine.tiles.TickableTile
 import org.nullversionnova.server.engine.tiles.TileInstance
 

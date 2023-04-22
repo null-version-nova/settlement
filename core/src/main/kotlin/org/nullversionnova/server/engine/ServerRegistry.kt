@@ -1,4 +1,4 @@
-package org.nullversionnova.server
+package org.nullversionnova.server.engine
 
 import com.badlogic.gdx.Gdx
 import com.beust.klaxon.Klaxon
@@ -9,6 +9,7 @@ import org.nullversionnova.common.InvalidIdentifierException
 import org.nullversionnova.common.properties.InheritingProperties
 import org.nullversionnova.server.engine.tiles.EngineTiles.NULL_TILE
 import org.nullversionnova.server.engine.tiles.Tile
+import org.nullversionnova.server.engine.tiles.TileInstance
 
 class ServerRegistry {
     // Members
@@ -66,6 +67,14 @@ class ServerRegistry {
         } else {
             materials[material]!!.staticCopy()
         }
+    }
+    fun instanceTile(tile: Identifier) : TileInstance? {
+        if (!tiles.containsKey(tile)) { return null }
+        val instance = TileInstance(tile)
+        for (i in tiles[tile]!!.defaultValues.keys) {
+            instance[i] = tiles[tile]!!.defaultValues[i]!!
+        }
+        return instance
     }
 
     // Getting

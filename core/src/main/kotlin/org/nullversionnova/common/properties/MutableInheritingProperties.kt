@@ -2,7 +2,7 @@ package org.nullversionnova.common.properties
 
 import org.nullversionnova.common.Identifier
 
-class MutableInheritingProperties<T>(parent: InheritingProperties<T>? = null) : MutableProperties<T>, InheritingProperties<T>(parent) {
+open class MutableInheritingProperties<T>(parent: InheritingProperties<T>? = null) : MutableProperties<T>, InheritingProperties<T>(parent) {
     // Members
     override val values = mutableMapOf<Identifier,T>()
     override val properties = mutableSetOf<Identifier>()

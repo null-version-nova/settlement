@@ -1,7 +1,6 @@
 package org.nullversionnova.server.engine
 
 import org.nullversionnova.common.Identifier
-import org.nullversionnova.server.ServerRegistry
 import org.nullversionnova.server.engine.tiles.EngineTiles
 
 object Engine {

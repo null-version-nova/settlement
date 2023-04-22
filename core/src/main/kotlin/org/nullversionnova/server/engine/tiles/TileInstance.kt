@@ -3,7 +3,7 @@ package org.nullversionnova.server.engine.tiles
 import org.nullversionnova.common.*
 import org.nullversionnova.common.properties.InheritingProperties
 import org.nullversionnova.common.properties.MutableMappedProperties
-import org.nullversionnova.server.ServerRegistry
+import org.nullversionnova.server.engine.ServerRegistry
 import org.nullversionnova.server.engine.GameObject
 
 class TileInstance(override var identifier: Identifier, var location : IntVector3? = null) : MutableMappedProperties<Number>(), GameObject {
@@ -11,6 +11,10 @@ class TileInstance(override var identifier: Identifier, var location : IntVector
     var direction : Direction? = null
 
     // Methods
+    fun at(location: IntVector3) : TileInstance {
+        this.location = location
+        return this
+    }
     fun getTile(registry: ServerRegistry) : Tile { return registry.accessTile(identifier) }
     fun getMaterial(registry: ServerRegistry) : InheritingProperties<Number> { return registry.getMaterial(registry.accessTile(identifier).material) }
     fun increment(property: Identifier, registry: ServerRegistry, value: Number = 1) : Number {
