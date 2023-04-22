@@ -1,15 +1,16 @@
-package org.nullversionnova.server
+package org.nullversionnova.server.cell
 
 import org.nullversionnova.SimplexNoise
 import org.nullversionnova.common.Axis
 import org.nullversionnova.common.Axis.*
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3
+import org.nullversionnova.server.ServerRegistry
 import org.nullversionnova.server.engine.tiles.*
 
 class WorldCell (private val location: IntVector3) {
     // Members
-    val tileMap = mutableMapOf<IntVector3,TileStorage>()
+    val tileMap = mutableMapOf<IntVector3, TileStorage>()
     private var loaded = false
 
     // Methods

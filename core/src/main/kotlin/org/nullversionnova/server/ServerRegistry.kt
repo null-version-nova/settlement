@@ -3,9 +3,10 @@ package org.nullversionnova.server
 import com.badlogic.gdx.Gdx
 import com.beust.klaxon.Klaxon
 import org.nullversionnova.common.Identifier
-import org.nullversionnova.common.InheritingProperties
-import org.nullversionnova.common.InheritingPropertiesJSON
+import org.nullversionnova.common.properties.MutableInheritingProperties
+import org.nullversionnova.common.properties.InheritingPropertiesJSON
 import org.nullversionnova.common.InvalidIdentifierException
+import org.nullversionnova.common.properties.InheritingProperties
 import org.nullversionnova.server.engine.tiles.EngineTiles.NULL_TILE
 import org.nullversionnova.server.engine.tiles.Tile
 
@@ -14,7 +15,7 @@ class ServerRegistry {
     private val tiles = mutableMapOf<Identifier, Tile>()
     private val valueProperties = mutableMapOf<Identifier,Number>()
     private val properties = mutableSetOf<Identifier>()
-    private val materials = mutableMapOf<Identifier,InheritingProperties>()
+    private val materials = mutableMapOf<Identifier, MutableInheritingProperties<Number>>()
 
     // Loading
     fun addTile(identifier: Identifier, properties: Tile) : Tile {
@@ -55,15 +56,15 @@ class ServerRegistry {
             materials[material]!!.hasProperty(property)
         } else { throw InvalidIdentifierException() }
     }
-    fun getMaterial(material: Identifier? = null) : InheritingProperties {
+    fun getMaterial(material: Identifier? = null) : InheritingProperties<Number> {
         return if (material == null) {
-            val item = InheritingProperties()
+            val item = MutableInheritingProperties<Number>()
             for (i in valueProperties.keys) {
                 item[i] = valueProperties[i]!!
             }
-            item
+            item.staticCopy()
         } else {
-            materials[material]!!
+            materials[material]!!.staticCopy()
         }
     }
 
@@ -78,5 +79,5 @@ class ServerRegistry {
     fun addValueProperty(pack: String, name: String, default: Number) { addValueProperty(Identifier(pack,name),default) }
     fun addMaterial(pack: String, name: String) { addMaterial(Identifier(pack,name)) }
     fun accessTile(pack: String, name: String) : Tile { return accessTile(Identifier(pack,name)) }
-    fun getMaterial(material: String) : InheritingProperties { return getMaterial(Identifier(material)) }
+    fun getMaterial(material: String) : InheritingProperties<Number> { return getMaterial(Identifier(material)) }
 }

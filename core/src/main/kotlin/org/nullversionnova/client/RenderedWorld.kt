@@ -13,8 +13,8 @@ import org.nullversionnova.common.Direction.*
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector2
 import org.nullversionnova.common.IntVector3
-import org.nullversionnova.server.WorldCell
-import org.nullversionnova.server.engine.tiles.TileUnit
+import org.nullversionnova.server.cell.WorldCell
+import org.nullversionnova.server.cell.TileUnit
 
 class RenderedWorld {
     // Initialize
@@ -32,7 +32,7 @@ class RenderedWorld {
     var depth = 0
 
     // Methods
-    private fun getCellLayer(cellCoordinates: IntVector3, cells: MutableMap<IntVector3,WorldCell>, depth: Int): MutableSet<TileUnit> {
+    private fun getCellLayer(cellCoordinates: IntVector3, cells: MutableMap<IntVector3, WorldCell>, depth: Int): MutableSet<TileUnit> {
         val displacement = depth % WorldCell.CELL_SIZE
         val layer = mutableSetOf<TileUnit>()
         if (cells[cellCoordinates] == null) {
@@ -67,7 +67,7 @@ class RenderedWorld {
         return layer
     }
     private fun getTileLayer(map: TiledMap, layers : MutableMap<IntVector2,MutableSet<TileUnit>>) : TiledMapTileLayer {
-        val tileLayer = TiledMapTileLayer(WorldCell.CELL_SIZE * 3,WorldCell.CELL_SIZE * 3, Client.scale, Client.scale)
+        val tileLayer = TiledMapTileLayer(WorldCell.CELL_SIZE * 3, WorldCell.CELL_SIZE * 3, Client.scale, Client.scale)
         val allTiles = mutableMapOf<Identifier,Cell>()
         val allTileKeys = mutableSetOf<Identifier>()
         for (i in layers) { // What a lifesaver!
@@ -105,7 +105,7 @@ class RenderedWorld {
         return tileLayer
     }
     private fun adjustTileLayer(oldLayer: TiledMapTileLayer, newCameraPosition: IntVector3, loadedCells: MutableSet<IntVector3>, cells: MutableMap<IntVector3, WorldCell>, depth: Int) : TiledMapTileLayer {
-        val tileLayer = TiledMapTileLayer(WorldCell.CELL_SIZE * 3,WorldCell.CELL_SIZE * 3, Client.scale, Client.scale)
+        val tileLayer = TiledMapTileLayer(WorldCell.CELL_SIZE * 3, WorldCell.CELL_SIZE * 3, Client.scale, Client.scale)
         val layerSize = WorldCell.CELL_SIZE * 3 - 1
         for (i in 0 until layerSize) {
             for (j in 0 until layerSize) {

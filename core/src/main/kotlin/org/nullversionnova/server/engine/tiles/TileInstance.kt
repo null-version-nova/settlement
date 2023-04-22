@@ -1,16 +1,18 @@
 package org.nullversionnova.server.engine.tiles
 
 import org.nullversionnova.common.*
+import org.nullversionnova.common.properties.InheritingProperties
+import org.nullversionnova.common.properties.MutableMappedProperties
 import org.nullversionnova.server.ServerRegistry
 import org.nullversionnova.server.engine.GameObject
 
-class TileInstance(override var identifier: Identifier, var location : IntVector3? = null) : Properties(), GameObject {
+class TileInstance(override var identifier: Identifier, var location : IntVector3? = null) : MutableMappedProperties<Number>(), GameObject {
     // Members
     var direction : Direction? = null
 
     // Methods
     fun getTile(registry: ServerRegistry) : Tile { return registry.accessTile(identifier) }
-    fun getMaterial(registry: ServerRegistry) : InheritingProperties { return registry.getMaterial(registry.accessTile(identifier).material) }
+    fun getMaterial(registry: ServerRegistry) : InheritingProperties<Number> { return registry.getMaterial(registry.accessTile(identifier).material) }
     fun increment(property: Identifier, registry: ServerRegistry, value: Number = 1) : Number {
         val currentValue = this[property] ?: return 0
         if (currentValue is Double) {

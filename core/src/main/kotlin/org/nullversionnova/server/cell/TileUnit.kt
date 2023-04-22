@@ -1,7 +1,9 @@
-package org.nullversionnova.server.engine.tiles
+package org.nullversionnova.server.cell
 
 import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.Server
+import org.nullversionnova.server.engine.tiles.TickableTile
+import org.nullversionnova.server.engine.tiles.TileInstance
 
 data class TileUnit(override val location : IntVector3, override val tile: TileInstance) : TileStorage {
     override fun tick(server: Server) {

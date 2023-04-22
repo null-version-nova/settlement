@@ -1,13 +1,14 @@
 package org.nullversionnova.server
 
 import org.nullversionnova.common.IntVector3
+import org.nullversionnova.server.cell.WorldCell
 import org.nullversionnova.server.engine.Engine
 import org.nullversionnova.server.settlement.Settlement
 import org.nullversionnova.server.engine.entities.MobileEntity
 
 class Server {
     // Members
-    val loadedCells = mutableMapOf<IntVector3,WorldCell>()
+    val loadedCells = mutableMapOf<IntVector3, WorldCell>()
     val cellsToLoad = mutableListOf<IntVector3>()
     val loadedMobileEntities = mutableListOf<MobileEntity>()
     val registry = ServerRegistry()

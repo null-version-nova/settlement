@@ -1,7 +1,8 @@
-package org.nullversionnova.server.engine.tiles
+package org.nullversionnova.server.cell
 
 import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.Server
+import org.nullversionnova.server.engine.tiles.TileInstance
 
 interface TileStorage {
     val location : IntVector3

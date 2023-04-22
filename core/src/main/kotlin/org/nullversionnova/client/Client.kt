@@ -20,7 +20,7 @@ import org.nullversionnova.common.Direction.*
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.Server
-import org.nullversionnova.server.WorldCell
+import org.nullversionnova.server.cell.WorldCell
 import java.nio.file.FileSystems
 
 class Client : ApplicationListener, InputProcessor {

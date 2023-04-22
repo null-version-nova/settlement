@@ -1,10 +1,12 @@
-package org.nullversionnova.server.engine.tiles
+package org.nullversionnova.server.cell
 
 import org.nullversionnova.common.Axis
 import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.Server
+import org.nullversionnova.server.engine.tiles.TileInstance
 
-data class TilePlane(override val location : IntVector3, var height : Int, var width : Int, val axis: Axis, override val tile : TileInstance) : TileStorage {
+data class TilePlane(override val location : IntVector3, var height : Int, var width : Int, val axis: Axis, override val tile : TileInstance) :
+    TileStorage {
     override fun tick(server: Server) {
         TODO("Not yet implemented")
     }
