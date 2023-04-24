@@ -30,10 +30,5 @@ class Server {
     }
     fun tick() {
         if (cellsToLoad.isNotEmpty()) { loadCell(cellsToLoad.first()) }
-        for (i in loadedCells.values) {
-            for (j in i.tileMap.values) {
-//                j.tick(this)
-            }
-        }
     }
 }

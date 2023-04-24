@@ -15,6 +15,11 @@ class TileInstance(override var identifier: Identifier, var location : IntVector
         this.location = location
         return this
     }
+    fun infuse(properties: MutableMappedProperties<Number>) : TileInstance {
+        this.properties.addAll(properties.properties())
+        for (i in properties.values()) { this[i] = properties[i]!! }
+        return this
+    }
     fun getTile(registry: ServerRegistry) : Tile { return registry.accessTile(identifier) }
     fun getMaterial(registry: ServerRegistry) : InheritingProperties<Number> { return registry.getMaterial(registry.accessTile(identifier).material) }
     fun increment(property: Identifier, registry: ServerRegistry, value: Number = 1) : Number {

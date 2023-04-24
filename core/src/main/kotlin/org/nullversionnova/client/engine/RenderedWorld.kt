@@ -30,6 +30,7 @@ class RenderedWorld {
     var cameraCellCoordinates = IntVector3()
     var direction = NORTH
     var depth = 0
+    var full = false
 
     // Methods
     private fun getCellLayer(cellCoordinates: IntVector3, cells: MutableMap<IntVector3, WorldCell>, depth: Int): MutableSet<TileInstance> {
@@ -126,14 +127,27 @@ class RenderedWorld {
     fun reloadMap(cells: MutableMap<IntVector3, WorldCell>, loadedCells: MutableSet<IntVector3>, oldMap: TiledMap? = null) : TiledMap {
         val map = TiledMap()
         val layers = mutableListOf<MutableMap<IntVector2,MutableSet<TileInstance>>>()
+        oldMap?.dispose()
         map.tileSets.addTileSet(tileSet)
         for (i in 0..renderDistance) {
-            layers.add(getLayers(loadedCells, cells, depthDirection(depth, direction, i)))
+            val layer = if (full) {
+                mutableMapOf()
+            } else {
+                getLayers(loadedCells, cells, depthDirection(depth, direction, i))
+            }
+            layers.add(layer)
+//            var count = 0
+//            for (j in layer.values) {
+//                count += j.size
+//            }
+//            if (count == 9216) {
+//                full = true
+//            }
         }
         for (i in renderDistance downTo 0) {
             map.layers.add(getTileLayer(map,layers[i]))
         }
-        oldMap?.dispose()
+        full = false
         return map
     }
     fun advanceDepth(cells: MutableMap<IntVector3, WorldCell>, loadedCells: MutableSet<IntVector3>, oldMap: TiledMap) : TiledMap {
@@ -159,7 +173,7 @@ class RenderedWorld {
 
     // Companions
     companion object Global {
-        const val renderDistance = 16
+        const val renderDistance = 32
         fun depthDirection(depth: Int, direction: Direction, increase: Int) : Int {
             return depth + if (direction.polarity()) {
                 increase

@@ -3,12 +3,16 @@ package org.nullversionnova.server.engine.cell
 import org.nullversionnova.SimplexNoise
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3
+import org.nullversionnova.common.properties.MutableMappedProperties
+import org.nullversionnova.server.engine.GameObject
 import org.nullversionnova.server.engine.ServerRegistry
+import org.nullversionnova.server.engine.SimpleObject
 import org.nullversionnova.server.engine.tiles.*
 
 class WorldCell (private val location: IntVector3) {
     // Members
-    val tileMap = mutableMapOf<IntVector3, TileInstance>()
+    private val tileMap = mutableMapOf<IntVector3, GameObject>()
+    private val propertyMap = mutableMapOf<IntVector3,MutableMappedProperties<Number>>()
     private var loaded = false
 
     // Methods
@@ -27,8 +31,15 @@ class WorldCell (private val location: IntVector3) {
         loaded = false
         tileMap.clear()
     }
-    fun findTile(location: IntVector3) : TileInstance? {
-        return tileMap[location]?.at(location)
+    fun findTile(location: IntVector3): TileInstance? {
+        if (tileMap[location] == null) {
+            return null
+        }
+        val instance = TileInstance(tileMap[location]!!.identifier).at(location)
+        if (propertyMap[location] != null) {
+            return instance.infuse(propertyMap[location]!!)
+        }
+        return instance
     }
     private fun getHeight(xin : Number, yin : Number, yoff : Number = 0) : Double {
         val offset = yoff.toInt() + Y_OFFSET - location.z * CELL_SIZE
@@ -49,7 +60,12 @@ class WorldCell (private val location: IntVector3) {
 //        }
         if (!registry.getTiles().contains(tile)) { return }
         for (i in 0 until height) {
-            tileMap[location.copy(z = location.z + i)] = registry.instanceTile(tile)!!
+            val instance = registry.instanceTile(tile)
+            if (instance!!.values().isEmpty()) {
+                tileMap[location.copy(z = location.z + i)] = SimpleObject(tile)
+            } else {
+                tileMap[location.copy(z = location.z + i)] = instance
+            }
         }
     }
 
