@@ -23,7 +23,6 @@ class Server {
     fun loadCell(location: IntVector3) {
         loadedCells[location] = WorldCell(location)
         loadedCells[location]?.generate(registry)
-//        loadedCells[location]?.optimize(registry)
         try {
             cellsToLoad.removeAt(0)
         } catch (_: Exception) {}
@@ -37,6 +36,6 @@ class Server {
     operator fun get(location: IntVector3) : TileInstance? {
         val cell = convertPositionToCell(location)
         val local = convertPositionToLocal(location)
-        return loadedCells[cell]?.get(local)
+        return loadedCells[cell]?.get(local)?.at(location)
     }
 }

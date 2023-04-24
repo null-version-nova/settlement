@@ -45,13 +45,14 @@ class RenderedWorld {
         }
         for (i in layers) {
             val vector = i.location!!
+            val camera = convertPositionToGlobal(cameraCellCoordinates)
             var x = when (direction) {
-                NORTH, SOUTH, UP, DOWN -> vector.x + WorldCell.CELL_SIZE
-                EAST, WEST -> vector.y + WorldCell.CELL_SIZE
+                NORTH, SOUTH, UP, DOWN -> vector.x - camera.x + WorldCell.CELL_SIZE
+                EAST, WEST -> vector.y - camera.y + WorldCell.CELL_SIZE
             }
             var y = when (direction) {
-                NORTH, SOUTH, EAST, WEST -> vector.z + WorldCell.CELL_SIZE
-                DOWN, UP -> vector.y + WorldCell.CELL_SIZE
+                NORTH, SOUTH, EAST, WEST -> vector.z - camera.z + WorldCell.CELL_SIZE
+                DOWN, UP -> vector.y - camera.y + WorldCell.CELL_SIZE
             }
             when (direction) {
                 SOUTH -> x = WorldCell.CELL_SIZE * 3 - x
@@ -62,18 +63,6 @@ class RenderedWorld {
             tileLayer.setCell(x,y, allTiles[i.identifier])
         }
         allTiles.clear()
-        allTileKeys.clear()
-        layers.clear()
-        return tileLayer
-    }
-    private fun adjustTileLayer(oldLayer: TiledMapTileLayer, newCameraPosition: IntVector3, loadedCells: MutableSet<IntVector3>, cells: MutableMap<IntVector3, WorldCell>, depth: Int) : TiledMapTileLayer {
-        val tileLayer = TiledMapTileLayer(WorldCell.CELL_SIZE * 3, WorldCell.CELL_SIZE * 3, Client.scale, Client.scale)
-        val layerSize = WorldCell.CELL_SIZE * 3 - 1
-        for (i in 0 until layerSize) {
-            for (j in 0 until layerSize) {
-
-            }
-        }
         return tileLayer
     }
     private fun getLayers(server: Server, depth: Int) : MutableSet<TileInstance> {
@@ -88,15 +77,12 @@ class RenderedWorld {
         return layers
     }
     fun reloadMap(server: Server, oldMap: TiledMap? = null) : TiledMap {
+        println(cameraCellCoordinates)
         val map = TiledMap()
-        val layers = mutableListOf<MutableSet<TileInstance>>()
         oldMap?.dispose()
         map.tileSets.addTileSet(tileSet)
-        for (i in 0..renderDistance) {
-            layers.add(getLayers(server, depthDirection(depth, direction, i)))
-        }
         for (i in renderDistance downTo 0) {
-            map.layers.add(getTileLayer(map,layers[i]))
+            map.layers.add(getTileLayer(map,getLayers(server, depthDirection(depth, direction, i))))
         }
         return map
     }
@@ -111,7 +97,7 @@ class RenderedWorld {
         val map = TiledMap()
         map.tileSets.addTileSet(tileSet)
         runBlocking { map.layers.add(getTileLayer(map, getLayers(server, depthDirection(depth, direction, renderDistance)))) }
-        for (i in 0 until renderDistance - 1) {
+        for (i in 0 until oldMap.layers.count - 1) {
             map.layers.add(oldMap.layers[i])
         }
         oldMap.dispose()
@@ -120,7 +106,7 @@ class RenderedWorld {
     fun recedeDepth(server: Server, oldMap: TiledMap) : TiledMap {
         val map = TiledMap()
         map.tileSets.addTileSet(tileSet)
-        for (i in 1 until renderDistance) {
+        for (i in 1 until oldMap.layers.count) {
             map.layers.add(oldMap.layers[i])
         }
         runBlocking { map.layers.add(getTileLayer(map, getLayers(server, depth))) }
@@ -130,7 +116,7 @@ class RenderedWorld {
 
     // Companions
     companion object {
-        const val renderDistance = 32
+        const val renderDistance = 16
         fun depthDirection(depth: Int, direction: Direction, increase: Int) : Int {
             return depth + if (direction.polarity()) {
                 increase

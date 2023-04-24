@@ -20,7 +20,7 @@ object Global {
         )
     }
     fun convertPositionToGlobal(cellLocation : IntVector3, localPosition : IntVector3 = IntVector3()) : IntVector3 {
-        return IntVector3(cellLocation.x * 128 + localPosition.x,cellLocation.y * 128 + localPosition.y,cellLocation.z * 128 + localPosition.z)
+        return IntVector3(cellLocation.x * WorldCell.CELL_SIZE + localPosition.x,cellLocation.y * WorldCell.CELL_SIZE + localPosition.y,cellLocation.z * WorldCell.CELL_SIZE + localPosition.z)
     }
     fun roundPosition(position: Vector3) : Vector3 {
         return Vector3(floor(position.x),floor(position.y),floor(position.z))

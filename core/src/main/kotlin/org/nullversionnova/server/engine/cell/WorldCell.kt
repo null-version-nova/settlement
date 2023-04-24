@@ -29,7 +29,7 @@ class WorldCell (private val location: IntVector3) {
     }
     operator fun get(location: IntVector3): TileInstance? {
         if (tileMap[location] == null) { return null }
-        return TileInstance(tileMap[location]!!.identifier).at(location)
+        return tileMap[location]!!.at(location)
     }
     private fun getHeight(xin : Number, yin : Number, yoff : Number = 0) : Double {
         val offset = yoff.toInt() + Y_OFFSET - location.z * CELL_SIZE
@@ -49,7 +49,7 @@ class WorldCell (private val location: IntVector3) {
         const val CELL_SIZE = 32
         const val H_SCALE : Double = 50.0
         const val V_SCALE : Double = 5.0
-        const val Y_OFFSET : Int = 0
+        const val Y_OFFSET : Int = 50
         const val SOIL_DEPTH : Int = 3
     }
 }
