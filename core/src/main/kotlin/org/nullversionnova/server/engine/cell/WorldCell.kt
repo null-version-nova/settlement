@@ -3,16 +3,12 @@ package org.nullversionnova.server.engine.cell
 import org.nullversionnova.SimplexNoise
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3
-import org.nullversionnova.common.properties.MutableMappedProperties
-import org.nullversionnova.server.engine.GameObject
 import org.nullversionnova.server.engine.ServerRegistry
-import org.nullversionnova.server.engine.SimpleObject
 import org.nullversionnova.server.engine.tiles.*
 
 class WorldCell (private val location: IntVector3) {
     // Members
-    private val tileMap = mutableMapOf<IntVector3, GameObject>()
-    private val propertyMap = mutableMapOf<IntVector3,MutableMappedProperties<Number>>()
+    private val tileMap = mutableMapOf<IntVector3, TileInstance>()
     private var loaded = false
 
     // Methods
@@ -31,15 +27,9 @@ class WorldCell (private val location: IntVector3) {
         loaded = false
         tileMap.clear()
     }
-    fun findTile(location: IntVector3): TileInstance? {
-        if (tileMap[location] == null) {
-            return null
-        }
-        val instance = TileInstance(tileMap[location]!!.identifier).at(location)
-        if (propertyMap[location] != null) {
-            return instance.infuse(propertyMap[location]!!)
-        }
-        return instance
+    operator fun get(location: IntVector3): TileInstance? {
+        if (tileMap[location] == null) { return null }
+        return TileInstance(tileMap[location]!!.identifier).at(location)
     }
     private fun getHeight(xin : Number, yin : Number, yoff : Number = 0) : Double {
         val offset = yoff.toInt() + Y_OFFSET - location.z * CELL_SIZE
@@ -47,25 +37,10 @@ class WorldCell (private val location: IntVector3) {
     }
 
     private fun addColumn(location: IntVector3, height: Int, tile: Identifier, registry: ServerRegistry) {
-//        if (height <= 0) return
-//        if (location.getAxis(axis) < 0) {
-//            if (location.getAxis(axis) + height > 0) {
-////                tilemap.add(TileColumn(location.getNewWithSetAxis(-location.getAxis(axis),axis),height - location.getAxis(axis),axis,tile))
-//                return
-//            }
-//        } else if (location.getAxis(axis) < CELL_SIZE) {
-//            val column = TileColumn(location,height,axis,tile)
-//            tileMap[location] = column
-//            return
-//        }
         if (!registry.getTiles().contains(tile)) { return }
         for (i in 0 until height) {
             val instance = registry.instanceTile(tile)
-            if (instance!!.values().isEmpty()) {
-                tileMap[location.copy(z = location.z + i)] = SimpleObject(tile)
-            } else {
-                tileMap[location.copy(z = location.z + i)] = instance
-            }
+            tileMap[location.copy(z = location.z + i)] = instance!!
         }
     }
 

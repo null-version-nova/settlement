@@ -1,9 +1,12 @@
 package org.nullversionnova.server.engine
 
+import org.nullversionnova.common.Global.convertPositionToCell
+import org.nullversionnova.common.Global.convertPositionToLocal
 import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.engine.cell.WorldCell
 import org.nullversionnova.server.settlement.Settlement
 import org.nullversionnova.server.engine.entities.MobileEntity
+import org.nullversionnova.server.engine.tiles.TileInstance
 
 class Server {
     // Members
@@ -30,5 +33,10 @@ class Server {
     }
     fun tick() {
         if (cellsToLoad.isNotEmpty()) { loadCell(cellsToLoad.first()) }
+    }
+    operator fun get(location: IntVector3) : TileInstance? {
+        val cell = convertPositionToCell(location)
+        val local = convertPositionToLocal(location)
+        return loadedCells[cell]?.get(local)
     }
 }

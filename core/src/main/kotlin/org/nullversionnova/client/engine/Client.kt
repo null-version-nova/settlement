@@ -53,7 +53,7 @@ class Client : ApplicationListener, InputProcessor {
         world.initialize(registry)
         batch = SpriteBatch()
         camera.setToOrtho(false, 30f, 30f)
-        renderer = OrthogonalTiledMapRenderer(world.reloadMap(server.loadedCells,loadedCellAddresses), (1f / scale.toFloat()))
+        renderer = OrthogonalTiledMapRenderer(world.reloadMap(server), (1f / scale.toFloat()))
         camera.position.set(1000f,1000f,0f)
     }
 
@@ -322,14 +322,14 @@ class Client : ApplicationListener, InputProcessor {
     fun resetMapViaDepth(polarity: Boolean) {
         loadedCellAddresses = getLoadedCellsNearCamera()
         if (polarity) {
-            renderer.map = world.advanceDepth(server.loadedCells,loadedCellAddresses,renderer.map)
+            renderer.map = world.advanceDepth(server,renderer.map)
         } else {
-            renderer.map = world.recedeDepth(server.loadedCells,loadedCellAddresses,renderer.map)
+            renderer.map = world.recedeDepth(server,renderer.map)
         }
     }
     fun resetMap() {
         loadedCellAddresses = getLoadedCellsNearCamera()
-        renderer.map = world.reloadMap(server.loadedCells,loadedCellAddresses,renderer.map)
+        renderer.map = world.reloadMap(server,renderer.map)
         reloadNecessary = false
     }
     fun changeCameraPosition() {
@@ -378,6 +378,4 @@ class Client : ApplicationListener, InputProcessor {
             return Identifier(data.side)
         }
     }
-
-
 }
