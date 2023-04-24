@@ -36,13 +36,6 @@ class RenderedWorld {
     private fun getTileLayer(map: TiledMap, layers : MutableSet<TileInstance>) : TiledMapTileLayer {
         val tileLayer = TiledMapTileLayer(WorldCell.CELL_SIZE * 3, WorldCell.CELL_SIZE * 3, Client.scale, Client.scale)
         val allTiles = mutableMapOf<Identifier,Cell>()
-        val allTileKeys = mutableSetOf<Identifier>()
-        for (i in layers) { // What a lifesaver!
-            allTileKeys.add(i.identifier)
-        }
-        for (i in allTileKeys) {
-            allTiles[i] = Cell().setTile(textureIds[getTileTexture(direction,i)]?.let { map.tileSets.getTile(it) })
-        }
         for (i in layers) {
             val vector = i.location!!
             val camera = convertPositionToGlobal(cameraCellCoordinates)
@@ -59,6 +52,9 @@ class RenderedWorld {
                 WEST -> x = WorldCell.CELL_SIZE * 3 - x
                 UP -> y = WorldCell.CELL_SIZE * 3 - y
                 else -> {}
+            }
+            if (!allTiles.keys.contains(i.getTexture())) {
+                allTiles[i.getTexture()] = Cell().setTile(textureIds[getTileTexture(direction,i.getTexture())]?.let { map.tileSets.getTile(it) })
             }
             tileLayer.setCell(x,y, allTiles[i.identifier])
         }

@@ -10,7 +10,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
 import com.beust.klaxon.Klaxon
-import org.nullversionnova.client.TileTextureData
+import org.nullversionnova.client.TileModel
 import org.nullversionnova.client.settlement.SettlementClient
 import org.nullversionnova.common.Axis
 import org.nullversionnova.common.Direction
@@ -19,7 +19,6 @@ import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.engine.Server
 import org.nullversionnova.server.engine.cell.WorldCell
-import javax.swing.Renderer
 
 class Client : ApplicationListener, InputProcessor {
     // Members
@@ -379,7 +378,7 @@ class Client : ApplicationListener, InputProcessor {
         const val PARALLAX = 0.01f
         const val MAX_ZOOM = 1.2f
         fun getTileTexture(direction: Direction, identifier: Identifier): Identifier {
-            val data = Klaxon().parse<TileTextureData>(Gdx.files.internal("client/${identifier.pack}/models/tiles/${identifier.name}.json").readString())
+            val data = Klaxon().parse<TileModel>(Gdx.files.internal("client/${identifier.pack}/models/tiles/${identifier.name}.json").readString())
                 ?: return Identifier("engine","default")
             if (direction == UP) {
                 return Identifier(data.bottom)

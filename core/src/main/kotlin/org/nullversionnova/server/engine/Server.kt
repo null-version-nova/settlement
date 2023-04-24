@@ -32,10 +32,24 @@ class Server {
     }
     fun tick() {
         if (cellsToLoad.isNotEmpty()) { loadCell(cellsToLoad.first()) }
+        for (i in loadedCells.values) {
+            i.tick(this)
+        }
     }
     operator fun get(location: IntVector3) : TileInstance? {
         val cell = convertPositionToCell(location)
         val local = convertPositionToLocal(location)
+        loadedCells[cell]?.get(local)?.location = location
         return loadedCells[cell]?.get(local)?.at(location)
+    }
+    fun getOrigin(location: IntVector3) : TileInstance? {
+        val cell = convertPositionToCell(location)
+        val local = convertPositionToLocal(location)
+        return loadedCells[cell]?.getOrigin(local)
+    }
+    operator fun set(location: IntVector3, tile: TileInstance) {
+        val cell = convertPositionToCell(location)
+        val local = convertPositionToLocal(location)
+        loadedCells[cell]?.set(local, tile)
     }
 }

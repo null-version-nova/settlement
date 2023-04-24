@@ -12,7 +12,10 @@ object SettlementClient {
     }
     fun loadTextures(registry: ClientRegistry) {
         registry.loadTexture(getId("rock"))
+        registry.loadTexture(getId("dirt"))
         registry.loadTexture(getId("sand"))
+        registry.loadTexture(getId("grass_side"))
+        registry.loadTexture(getId("grass_top"))
     }
     fun getId(input: String) : Identifier { return Identifier(pack_identifier,input) }
 }

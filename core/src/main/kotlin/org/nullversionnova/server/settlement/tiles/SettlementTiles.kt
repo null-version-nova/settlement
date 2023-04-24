@@ -7,7 +7,7 @@ import org.nullversionnova.server.settlement.Settlement
 object SettlementTiles {
     // Tiles
     val ROCK = Tile(Settlement.getId("rock"))
-    val DIRT = Tile(Settlement.getId("soil"))
+    val DIRT = Soil(Settlement.getId("soil"))
     val SAND = Tile(Settlement.getId("soil"))
 
     // Functions
