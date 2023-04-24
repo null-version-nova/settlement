@@ -19,6 +19,7 @@ import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.engine.Server
 import org.nullversionnova.server.engine.cell.WorldCell
+import javax.swing.Renderer
 
 class Client : ApplicationListener, InputProcessor {
     // Members
@@ -33,6 +34,7 @@ class Client : ApplicationListener, InputProcessor {
     private var h = 0
     private var zoom : Float = 1f
     private var reloadNecessary = false
+    private var scanLine = 0
 
     private val current = Vector3()
     private val last = Vector3(-1f,-1f,-1f)
@@ -66,8 +68,16 @@ class Client : ApplicationListener, InputProcessor {
     override fun render() {
         // World Rendering
         if (reloadNecessary && server.cellsToLoad.isEmpty()) { resetMap() }
-        ScreenUtils.clear(100f / 255f, 100f / 255f, 250f / 255f, 1f)
-        camera.zoom = zoom
+        if (renderer.map.layers.count < RenderedWorld.renderDistance) {
+            renderer.map = world.renderMore(server,renderer.map)
+        } else {
+            renderer.map = world.renderOver(scanLine,server,renderer.map)
+            scanLine++
+            if (scanLine == RenderedWorld.renderDistance) { scanLine = 0 }
+        }
+        renderer.map = world.renderOver(0,server,renderer.map)
+        ScreenUtils.clear(190f / 255f, 205f / 255f, 255f / 255f, 1f)
+        camera.zoom = zoom + PARALLAX * renderer.map.layers.count
         camera.update()
         for (i in 0 until renderer.map.layers.count) {
             renderer.setView(camera)
@@ -75,7 +85,7 @@ class Client : ApplicationListener, InputProcessor {
             batch.draw(registry.getTexture(Identifier(EngineClient.pack_identifier,"fog")),0f,0f,w.toFloat(),h.toFloat())
             batch.end()
             renderer.render(intArrayOf(i))
-            camera.zoom -= 0.01f
+            camera.zoom -= PARALLAX
             camera.update()
         }
 
@@ -261,8 +271,8 @@ class Client : ApplicationListener, InputProcessor {
         if (camera.zoom.isNaN()) {
             camera.zoom = zoom
         }
-        if (zoom > 1.5) {
-            zoom = 1.5f
+        if (zoom > MAX_ZOOM) {
+            zoom = MAX_ZOOM
         }
         return true
     }
@@ -329,7 +339,7 @@ class Client : ApplicationListener, InputProcessor {
     }
     fun resetMap() {
         loadedCellAddresses = getLoadedCellsNearCamera()
-        renderer.map = world.reloadMap(server,renderer.map)
+        renderer.map = world.resetMap(server,renderer.map)
         reloadNecessary = false
     }
     fun changeCameraPosition() {
@@ -364,8 +374,10 @@ class Client : ApplicationListener, InputProcessor {
     }
 
     // Companions
-    companion object Global {
+    companion object {
         const val scale = 8
+        const val PARALLAX = 0.01f
+        const val MAX_ZOOM = 1.2f
         fun getTileTexture(direction: Direction, identifier: Identifier): Identifier {
             val data = Klaxon().parse<TileTextureData>(Gdx.files.internal("client/${identifier.pack}/models/tiles/${identifier.name}.json").readString())
                 ?: return Identifier("engine","default")

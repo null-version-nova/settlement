@@ -7,7 +7,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 import kotlinx.coroutines.runBlocking
-import org.nullversionnova.client.engine.Client.Global.getTileTexture
+import org.nullversionnova.client.engine.Client.Companion.getTileTexture
 import org.nullversionnova.common.Direction
 import org.nullversionnova.common.Direction.*
 import org.nullversionnova.common.Global.convertPositionToGlobal
@@ -93,10 +93,35 @@ class RenderedWorld {
         map.layers.add(getTileLayer(map,getLayers(server,depth)))
         return map
     }
+    fun renderMore(server: Server, oldMap: TiledMap? = null) : TiledMap {
+        if (oldMap == null) { resetMap(server) }
+        val map = TiledMap()
+        map.tileSets.addTileSet(tileSet)
+        runBlocking { map.layers.add(getTileLayer(map, getLayers(server, depthDirection(depth, direction, oldMap!!.layers.count)))) }
+        for (i in 0 until oldMap!!.layers.count) {
+            map.layers.add(oldMap.layers[i])
+        }
+        oldMap.dispose()
+        return map
+    }
+    fun renderOver(depth: Int, server: Server, oldMap: TiledMap? = null) : TiledMap {
+        if (oldMap == null) { resetMap(server) }
+        val map = TiledMap()
+        map.tileSets.addTileSet(tileSet)
+        for (i in 0 until oldMap!!.layers.count) {
+            if (oldMap.layers.count - i - 1 == depth) {
+                map.layers.add(getTileLayer(map,getLayers(server, depthDirection(this.depth, direction, depth))))
+            } else {
+                map.layers.add(oldMap.layers[i])
+            }
+        }
+        oldMap.dispose()
+        return map
+    }
     fun advanceDepth(server: Server, oldMap: TiledMap) : TiledMap {
         val map = TiledMap()
         map.tileSets.addTileSet(tileSet)
-        runBlocking { map.layers.add(getTileLayer(map, getLayers(server, depthDirection(depth, direction, renderDistance)))) }
+        runBlocking { map.layers.add(getTileLayer(map, getLayers(server, depthDirection(depth, direction, oldMap.layers.count)))) }
         for (i in 0 until oldMap.layers.count - 1) {
             map.layers.add(oldMap.layers[i])
         }
@@ -116,7 +141,7 @@ class RenderedWorld {
 
     // Companions
     companion object {
-        const val renderDistance = 16
+        const val renderDistance = 32
         fun depthDirection(depth: Int, direction: Direction, increase: Int) : Int {
             return depth + if (direction.polarity()) {
                 increase
