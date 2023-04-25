@@ -1,4 +1,4 @@
-package org.nullversionnova.server.engine
+package org.nullversionnova.server
 
 import com.badlogic.gdx.Gdx
 import com.beust.klaxon.Klaxon
@@ -8,9 +8,9 @@ import org.nullversionnova.common.properties.MutableInheritingProperties
 import org.nullversionnova.common.properties.InheritingPropertiesJSON
 import org.nullversionnova.common.InvalidIdentifierException
 import org.nullversionnova.common.properties.InheritingProperties
-import org.nullversionnova.server.engine.tiles.EngineTiles.NULL_TILE
-import org.nullversionnova.server.engine.tiles.Tile
-import org.nullversionnova.server.engine.tiles.TileInstance
+import org.nullversionnova.server.tiles.EngineTiles.NULL_TILE
+import org.nullversionnova.server.tiles.Tile
+import org.nullversionnova.server.tiles.TileInstance
 
 class ServerRegistry {
     // Members

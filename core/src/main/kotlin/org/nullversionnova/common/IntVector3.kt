@@ -1,7 +1,7 @@
 package org.nullversionnova.common
 
 import com.badlogic.gdx.math.Vector3
-import org.nullversionnova.server.engine.cell.WorldCell
+import org.nullversionnova.server.cell.WorldCell
 
 data class IntVector3(var x: Int = 0, var y: Int = 0, var z: Int = 0) {
     constructor(xf : Float, yf: Float, zf : Float) : this(xf.toInt(),yf.toInt(),zf.toInt())

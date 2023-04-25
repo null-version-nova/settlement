@@ -1,18 +1,20 @@
-package org.nullversionnova.server.engine
+package org.nullversionnova.server
 
 import org.nullversionnova.common.Global.convertPositionToCell
 import org.nullversionnova.common.Global.convertPositionToLocal
 import org.nullversionnova.common.IntVector3
-import org.nullversionnova.server.engine.cell.WorldCell
+import org.nullversionnova.server.cell.WorldCell
 import org.nullversionnova.server.settlement.Settlement
-import org.nullversionnova.server.engine.entities.MobileEntity
-import org.nullversionnova.server.engine.tiles.TileInstance
+import org.nullversionnova.server.entities.MobileEntity
+import org.nullversionnova.server.tiles.TileInstance
+import org.nullversionnova.server.world.Generator
 
 class Server {
     // Members
     val loadedCells = mutableMapOf<IntVector3, WorldCell>()
     val cellsToLoad = mutableListOf<IntVector3>()
     val loadedMobileEntities = mutableListOf<MobileEntity>()
+    val generator = Generator()
     val registry = ServerRegistry()
 
     // Methods

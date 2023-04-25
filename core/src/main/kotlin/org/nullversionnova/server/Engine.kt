@@ -1,7 +1,7 @@
-package org.nullversionnova.server.engine
+package org.nullversionnova.server
 
 import org.nullversionnova.common.Identifier
-import org.nullversionnova.server.engine.tiles.EngineTiles
+import org.nullversionnova.server.tiles.EngineTiles
 
 object Engine {
     const val pack_identifier = "engine"

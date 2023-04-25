@@ -1,12 +1,13 @@
-package org.nullversionnova.server.engine.tiles
+package org.nullversionnova.server.tiles
 
 import org.nullversionnova.common.*
 import org.nullversionnova.common.properties.InheritingProperties
 import org.nullversionnova.common.properties.MutableMappedProperties
-import org.nullversionnova.server.engine.ServerRegistry
-import org.nullversionnova.server.engine.GameObject
+import org.nullversionnova.server.ServerRegistry
+import org.nullversionnova.server.GameObject
 
-class TileInstance(override var identifier: Identifier, var location : IntVector3) : MutableMappedProperties<Number>(), GameObject {
+class TileInstance(override var identifier: Identifier, var location : IntVector3) : MutableMappedProperties<Number>(),
+    GameObject {
     // Members
     var direction : Direction? = null
     private var currentTexture : Identifier? = null

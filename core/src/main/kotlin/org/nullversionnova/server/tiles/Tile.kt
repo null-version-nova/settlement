@@ -1,10 +1,11 @@
-package org.nullversionnova.server.engine.tiles
+package org.nullversionnova.server.tiles
 
 import org.nullversionnova.common.Identifier
-import org.nullversionnova.server.engine.ServerRegistry
-import org.nullversionnova.server.engine.GameObject
+import org.nullversionnova.server.ServerRegistry
+import org.nullversionnova.server.GameObject
 
-open class Tile(var material: Identifier = Identifier(), override var identifier: Identifier = Identifier()) : GameObject {
+open class Tile(var material: Identifier = Identifier(), override var identifier: Identifier = Identifier()) :
+    GameObject {
     // Initialization
     constructor(material: String) : this(Identifier(material))
 

@@ -1,4 +1,4 @@
-package org.nullversionnova.server.engine
+package org.nullversionnova.server
 
 import org.nullversionnova.common.Identifier
 

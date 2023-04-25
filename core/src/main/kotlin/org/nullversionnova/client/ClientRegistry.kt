@@ -1,9 +1,8 @@
-package org.nullversionnova.client.engine
+package org.nullversionnova.client
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.beust.klaxon.Klaxon
-import org.nullversionnova.client.SpriteAnimation
 import org.nullversionnova.common.Identifier
 
 class ClientRegistry {
@@ -32,9 +31,7 @@ class ClientRegistry {
             for (i in data.sprites) {
                 if (textureSet[Identifier(i)] == null) {
                     try {
-                        println("$i got in!")
                         textureSet[Identifier(i)] = Texture("client/${Identifier(i).pack}/sprites/${Identifier(i).name}.png")
-                        println("${textureSet[Identifier(i)] != null}")
                     } catch (e: Exception) {
                         println("Error: Exception while loading texture $i")
                         println(e)

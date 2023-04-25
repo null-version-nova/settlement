@@ -4,7 +4,7 @@ package org.nullversionnova.lwjgl3
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
-import org.nullversionnova.client.engine.Client
+import org.nullversionnova.client.Client
 
 /** Launches the desktop (LWJGL3) application. */
 fun main() {

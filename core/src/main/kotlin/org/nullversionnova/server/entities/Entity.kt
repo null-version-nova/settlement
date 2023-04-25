@@ -1,7 +1,7 @@
-package org.nullversionnova.server.engine.entities
+package org.nullversionnova.server.entities
 
 import org.nullversionnova.common.Identifier
-import org.nullversionnova.server.engine.GameObject
+import org.nullversionnova.server.GameObject
 
 interface Entity : GameObject {
     // Members

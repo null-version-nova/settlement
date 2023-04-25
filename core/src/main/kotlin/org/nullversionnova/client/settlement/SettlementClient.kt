@@ -1,7 +1,7 @@
 package org.nullversionnova.client.settlement
 
 import org.nullversionnova.common.Identifier
-import org.nullversionnova.client.engine.ClientRegistry
+import org.nullversionnova.client.ClientRegistry
 import org.nullversionnova.server.settlement.Settlement
 
 object SettlementClient {

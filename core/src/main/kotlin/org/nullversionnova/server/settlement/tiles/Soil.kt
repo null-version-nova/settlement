@@ -2,22 +2,15 @@ package org.nullversionnova.server.settlement.tiles
 
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3
-import org.nullversionnova.server.engine.Server
-import org.nullversionnova.server.engine.tiles.TickableTile
+import org.nullversionnova.server.Server
+import org.nullversionnova.server.tiles.TickableTile
 
 class Soil(material: Identifier) : TickableTile(material) {
-    override fun tick(location: IntVector3, server: Server) {
-        val tile = server[location]?.identifier?.let { server.registry.accessTile(it) }
-        if (tile is Soil) {
-            tile.growGrass(location,server)
-        }
-    }
+    override fun tick(location: IntVector3, server: Server) {}
     fun growGrass(location: IntVector3, server: Server) {
-        val newTile = server[location]
-        newTile?.make("settlement:grass")
-        newTile?.setTexture("settlement:grass")
-        if (newTile != null) {
-            server[location] = newTile
+        if (server[location]?.hasProperty("settlement:grass") == false) {
+            server[location]!!.make("settlement:grass")
+            server[location]!!.setTexture("settlement:grass")
         }
     }
 }

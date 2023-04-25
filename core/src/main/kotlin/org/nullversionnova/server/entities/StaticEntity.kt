@@ -1,4 +1,4 @@
-package org.nullversionnova.server.engine.entities
+package org.nullversionnova.server.entities
 
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3

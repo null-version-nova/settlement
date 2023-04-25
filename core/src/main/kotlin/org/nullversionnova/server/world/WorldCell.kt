@@ -1,14 +1,15 @@
-package org.nullversionnova.server.engine.cell
+package org.nullversionnova.server.cell
 
 import org.nullversionnova.SimplexNoise
 import org.nullversionnova.common.Global.convertPositionToGlobal
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3
-import org.nullversionnova.server.engine.Server
-import org.nullversionnova.server.engine.ServerRegistry
-import org.nullversionnova.server.engine.tiles.*
+import org.nullversionnova.server.Server
+import org.nullversionnova.server.ServerRegistry
+import org.nullversionnova.server.tiles.TickableTile
+import org.nullversionnova.server.tiles.TileInstance
 
-class WorldCell (private val location: IntVector3) {
+class WorldCell (val location: IntVector3) {
     // Members
     private val tileMap = mutableMapOf<IntVector3, TileInstance>()
     private var loaded = false
@@ -41,7 +42,9 @@ class WorldCell (private val location: IntVector3) {
             }
         }
     }
-    operator fun get(location: IntVector3): TileInstance? { return tileMap[location] }
+    operator fun get(location: IntVector3): TileInstance? {
+        return tileMap[location]
+    }
     operator fun set(location: IntVector3, tile: TileInstance) { tileMap[location] = tile }
     private fun getHeight(xin : Number, yin : Number, yoff : Number = 0) : Double {
         val offset = yoff.toInt() + Y_OFFSET - location.z * CELL_SIZE
@@ -66,7 +69,7 @@ class WorldCell (private val location: IntVector3) {
         const val V_SCALE : Double = 5.0
         const val H_SCALE_DESERT : Double = 100.0
         const val V_SCALE_DESERT : Double = 2.0
-        const val Y_OFFSET : Int = 0
+        const val Y_OFFSET : Int = CELL_SIZE
         const val SOIL_DEPTH : Int = 3
     }
 }

@@ -2,7 +2,7 @@ package org.nullversionnova.common.properties
 
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.ValueProperty
-import org.nullversionnova.server.engine.ServerRegistry
+import org.nullversionnova.server.ServerRegistry
 
 class InheritingPropertiesJSON (
     val values: Array<ValueProperty> = arrayOf(),

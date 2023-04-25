@@ -1,7 +1,7 @@
-package org.nullversionnova.client.engine
+package org.nullversionnova.client
 
 import org.nullversionnova.common.Identifier
-import org.nullversionnova.server.engine.Engine
+import org.nullversionnova.server.Engine
 
 object EngineClient {
     const val pack_identifier = Engine.pack_identifier

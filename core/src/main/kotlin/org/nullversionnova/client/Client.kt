@@ -1,4 +1,4 @@
-package org.nullversionnova.client.engine
+package org.nullversionnova.client
 
 import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
@@ -10,15 +10,14 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
 import com.beust.klaxon.Klaxon
-import org.nullversionnova.client.TileModel
 import org.nullversionnova.client.settlement.SettlementClient
 import org.nullversionnova.common.Axis
 import org.nullversionnova.common.Direction
 import org.nullversionnova.common.Direction.*
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3
-import org.nullversionnova.server.engine.Server
-import org.nullversionnova.server.engine.cell.WorldCell
+import org.nullversionnova.server.Server
+import org.nullversionnova.server.cell.WorldCell
 
 class Client : ApplicationListener, InputProcessor {
     // Members
@@ -55,7 +54,7 @@ class Client : ApplicationListener, InputProcessor {
         batch = SpriteBatch()
         camera.setToOrtho(false, 30f, 30f)
         renderer = OrthogonalTiledMapRenderer(world.resetMap(server), (1f / scale.toFloat()))
-        camera.position.set(1000f,1000f,0f)
+        camera.position.set(0f,0f,0f)
     }
 
     override fun resize(width: Int, height: Int) {
@@ -65,7 +64,8 @@ class Client : ApplicationListener, InputProcessor {
     }
 
     override fun render() {
-        // World Rendering
+        // Rendering
+        changeCameraPosition()
         if (reloadNecessary && server.cellsToLoad.isEmpty()) { resetMap() }
         if (renderer.map.layers.count < RenderedWorld.renderDistance) {
             renderer.map = world.renderMore(server,renderer.map)
@@ -75,6 +75,8 @@ class Client : ApplicationListener, InputProcessor {
             if (scanLine == RenderedWorld.renderDistance) { scanLine = 0 }
         }
         renderer.map = world.renderOver(0,server,renderer.map)
+
+        // Display
         ScreenUtils.clear(190f / 255f, 205f / 255f, 255f / 255f, 1f)
         camera.zoom = zoom + PARALLAX * renderer.map.layers.count
         camera.update()
@@ -89,7 +91,6 @@ class Client : ApplicationListener, InputProcessor {
         }
 
         // Game Processing
-        changeCameraPosition()
         server.tick()
     }
 
@@ -101,6 +102,7 @@ class Client : ApplicationListener, InputProcessor {
 
     override fun dispose() {
         registry.destroy()
+        renderer.map.dispose()
     }
 
     // Input
@@ -124,11 +126,15 @@ class Client : ApplicationListener, InputProcessor {
             }
             Input.Keys.UP -> if (!world.direction.isVertical()) {
                 world.direction = UP
+                world.depth = camera.position.y.toInt() - 32
                 changeDepth()
                 reloadNecessary = true
             }
             else if (world.direction == DOWN) {
                 world.direction = NORTH
+                buffer = world.depth + 32
+                world.depth = camera.position.y.toInt() - 32
+                camera.position.y = buffer.toFloat()
                 changeDepth()
                 reloadNecessary = true
             }
@@ -170,11 +176,14 @@ class Client : ApplicationListener, InputProcessor {
             Input.Keys.DOWN -> when (world.direction) {
                 EAST, WEST, NORTH, SOUTH -> {
                     world.direction = DOWN
+                    buffer = camera.position.y.toInt() - 32
+                    world.depth = buffer
                     changeDepth()
                     reloadNecessary = true
                 }
                 UP -> {
                     world.direction = NORTH
+                    camera.position.y = world.depth.toFloat() + 32
                     changeDepth()
                     reloadNecessary = true
                 }
@@ -205,7 +214,7 @@ class Client : ApplicationListener, InputProcessor {
             'a' -> camera.translate(-0.5f,0f)
             's' -> camera.translate(0f,-0.5f)
             'd' -> camera.translate(0.5f,0f)
-            'm' -> registry.isTexture(Identifier())
+            'm' -> registry.isTexture(Identifier("settlement:grass_side"))
             else -> return false
         }
         return true
@@ -348,21 +357,21 @@ class Client : ApplicationListener, InputProcessor {
         }
         val increasey = if (world.direction == UP) { -1 } else { 1 }
         var isChange = false
-        if (camera.position.x < 32) {
-            camera.position.x += 32
+        if (camera.position.x < WorldCell.CELL_SIZE) {
+            camera.position.x += WorldCell.CELL_SIZE
             world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.axis().getOtherPair().first) - increasex,world.direction.axis().getOtherPair().first)
             isChange = true
-        } else if (camera.position.x > 64) {
-            camera.position.x -= 32
+        } else if (camera.position.x >= WorldCell.CELL_SIZE * 2) {
+            camera.position.x -= WorldCell.CELL_SIZE
             world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.axis().getOtherPair().first) + increasex,world.direction.axis().getOtherPair().first)
             isChange = true
         }
-        if (camera.position.y < 32) {
-            camera.position.y += 32
+        if (camera.position.y < WorldCell.CELL_SIZE) {
+            camera.position.y += WorldCell.CELL_SIZE
             world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.axis().getOtherPair().second) - increasey,world.direction.axis().getOtherPair().second)
             isChange = true
-        } else if (camera.position.y > 64) {
-            camera.position.y -= 32
+        } else if (camera.position.y >= WorldCell.CELL_SIZE * 2) {
+            camera.position.y -= WorldCell.CELL_SIZE
             world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.axis().getOtherPair().second) + increasey,world.direction.axis().getOtherPair().second)
             isChange = true
         }

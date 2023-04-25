@@ -1,7 +1,7 @@
-package org.nullversionnova.server.engine.tiles
+package org.nullversionnova.server.tiles
 
 import org.nullversionnova.common.Identifier
-import org.nullversionnova.server.engine.ServerRegistry
+import org.nullversionnova.server.ServerRegistry
 
 object EngineTiles {
     // Tiles

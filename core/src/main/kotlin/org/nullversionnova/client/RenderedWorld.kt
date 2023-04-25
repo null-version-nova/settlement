@@ -1,4 +1,4 @@
-package org.nullversionnova.client.engine
+package org.nullversionnova.client
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.maps.tiled.TiledMap
@@ -7,22 +7,21 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 import kotlinx.coroutines.runBlocking
-import org.nullversionnova.client.engine.Client.Companion.getTileTexture
+import org.nullversionnova.client.Client.Companion.getTileTexture
 import org.nullversionnova.common.Direction
 import org.nullversionnova.common.Direction.*
 import org.nullversionnova.common.Global.convertPositionToGlobal
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3
-import org.nullversionnova.server.engine.Server
-import org.nullversionnova.server.engine.cell.WorldCell
-import org.nullversionnova.server.engine.tiles.TileInstance
+import org.nullversionnova.server.Server
+import org.nullversionnova.server.cell.WorldCell
+import org.nullversionnova.server.tiles.TileInstance
 
 class RenderedWorld {
     // Initialize
     fun initialize(registry: ClientRegistry) {
         for ((counter, i) in registry.getTextureSet().withIndex()) {
             textureIds[i] = counter
-            println(textureIds)
             tileSet.putTile(counter, StaticTiledMapTile(TextureRegion(registry.getTexture(i))))
         }
     }
