@@ -3,6 +3,7 @@ package org.nullversionnova.server.engine
 import com.badlogic.gdx.Gdx
 import com.beust.klaxon.Klaxon
 import org.nullversionnova.common.Identifier
+import org.nullversionnova.common.IntVector3
 import org.nullversionnova.common.properties.MutableInheritingProperties
 import org.nullversionnova.common.properties.InheritingPropertiesJSON
 import org.nullversionnova.common.InvalidIdentifierException
@@ -68,9 +69,9 @@ class ServerRegistry {
             materials[material]!!.staticCopy()
         }
     }
-    fun instanceTile(tile: Identifier) : TileInstance? {
+    fun instanceTile(tile: Identifier, location: IntVector3) : TileInstance? {
         if (!tiles.containsKey(tile)) { return null }
-        val instance = TileInstance(tile)
+        val instance = TileInstance(tile,location)
         for (i in tiles[tile]!!.defaultValues.keys) {
             instance[i] = tiles[tile]!!.defaultValues[i]!!
         }

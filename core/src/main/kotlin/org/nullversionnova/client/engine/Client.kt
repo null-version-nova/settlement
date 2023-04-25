@@ -54,7 +54,7 @@ class Client : ApplicationListener, InputProcessor {
         world.initialize(registry)
         batch = SpriteBatch()
         camera.setToOrtho(false, 30f, 30f)
-        renderer = OrthogonalTiledMapRenderer(world.reloadMap(server), (1f / scale.toFloat()))
+        renderer = OrthogonalTiledMapRenderer(world.resetMap(server), (1f / scale.toFloat()))
         camera.position.set(1000f,1000f,0f)
     }
 

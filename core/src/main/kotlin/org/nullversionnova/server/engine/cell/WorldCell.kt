@@ -37,19 +37,11 @@ class WorldCell (private val location: IntVector3) {
         for (i in tileMap.values) {
             val tile = server.registry.accessTile(i.identifier)
             if (tile is TickableTile) {
-                tile.tick(convertPositionToGlobal(location,i.location!!),server)
+                tile.tick(i.location,server)
             }
         }
     }
-    operator fun get(location: IntVector3): TileInstance? {
-        if (tileMap[location] == null) { return null }
-        val tile = tileMap[location]!!
-        tile.location = location
-        return tile
-    }
-    fun getOrigin(location: IntVector3) : TileInstance? {
-        return tileMap[location]
-    }
+    operator fun get(location: IntVector3): TileInstance? { return tileMap[location] }
     operator fun set(location: IntVector3, tile: TileInstance) { tileMap[location] = tile }
     private fun getHeight(xin : Number, yin : Number, yoff : Number = 0) : Double {
         val offset = yoff.toInt() + Y_OFFSET - location.z * CELL_SIZE
@@ -62,8 +54,8 @@ class WorldCell (private val location: IntVector3) {
     private fun addColumn(location: IntVector3, height: Int, tile: Identifier, registry: ServerRegistry) {
         if (!registry.getTiles().contains(tile)) { return }
         for (i in 0 until height) {
-            val instance = registry.instanceTile(tile)
-            tileMap[location.copy(z = location.z + i)] = instance!!.at(location)
+            val instance = registry.instanceTile(tile, convertPositionToGlobal(this.location,location.copy(z = location.z + i)))
+            tileMap[location.copy(z = location.z + i)] = instance!!
         }
     }
 
@@ -74,7 +66,7 @@ class WorldCell (private val location: IntVector3) {
         const val V_SCALE : Double = 5.0
         const val H_SCALE_DESERT : Double = 100.0
         const val V_SCALE_DESERT : Double = 2.0
-        const val Y_OFFSET : Int = 50
+        const val Y_OFFSET : Int = 0
         const val SOIL_DEPTH : Int = 3
     }
 }

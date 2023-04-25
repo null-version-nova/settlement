@@ -39,13 +39,7 @@ class Server {
     operator fun get(location: IntVector3) : TileInstance? {
         val cell = convertPositionToCell(location)
         val local = convertPositionToLocal(location)
-        loadedCells[cell]?.get(local)?.location = location
-        return loadedCells[cell]?.get(local)?.at(location)
-    }
-    fun getOrigin(location: IntVector3) : TileInstance? {
-        val cell = convertPositionToCell(location)
-        val local = convertPositionToLocal(location)
-        return loadedCells[cell]?.getOrigin(local)
+        return loadedCells[cell]?.get(local)
     }
     operator fun set(location: IntVector3, tile: TileInstance) {
         val cell = convertPositionToCell(location)

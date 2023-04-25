@@ -22,6 +22,7 @@ class RenderedWorld {
     fun initialize(registry: ClientRegistry) {
         for ((counter, i) in registry.getTextureSet().withIndex()) {
             textureIds[i] = counter
+            println(textureIds)
             tileSet.putTile(counter, StaticTiledMapTile(TextureRegion(registry.getTexture(i))))
         }
     }
@@ -37,7 +38,7 @@ class RenderedWorld {
         val tileLayer = TiledMapTileLayer(WorldCell.CELL_SIZE * 3, WorldCell.CELL_SIZE * 3, Client.scale, Client.scale)
         val allTiles = mutableMapOf<Identifier,Cell>()
         for (i in layers) {
-            val vector = i.location!!
+            val vector = i.location
             val camera = convertPositionToGlobal(cameraCellCoordinates)
             var x = when (direction) {
                 NORTH, SOUTH, UP, DOWN -> vector.x - camera.x + WorldCell.CELL_SIZE
@@ -71,16 +72,6 @@ class RenderedWorld {
             }
         }
         return layers
-    }
-    fun reloadMap(server: Server, oldMap: TiledMap? = null) : TiledMap {
-        println(cameraCellCoordinates)
-        val map = TiledMap()
-        oldMap?.dispose()
-        map.tileSets.addTileSet(tileSet)
-        for (i in renderDistance downTo 0) {
-            map.layers.add(getTileLayer(map,getLayers(server, depthDirection(depth, direction, i))))
-        }
-        return map
     }
     fun resetMap(server: Server, oldMap: TiledMap? = null) : TiledMap {
         val map = TiledMap()

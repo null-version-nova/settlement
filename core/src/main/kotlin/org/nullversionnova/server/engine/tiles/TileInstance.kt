@@ -6,7 +6,7 @@ import org.nullversionnova.common.properties.MutableMappedProperties
 import org.nullversionnova.server.engine.ServerRegistry
 import org.nullversionnova.server.engine.GameObject
 
-class TileInstance(override var identifier: Identifier, var location : IntVector3? = null) : MutableMappedProperties<Number>(), GameObject {
+class TileInstance(override var identifier: Identifier, var location : IntVector3) : MutableMappedProperties<Number>(), GameObject {
     // Members
     var direction : Direction? = null
     private var currentTexture : Identifier? = null
