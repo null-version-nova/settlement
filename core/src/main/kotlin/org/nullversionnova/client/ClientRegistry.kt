@@ -9,6 +9,7 @@ class ClientRegistry {
     // Initializing and Finalizing
     fun initialize() {
         println("Client registry initialized!")
+        loadTexture(Identifier())
     }
     fun destroy() {
         for (i in textureSet) { i.value.dispose() }
@@ -44,10 +45,15 @@ class ClientRegistry {
     // Retrieving
     fun getTexture(identifier: Identifier) : Texture {
         return if (!textureSet.contains(identifier)) {
-            if (textureSet[Identifier()] == null) {
-                throw Exception("Imminent stack overflow. Offending identifier $identifier. texture set has ${textureSet.keys.size} elements.")
+            loadTexture(identifier)
+            if (!textureSet.contains(identifier)) {
+                if (textureSet[Identifier()] == null) {
+                    throw Exception("Imminent stack overflow. Offending identifier $identifier. texture set has ${textureSet.keys.size} elements.")
+                }
+                getTexture(Identifier())
+            } else {
+                textureSet[identifier]!!
             }
-            getTexture(Identifier())
         }
         else { textureSet[identifier]!! }
     }

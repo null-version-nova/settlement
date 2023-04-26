@@ -9,7 +9,7 @@ import org.nullversionnova.server.GameObject
 class TileInstance(override var identifier: Identifier, var location : IntVector3) : MutableMappedProperties<Number>(),
     GameObject {
     // Members
-    var direction : Direction? = null
+    var direction : Direction3? = null
     private var currentTexture : Identifier? = null
 
     // Self Returns

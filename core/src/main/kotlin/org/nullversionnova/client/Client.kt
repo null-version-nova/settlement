@@ -10,14 +10,13 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
 import com.beust.klaxon.Klaxon
-import org.nullversionnova.client.settlement.SettlementClient
-import org.nullversionnova.common.Axis
-import org.nullversionnova.common.Direction
-import org.nullversionnova.common.Direction.*
+import org.nullversionnova.common.Axis3
+import org.nullversionnova.common.Direction3
+import org.nullversionnova.common.Direction3.*
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.Server
-import org.nullversionnova.server.cell.WorldCell
+import org.nullversionnova.server.world.WorldCell
 
 class Client : ApplicationListener, InputProcessor {
     // Members
@@ -46,8 +45,6 @@ class Client : ApplicationListener, InputProcessor {
         w = Gdx.graphics.width
         h = Gdx.graphics.height
         registry.initialize()
-        EngineClient.loadAssets(registry)
-        SettlementClient.loadAssets(registry)
         server.loadPacks()
         loadedCellAddresses = getLoadedCellsNearCamera()
         world.initialize(registry)
@@ -66,7 +63,7 @@ class Client : ApplicationListener, InputProcessor {
     override fun render() {
         // Rendering
         changeCameraPosition()
-        if (reloadNecessary && server.cellsToLoad.isEmpty()) { resetMap() }
+        if (reloadNecessary) { resetMap() }
         if (renderer.map.layers.count < RenderedWorld.renderDistance) {
             renderer.map = world.renderMore(server,renderer.map)
         } else {
@@ -83,7 +80,7 @@ class Client : ApplicationListener, InputProcessor {
         for (i in 0 until renderer.map.layers.count) {
             renderer.setView(camera)
             batch.begin()
-            batch.draw(registry.getTexture(Identifier(EngineClient.pack_identifier,"fog")),0f,0f,w.toFloat(),h.toFloat())
+            batch.draw(registry.getTexture(Identifier("engine:fog")),0f,0f,w.toFloat(),h.toFloat())
             batch.end()
             renderer.render(intArrayOf(i))
             camera.zoom -= PARALLAX
@@ -286,7 +283,7 @@ class Client : ApplicationListener, InputProcessor {
     }
 
     // Auxiliary
-    fun getLoadedCellsNearCamera(cameraCoordinates: IntVector3 = world.cameraCellCoordinates) : MutableSet<IntVector3> {
+    private fun getLoadedCellsNearCamera(cameraCoordinates: IntVector3 = world.cameraCellCoordinates) : MutableSet<IntVector3> {
         val set = mutableSetOf<IntVector3>()
         val setToUnload = mutableSetOf<IntVector3>()
         for (i in -1..1) {
@@ -316,28 +313,28 @@ class Client : ApplicationListener, InputProcessor {
         }
         return set
     }
-    fun changeDepth() {
-        if (world.depth >= WorldCell.CELL_SIZE && world.direction.axis() == Axis.X) {
+    private fun changeDepth() {
+        if (world.depth >= WorldCell.CELL_SIZE && world.direction.axis() == Axis3.X) {
             world.cameraCellCoordinates.x += 1
             world.depth -= WorldCell.CELL_SIZE
-        } else if (world.depth < 0 && world.direction.axis() == Axis.X) {
+        } else if (world.depth < 0 && world.direction.axis() == Axis3.X) {
             world.cameraCellCoordinates.x -= 1
             world.depth += WorldCell.CELL_SIZE
-        } else if (world.depth >= WorldCell.CELL_SIZE && world.direction.axis() == Axis.Y) {
+        } else if (world.depth >= WorldCell.CELL_SIZE && world.direction.axis() == Axis3.Y) {
             world.cameraCellCoordinates.y += 1
             world.depth -= WorldCell.CELL_SIZE
-        } else if (world.depth < 0 && world.direction.axis() == Axis.Y) {
+        } else if (world.depth < 0 && world.direction.axis() == Axis3.Y) {
             world.cameraCellCoordinates.y -= 1
             world.depth += WorldCell.CELL_SIZE
-        } else if (world.depth >= WorldCell.CELL_SIZE && world.direction.axis() == Axis.Z) {
+        } else if (world.depth >= WorldCell.CELL_SIZE && world.direction.axis() == Axis3.Z) {
             world.cameraCellCoordinates.z += 1
             world.depth -= WorldCell.CELL_SIZE
-        } else if (world.depth < 0 && world.direction.axis() == Axis.Z) {
+        } else if (world.depth < 0 && world.direction.axis() == Axis3.Z) {
             world.cameraCellCoordinates.z -= 1
             world.depth += WorldCell.CELL_SIZE
         }
     }
-    fun resetMapViaDepth(polarity: Boolean) {
+    private fun resetMapViaDepth(polarity: Boolean) {
         loadedCellAddresses = getLoadedCellsNearCamera()
         if (polarity) {
             renderer.map = world.advanceDepth(server,renderer.map)
@@ -345,34 +342,34 @@ class Client : ApplicationListener, InputProcessor {
             renderer.map = world.recedeDepth(server,renderer.map)
         }
     }
-    fun resetMap() {
+    private fun resetMap() {
         loadedCellAddresses = getLoadedCellsNearCamera()
         renderer.map = world.resetMap(server,renderer.map)
         reloadNecessary = false
     }
-    fun changeCameraPosition() {
-        val increasex = when (world.direction) {
+    private fun changeCameraPosition() {
+        val increaseX = when (world.direction) {
             SOUTH, WEST -> -1
             else -> 1
         }
-        val increasey = if (world.direction == UP) { -1 } else { 1 }
+        val increaseY = if (world.direction == UP) { -1 } else { 1 }
         var isChange = false
         if (camera.position.x < WorldCell.CELL_SIZE) {
             camera.position.x += WorldCell.CELL_SIZE
-            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.axis().getOtherPair().first) - increasex,world.direction.axis().getOtherPair().first)
+            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.getOtherAxes().first) - increaseX,world.direction.getOtherAxes().first)
             isChange = true
         } else if (camera.position.x >= WorldCell.CELL_SIZE * 2) {
             camera.position.x -= WorldCell.CELL_SIZE
-            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.axis().getOtherPair().first) + increasex,world.direction.axis().getOtherPair().first)
+            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.getOtherAxes().first) + increaseX,world.direction.getOtherAxes().first)
             isChange = true
         }
         if (camera.position.y < WorldCell.CELL_SIZE) {
             camera.position.y += WorldCell.CELL_SIZE
-            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.axis().getOtherPair().second) - increasey,world.direction.axis().getOtherPair().second)
+            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.getOtherAxes().second) - increaseY,world.direction.getOtherAxes().second)
             isChange = true
         } else if (camera.position.y >= WorldCell.CELL_SIZE * 2) {
             camera.position.y -= WorldCell.CELL_SIZE
-            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.axis().getOtherPair().second) + increasey,world.direction.axis().getOtherPair().second)
+            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.getOtherAxes().second) + increaseY,world.direction.getOtherAxes().second)
             isChange = true
         }
         if (isChange) {
@@ -386,7 +383,7 @@ class Client : ApplicationListener, InputProcessor {
         const val scale = 8
         const val PARALLAX = 0.01f
         const val MAX_ZOOM = 1.2f
-        fun getTileTexture(direction: Direction, identifier: Identifier): Identifier {
+        fun getTileTexture(direction: Direction3, identifier: Identifier): Identifier {
             val data = Klaxon().parse<TileModel>(Gdx.files.internal("client/${identifier.pack}/models/tiles/${identifier.name}.json").readString())
                 ?: return Identifier("engine","default")
             if (direction == UP) {

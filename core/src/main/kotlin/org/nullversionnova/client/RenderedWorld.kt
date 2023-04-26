@@ -8,13 +8,13 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileSet
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 import kotlinx.coroutines.runBlocking
 import org.nullversionnova.client.Client.Companion.getTileTexture
-import org.nullversionnova.common.Direction
-import org.nullversionnova.common.Direction.*
-import org.nullversionnova.common.Global.convertPositionToGlobal
+import org.nullversionnova.common.Axis2
+import org.nullversionnova.common.Direction3
+import org.nullversionnova.common.Direction3.*
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.Server
-import org.nullversionnova.server.cell.WorldCell
+import org.nullversionnova.server.world.WorldCell
 import org.nullversionnova.server.tiles.TileInstance
 
 class RenderedWorld {
@@ -38,7 +38,7 @@ class RenderedWorld {
         val allTiles = mutableMapOf<Identifier,Cell>()
         for (i in layers) {
             val vector = i.location
-            val camera = convertPositionToGlobal(cameraCellCoordinates)
+            val camera = cameraCellCoordinates.toGlobal()
             var x = when (direction) {
                 NORTH, SOUTH, UP, DOWN -> vector.x - camera.x + WorldCell.CELL_SIZE
                 EAST, WEST -> vector.y - camera.y + WorldCell.CELL_SIZE
@@ -63,10 +63,10 @@ class RenderedWorld {
     }
     private fun getLayers(server: Server, depth: Int) : MutableSet<TileInstance> {
         val layers = mutableSetOf<TileInstance>()
-        val scan = convertPositionToGlobal(cameraCellCoordinates).getNewWithSetAxis(depth,direction.axis())
+        val scan = cameraCellCoordinates.toGlobal().getNewWithSetAxis(depth,direction.axis())
         for (i in -WorldCell.CELL_SIZE until WorldCell.CELL_SIZE * 2) {
             for (j in -WorldCell.CELL_SIZE until WorldCell.CELL_SIZE * 2) {
-                val landing = scan.getNewWithSetAxis(i,direction.axis().getOtherPair().first).getNewWithSetAxis(j,direction.axis().getOtherPair().second)
+                val landing = scan.getNewWithSetAxis(i,direction.perpendicularAxis(Axis2.X)).getNewWithSetAxis(j,direction.perpendicularAxis(Axis2.Y))
                 server[landing]?.let { layers.add(it) }
             }
         }
@@ -128,7 +128,7 @@ class RenderedWorld {
     // Companions
     companion object {
         const val renderDistance = 32
-        fun depthDirection(depth: Int, direction: Direction, increase: Int) : Int {
+        fun depthDirection(depth: Int, direction: Direction3, increase: Int) : Int {
             return depth + if (direction.polarity()) {
                 increase
             } else {

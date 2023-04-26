@@ -1,13 +1,25 @@
 package org.nullversionnova.common
 
-enum class Direction {
+enum class Direction3 {
     NORTH, SOUTH, EAST, WEST, UP, DOWN;
-    fun axis() : Axis {
+    fun axis() : Axis3 {
         return when (this) {
-            NORTH, SOUTH -> Axis.Y
-            EAST, WEST -> Axis.X
-            UP, DOWN -> Axis.Z
+            NORTH, SOUTH -> Axis3.Y
+            EAST, WEST -> Axis3.X
+            UP, DOWN -> Axis3.Z
         }
+    }
+    fun getOtherAxes() : Pair<Axis3,Axis3> {
+        return axis().getOtherPair()
+    }
+    fun perpendicularAxis(axis: Axis2) : Axis3 {
+        return axis().perpendicular(axis)
+    }
+    fun perpendicular(direction: Direction2) : Direction3 {
+        return axis().perpendicular(direction.axis()).direction(!direction.polarity().xor(polarity()))
+    }
+    fun perpendicular(direction: Direction3) : Direction2? {
+        return axis().perpendicular(direction.axis())?.direction(!direction.polarity().xor(polarity()))
     }
     fun polarity() : Boolean {
         return when (this) {
@@ -21,7 +33,7 @@ enum class Direction {
             SOUTH, WEST, UP -> false
         }
     }
-    fun clockwise() : Direction {
+    fun clockwise() : Direction3 {
         return when (this) {
             NORTH -> EAST
             EAST -> SOUTH
@@ -31,7 +43,7 @@ enum class Direction {
             DOWN -> DOWN
         }
     }
-    fun counterClockwise() : Direction {
+    fun counterClockwise() : Direction3 {
         return when (this) {
             NORTH -> WEST
             EAST -> NORTH
@@ -42,7 +54,7 @@ enum class Direction {
         }
     }
     fun isVertical() : Boolean {
-        return this.axis() == Axis.Z
+        return this.axis() == Axis3.Z
     }
 
 }

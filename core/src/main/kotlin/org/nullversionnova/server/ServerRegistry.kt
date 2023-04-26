@@ -69,12 +69,10 @@ class ServerRegistry {
             materials[material]!!.staticCopy()
         }
     }
-    fun instanceTile(tile: Identifier, location: IntVector3) : TileInstance? {
-        if (!tiles.containsKey(tile)) { return null }
+    fun instanceTile(tile: Identifier, location: IntVector3, server: Server) : TileInstance {
+        if (!tiles.containsKey(tile)) { throw InvalidIdentifierException() }
         val instance = TileInstance(tile,location)
-        for (i in tiles[tile]!!.defaultValues.keys) {
-            instance[i] = tiles[tile]!!.defaultValues[i]!!
-        }
+        accessTile(instance.identifier).place(instance, server)
         return instance
     }
 
@@ -90,4 +88,7 @@ class ServerRegistry {
     fun addMaterial(pack: String, name: String) { addMaterial(Identifier(pack,name)) }
     fun accessTile(pack: String, name: String) : Tile { return accessTile(Identifier(pack,name)) }
     fun getMaterial(material: String) : InheritingProperties<Number> { return getMaterial(Identifier(material)) }
+    fun instanceTile(tile: String, location: IntVector3, server: Server) : TileInstance {
+        return instanceTile(Identifier(tile),location,server)
+    }
 }

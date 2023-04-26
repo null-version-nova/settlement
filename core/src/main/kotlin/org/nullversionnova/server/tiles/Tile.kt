@@ -2,6 +2,7 @@ package org.nullversionnova.server.tiles
 
 import org.nullversionnova.common.Identifier
 import org.nullversionnova.server.ServerRegistry
+import org.nullversionnova.server.Server
 import org.nullversionnova.server.GameObject
 
 open class Tile(var material: Identifier = Identifier(), override var identifier: Identifier = Identifier()) :
@@ -19,6 +20,13 @@ open class Tile(var material: Identifier = Identifier(), override var identifier
     open val maximumValues = mutableMapOf<Identifier,Number>(
         // Pair(property, Maximum), Pair(otherProperty, otherMaximum)
     )
+
+    // Methods
+    open fun place(tile: TileInstance, server: Server) {
+        for (i in defaultValues.keys) {
+            tile[i] = defaultValues[i]!!
+        }
+    }
 
     // Setters
     fun material(newMaterial: Identifier) : Tile {
