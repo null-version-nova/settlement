@@ -14,7 +14,7 @@ class Generator {
                     SimplexNoise.noise(
                     (i.toDouble() + cell.location.x * WorldCell.CELL_SIZE) / H_SCALE,
                     (j.toDouble() + cell.location.y * WorldCell.CELL_SIZE) / H_SCALE
-                ) / V_SCALE * WorldCell.CELL_SIZE).toInt() + WorldCell.CELL_SIZE * cell.location.z
+                ) / V_SCALE * WorldCell.CELL_SIZE).toInt() - WorldCell.CELL_SIZE * cell.location.z
             }
         }
         for (i in 0 until WorldCell.CELL_SIZE) {

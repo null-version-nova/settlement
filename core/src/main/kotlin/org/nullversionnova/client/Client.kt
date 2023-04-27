@@ -10,6 +10,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
 import com.beust.klaxon.Klaxon
+import org.nullversionnova.client.settlement.SettlementClient
 import org.nullversionnova.common.Axis3
 import org.nullversionnova.common.Direction3
 import org.nullversionnova.common.Direction3.*
@@ -45,7 +46,8 @@ class Client : ApplicationListener, InputProcessor {
         w = Gdx.graphics.width
         h = Gdx.graphics.height
         registry.initialize()
-        server.loadPacks()
+        SettlementClient.loadAssets(registry)
+        server.initialize()
         loadedCellAddresses = getLoadedCellsNearCamera()
         world.initialize(registry)
         batch = SpriteBatch()
@@ -211,7 +213,10 @@ class Client : ApplicationListener, InputProcessor {
             'a' -> camera.translate(-0.5f,0f)
             's' -> camera.translate(0f,-0.5f)
             'd' -> camera.translate(0.5f,0f)
-            'm' -> registry.isTexture(Identifier("settlement:grass_side"))
+            'm' -> {
+                registry.getTexture("settlement:grass_side")
+                registry.isTexture(Identifier("settlement:grass_side"))
+            }
             else -> return false
         }
         return true

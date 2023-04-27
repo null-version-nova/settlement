@@ -42,7 +42,7 @@ data class IntVector3(var x: Int = 0, var y: Int = 0, var z: Int = 0) {
             z * WorldCell.CELL_SIZE + local.z
         )
     }
-    fun toGlobal(localX: Number, localY: Number, localZ: Number) : IntVector3 { return IntVector3(localX,localY,localZ) }
+    fun toGlobal(localX: Number, localY: Number, localZ: Number) : IntVector3 { return toGlobal(IntVector3(localX,localY,localZ)) }
     fun toLocal() : IntVector3 {
         return IntVector3(
             x - toCell().toGlobal().x,

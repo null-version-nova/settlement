@@ -13,7 +13,7 @@ class Server {
     val registry = ServerRegistry()
 
     // Methods
-    fun loadPacks() {
+    fun initialize() {
         Engine.load(registry)
         Settlement.load(registry)
     }

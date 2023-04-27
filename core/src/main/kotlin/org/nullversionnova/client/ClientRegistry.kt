@@ -44,18 +44,16 @@ class ClientRegistry {
 
     // Retrieving
     fun getTexture(identifier: Identifier) : Texture {
-        return if (!textureSet.contains(identifier)) {
+        return try {
+            textureSet[identifier]!!
+        } catch (e: Exception) {
             loadTexture(identifier)
-            if (!textureSet.contains(identifier)) {
-                if (textureSet[Identifier()] == null) {
-                    throw Exception("Imminent stack overflow. Offending identifier $identifier. texture set has ${textureSet.keys.size} elements.")
-                }
-                getTexture(Identifier())
-            } else {
+            try {
                 textureSet[identifier]!!
+            } catch (e: Exception) {
+                textureSet[Identifier()]!!
             }
         }
-        else { textureSet[identifier]!! }
     }
     fun isTexture(identifier: Identifier) {
         println("Texture selected for test: $identifier")
@@ -66,4 +64,12 @@ class ClientRegistry {
 
     // Getting
     fun getTextureSet() : Set<Identifier> { return textureSet.keys }
+
+    // Alternative Calls
+    fun getTexture(identifier: String) : Texture {
+        return getTexture(Identifier(identifier))
+    }
+    fun isTexture(identifier: String) {
+        isTexture(Identifier(identifier))
+    }
 }
