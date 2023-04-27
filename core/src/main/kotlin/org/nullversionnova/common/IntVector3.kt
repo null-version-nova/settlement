@@ -3,7 +3,8 @@ package org.nullversionnova.common
 import com.badlogic.gdx.math.Vector3
 import org.nullversionnova.server.world.WorldCell
 
-data class IntVector3(var x: Int = 0, var y: Int = 0, var z: Int = 0) {
+data class IntVector3(var x: Int, var y: Int, var z: Int) {
+    constructor() : this(0,0,0)
     constructor(xf : Number, yf: Number, zf : Number) : this(xf.toInt(),yf.toInt(),zf.toInt())
     constructor(vector: Vector3) : this(vector.x,vector.y,vector.z)
     fun toVector3() : Vector3 {
@@ -50,5 +51,4 @@ data class IntVector3(var x: Int = 0, var y: Int = 0, var z: Int = 0) {
             z - toCell().toGlobal().z
         )
     }
-    fun reflectAcrossCell(axis: Axis3) { setAxis(WorldCell.CELL_SIZE - getAxis(axis),axis) }
 }
