@@ -21,13 +21,11 @@ data class IntVector3(var x: Int, var y: Int, var z: Int) {
         y += other.y
         z += other.z
     }
-    operator fun minus(vector: IntVector3) : IntVector3 {
-        return IntVector3(x - vector.x, y - vector.y, z - vector.z)
+    operator fun minus(other: IntVector3) : IntVector3 {
+        return this + -other
     }
     operator fun minusAssign(other: IntVector3) {
-        x -= other.x
-        y -= other.y
-        z -= other.z
+        this += -other
     }
     operator fun times(other: Number) : IntVector3 {
         return IntVector3(x * other.toInt(), y * other.toInt(), z * other.toInt())
@@ -44,6 +42,9 @@ data class IntVector3(var x: Int, var y: Int, var z: Int) {
         x /= other.toInt()
         y /= other.toInt()
         z /= other.toInt()
+    }
+    operator fun unaryMinus() : IntVector3 {
+        return IntVector3(-x,-y,-z)
     }
 
     // Functions
@@ -79,4 +80,9 @@ data class IntVector3(var x: Int, var y: Int, var z: Int) {
     fun toGlobal(local: IntVector3 = IntVector3()) : IntVector3 { return this * WorldCell.CELL_SIZE - local }
     fun toGlobal(localX: Number, localY: Number, localZ: Number) : IntVector3 { return toGlobal(IntVector3(localX,localY,localZ)) }
     fun toLocal() : IntVector3 { return this - toCell().toGlobal() }
+
+    companion object {
+        val UNIT = IntVector3(1,0,0)
+        val ZERO = IntVector3()
+    }
 }
