@@ -11,11 +11,8 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
 import com.beust.klaxon.Klaxon
 import org.nullversionnova.client.settlement.SettlementClient
-import org.nullversionnova.common.Axis3
-import org.nullversionnova.common.Direction3
+import org.nullversionnova.common.*
 import org.nullversionnova.common.Direction3.*
-import org.nullversionnova.common.Identifier
-import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.Server
 import org.nullversionnova.server.world.WorldCell
 
@@ -361,7 +358,7 @@ class Client : ApplicationListener, InputProcessor {
         var isChange = false
         if (camera.position.x < WorldCell.CELL_SIZE) {
             camera.position.x += WorldCell.CELL_SIZE
-            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates.getAxis(world.direction.getOtherAxes().first) - increaseX,world.direction.getOtherAxes().first)
+            world.cameraCellCoordinates.setAxis(world.cameraCellCoordinates[world.direction.perpendicularAxis(Axis2.X)] - increaseX,world.direction.getOtherAxes().first)
             isChange = true
         } else if (camera.position.x >= WorldCell.CELL_SIZE * 2) {
             camera.position.x -= WorldCell.CELL_SIZE

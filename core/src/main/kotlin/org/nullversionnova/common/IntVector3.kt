@@ -44,7 +44,7 @@ data class IntVector3(var x: Int, var y: Int, var z: Int) {
         z /= other.toInt()
     }
     operator fun unaryMinus() : IntVector3 {
-        return IntVector3(-x,-y,-z)
+        return this * -1
     }
 
     // Functions
@@ -52,6 +52,13 @@ data class IntVector3(var x: Int, var y: Int, var z: Int) {
         return Vector3(x.toFloat(),y.toFloat(),z.toFloat())
     }
     fun getAxis(axis: Axis3) : Int {
+        return when (axis) {
+            Axis3.X -> x
+            Axis3.Y -> y
+            Axis3.Z -> z
+        }
+    }
+    operator fun get(axis: Axis3) : Int {
         return when (axis) {
             Axis3.X -> x
             Axis3.Y -> y
