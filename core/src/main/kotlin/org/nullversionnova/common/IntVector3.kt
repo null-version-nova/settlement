@@ -86,7 +86,7 @@ data class IntVector3(var x: Int, var y: Int, var z: Int) {
     }
     fun toGlobal(local: IntVector3 = IntVector3()) : IntVector3 { return this * WorldCell.CELL_SIZE - local }
     fun toGlobal(localX: Number, localY: Number, localZ: Number) : IntVector3 { return toGlobal(IntVector3(localX,localY,localZ)) }
-    fun toLocal() : IntVector3 { return this - toCell().toGlobal() }
+    fun toLocal() : IntVector3 { return IntVector3(x.mod(WorldCell.CELL_SIZE),y.mod(WorldCell.CELL_SIZE),z.mod(WorldCell.CELL_SIZE)) }
 
     companion object {
         val UNIT = IntVector3(1,0,0)
