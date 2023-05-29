@@ -27,8 +27,9 @@ class RenderedWorld {
     // Members
     private val textureIds = mutableMapOf<Identifier,Int>()
     private val tileSet = TiledMapTileSet()
+    private val cullingMemory = Array(WorldCell.CELL_SIZE) { _ -> Array(WorldCell.CELL_SIZE) { _ -> false } }
     var direction = DOWN
-    var depth = 0
+    var depth = 32
 
     // Methods
     private fun getTileLayer(map: TiledMap, layers : MutableSet<TileInstance>) : TiledMapTileLayer {
@@ -36,8 +37,8 @@ class RenderedWorld {
         val allTiles = mutableMapOf<Identifier,Cell>()
         for (i in layers) {
             val vector = i.location
-            val x = vector.x + WorldCell.CELL_SIZE / 2
-            val y = vector.y + WorldCell.CELL_SIZE / 2
+            val x = vector.x
+            val y = vector.y
             if (!allTiles.keys.contains(i.getTexture())) {
                 allTiles[i.getTexture()] = Cell().setTile(textureIds[getTileTexture(direction,i.getTexture())]?.let { map.tileSets.getTile(it) })
             }
@@ -48,9 +49,23 @@ class RenderedWorld {
     }
     private fun getLayer(server: Server, depth: Int) : MutableSet<TileInstance> {
         val layers = mutableSetOf<TileInstance>()
-        for (i in -128 until 127) {
-            for (j in -128 until 127) {
-                layers.add(server.loadedCell[IntVector3(i,j,depth)])
+        for (i in 0 until WorldCell.CELL_SIZE) {
+            for (j in 0 until WorldCell.CELL_SIZE) {
+                server.loadedCell[IntVector3(i,j,depth)]?.let { layers.add(it) }
+            }
+        }
+        return layers
+    }
+    private fun layerCast(server: Server, depth: Int) : MutableSet<TileInstance> {
+        val layers = mutableSetOf<TileInstance>()
+        for (i in 0 until WorldCell.CELL_SIZE) {
+            for (j in 0 until WorldCell.CELL_SIZE) {
+                if (!cullingMemory[i][j]) {
+                    server.loadedCell[IntVector3(i,j,depth)]?.let {
+                        layers.add(it)
+                        cullingMemory[i][j] = true
+                    }
+                }
             }
         }
         return layers
@@ -105,6 +120,18 @@ class RenderedWorld {
         }
         runBlocking { map.layers.add(getTileLayer(map, getLayer(server, depth))) }
         oldMap.dispose()
+        return map
+    }
+    fun renderCast(server: Server, oldMap: TiledMap? = null) : TiledMap {
+        val map = TiledMap()
+        oldMap?.dispose()
+        map.tileSets.addTileSet(tileSet)
+        for (i in 0 until renderDistance) {
+            map.layers.add(getTileLayer(map,layerCast(server,depth - i)))
+        }
+        for (i in cullingMemory) {
+            i.fill(false)
+        }
         return map
     }
 

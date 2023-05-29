@@ -20,6 +20,8 @@ open class Tile(var material: Identifier = Identifier(), override var identifier
     open val maximumValues = mutableMapOf<Identifier,Number>(
         // Pair(property, Maximum), Pair(otherProperty, otherMaximum)
     )
+    private val addedProperties = mutableSetOf<Identifier>()
+    private val removedProperties = mutableSetOf<Identifier>()
 
     // Methods
     open fun place(tile: TileInstance, server: Server) {
@@ -33,7 +35,17 @@ open class Tile(var material: Identifier = Identifier(), override var identifier
         material = newMaterial
         return this
     }
-    fun addProperty(property: Identifier, default: Number, max: Number? = null, min: Number? = null) : Tile {
+    fun addProperty(property: Identifier) : Tile {
+        addedProperties.add(property)
+        removedProperties.remove(property)
+        return this
+    }
+    fun removeProperty(property: Identifier) : Tile {
+        removedProperties.add(property)
+        addedProperties.remove(property)
+        return this
+    }
+    fun addValueProperty(property: Identifier, default: Number, max: Number? = null, min: Number? = null) : Tile {
         defaultValues[property] = default
         if (max != null) { maximumValues[property] = max }
         if (min != null) { minimumValues[property] = min }
@@ -45,6 +57,12 @@ open class Tile(var material: Identifier = Identifier(), override var identifier
         return registry.getMaterialValue(material,value)
     }
     fun checkProperty(property: Identifier, registry: ServerRegistry) : Boolean {
-        return registry.isMaterial(material,property)
+        return if (addedProperties.contains(property)) {
+            true
+        } else if (removedProperties.contains(property)) {
+            false
+        } else {
+            registry.isMaterial(material,property)
+        }
     }
 }

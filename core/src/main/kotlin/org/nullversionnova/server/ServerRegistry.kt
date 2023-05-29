@@ -11,6 +11,7 @@ import org.nullversionnova.common.properties.InheritingProperties
 import org.nullversionnova.server.tiles.EngineTiles.NULL_TILE
 import org.nullversionnova.server.tiles.Tile
 import org.nullversionnova.server.tiles.TileInstance
+import org.nullversionnova.server.world.WorldCell
 
 class ServerRegistry {
     // Members
@@ -71,6 +72,12 @@ class ServerRegistry {
     }
     fun instanceTile(tile: Identifier, location: IntVector3, server: Server) : TileInstance {
         if (!tiles.containsKey(tile)) { throw InvalidIdentifierException() }
+        if (
+            location.x < 0 || location.x >= WorldCell.CELL_SIZE ||
+            location.y < 0 || location.y >= WorldCell.CELL_SIZE ||
+            location.z < 0 || location.z >= WorldCell.CELL_SIZE) {
+            throw Exception("Out of bounds! Location was $location")
+        }
         val instance = TileInstance(tile,location)
         accessTile(instance.identifier).place(instance, server)
         return instance
@@ -84,6 +91,7 @@ class ServerRegistry {
 
     // Alternative Calls
     fun addTile(pack: String, name: String, properties: Tile) : Tile { return addTile(Identifier(pack,name),properties) }
+    fun addTile(identifier: String, properties: Tile) : Tile { return addTile(Identifier(identifier),properties) }
     fun addValueProperty(pack: String, name: String, default: Number) { addValueProperty(Identifier(pack,name),default) }
     fun addMaterial(pack: String, name: String) { addMaterial(Identifier(pack,name)) }
     fun accessTile(pack: String, name: String) : Tile { return accessTile(Identifier(pack,name)) }

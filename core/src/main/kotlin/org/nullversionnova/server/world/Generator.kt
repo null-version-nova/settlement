@@ -23,13 +23,13 @@ class Generator {
                     cell[IntVector3(i,j,k)] = server.registry.instanceTile("settlement:rock",cell.location.toGlobal(i,j,k),server)
                 }
                 for (k in heightmap[IntVector2(i,j)]!! - SOIL_DEPTH until heightmap[IntVector2(i,j)]!!) {
-                    cell[IntVector3(i,j,k)] = server.registry.instanceTile("settlement:sand",cell.location.toGlobal(i,j,k),server)
+                    cell[IntVector3(i,j,k)] = server.registry.instanceTile("settlement:dirt",cell.location.toGlobal(i,j,k),server)
                 }
             }
         }
     }
     companion object {
-        const val H_SCALE : Double = 50.0
+        const val H_SCALE : Double = 200.0
         const val V_SCALE : Double = 5.0
         const val SOIL_DEPTH : Int = 3
     }

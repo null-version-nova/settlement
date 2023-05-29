@@ -1,7 +1,6 @@
 package org.nullversionnova.server.world
 
 import org.nullversionnova.SimplexNoise
-import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector2
 import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.Server
@@ -23,16 +22,29 @@ class WorldCell {
                     SimplexNoise.noise(
                         (i.toDouble() + location.x * CELL_SIZE) / Generator.H_SCALE,
                         (j.toDouble() + location.y * CELL_SIZE) / Generator.H_SCALE
-                    ) / Generator.V_SCALE * CELL_SIZE).toInt() - CELL_SIZE * location.z
+                    ) / Generator.V_SCALE * CELL_SIZE).toInt() - CELL_SIZE * location.z + 128
             }
         }
         for (i in 0 until CELL_SIZE) {
             for (j in 0 until CELL_SIZE) {
                 for (k in 0 until heightmap[IntVector2(i,j)]!! - Generator.SOIL_DEPTH) {
-                    this[IntVector3(i,j,k)] = server.registry.instanceTile("settlement:rock",location.toGlobal(i,j,k),server)
+                    try { this[IntVector3(i,j,k)] = server.registry.instanceTile("settlement:rock", IntVector3(i,j,k),server) }
+                    catch (e: Exception) {
+                        println(e)
+                    }
                 }
                 for (k in heightmap[IntVector2(i,j)]!! - Generator.SOIL_DEPTH until heightmap[IntVector2(i,j)]!!) {
-                    this[IntVector3(i,j,k)] = server.registry.instanceTile("settlement:sand",location.toGlobal(i,j,k),server)
+                    try { this[IntVector3(i,j,k)] = server.registry.instanceTile("settlement:dirt",
+                        IntVector3(i,j,k),server) }
+                    catch (e: Exception) {
+                        println(e)
+                    }
+                }
+                try {
+                    this[IntVector3(i,j,heightmap[IntVector2(i,j)]!!)] = server.registry.instanceTile("settlement:grass",IntVector3(i,j,heightmap[IntVector2(i,j)]!!),server)
+                }
+                catch (e: Exception) {
+                    println(e)
                 }
             }
         }
@@ -49,12 +61,8 @@ class WorldCell {
             }
         }
     }
-    operator fun get(location: IntVector3): TileInstance {
-        return try {
-            tileMap[location]!!
-        } catch (e: Exception) {
-            TileInstance(Identifier(),location)
-        }
+    operator fun get(location: IntVector3): TileInstance? {
+        return tileMap[location]
     }
     operator fun set(location: IntVector3, tile: TileInstance) { tileMap[location] = tile }
 

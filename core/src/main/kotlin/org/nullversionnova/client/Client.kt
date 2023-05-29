@@ -80,7 +80,7 @@ class Client : ApplicationListener, InputProcessor {
         }
 
         // Game Processing
-        server.tick()
+//        server.tick()
     }
 
     override fun pause() {
@@ -211,7 +211,7 @@ class Client : ApplicationListener, InputProcessor {
     companion object {
         const val scale = 8
         const val PARALLAX = 0.00f
-        const val MAX_ZOOM = 1.2f
+        const val MAX_ZOOM = 5f
         fun getTileTexture(direction: Direction3, identifier: Identifier): Identifier {
             return try {
                 val data = Klaxon().parse<TileModel>(Gdx.files.internal("client/${identifier.pack}/models/tiles/${identifier.name}.json").readString())
