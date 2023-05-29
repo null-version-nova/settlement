@@ -12,8 +12,7 @@ import org.nullversionnova.server.tiles.TileInstance
 class WorldCell {
     // Members
     private val tileMap = mutableMapOf<IntVector3, TileInstance>()
-    private val tickableSet = mutableSetOf<IntVector3>()
-    private var loaded = false
+    private val tickableSet = mutableListOf<IntVector3>()
     var location = IntVector3()
 
     // Methods
@@ -40,10 +39,6 @@ class WorldCell {
             }
         }
     }
-    fun unload() {
-        loaded = false
-        tileMap.clear()
-    }
     fun placeTile(identifier: Identifier, location: IntVector3, server: Server) {
         try {
             tileMap[location] = server.registry.instanceTile(identifier,location,server)
@@ -56,12 +51,11 @@ class WorldCell {
             println("Error: Tried to place $identifier at $location, which is out of bounds")
         }
     }
-    fun tick(server: Server) {
-        for (i in tickableSet) {
-            val tile = server.registry.accessTile(tileMap[i]!!.identifier)
-            if (tile is TickableTile) {
-                tile.tick(i,server)
-            }
+    fun tick(server: Server,tickIndex: Int) {
+        location = tickableSet[tickIndex]
+        val tile = server.registry.accessTile(tileMap[location]!!.identifier)
+        if (tile is TickableTile) {
+            tile.tick(location,server)
         }
     }
     operator fun get(location: IntVector3): TileInstance? {

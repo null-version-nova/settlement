@@ -24,7 +24,6 @@ class Client : ApplicationListener, InputProcessor {
     private val camera = OrthographicCamera()
     private lateinit var renderer : OrthogonalTiledMapRenderer
     private lateinit var batch : SpriteBatch
-    private var buffer = 0
     private var w = 0
     private var h = 0
     private var zoom : Float = 1f
@@ -34,8 +33,6 @@ class Client : ApplicationListener, InputProcessor {
     private val current = Vector3()
     private val last = Vector3(-1f,-1f,-1f)
     private val delta = Vector3()
-
-    private var loadedCellAddresses = mutableSetOf<IntVector3>()
 
     // Application
     override fun create() {
@@ -88,7 +85,7 @@ class Client : ApplicationListener, InputProcessor {
         }
 
         // Game Processing
-//        server.tick()
+        server.tick()
     }
 
     override fun pause() {
@@ -210,8 +207,9 @@ class Client : ApplicationListener, InputProcessor {
     private fun resetMapViaDepth(polarity: Boolean) {
         if (polarity) {
             renderer.map = world.advanceDepth(server,renderer.map)
-                    scanLine = 0
             world.resetCull()
+            renderer.map = world.renderCastOver(0,server,renderer.map)
+            scanLine = 1
         } else {
             renderer.map = world.recedeDepth(server,renderer.map)
             renderer.map = world.renderCastOver(1,server,renderer.map)
