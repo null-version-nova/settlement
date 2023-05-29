@@ -29,7 +29,7 @@ class RenderedWorld {
     private val tileSet = TiledMapTileSet()
     private val cullingMemory = Array(WorldCell.CELL_SIZE) { _ -> Array(WorldCell.CELL_SIZE) { _ -> false } }
     var direction = DOWN
-    var depth = 32
+    var depth = 128
 
     // Methods
     private fun getTileLayer(map: TiledMap, layers : MutableSet<TileInstance>) : TiledMapTileLayer {
@@ -58,6 +58,9 @@ class RenderedWorld {
     }
     private fun layerCast(server: Server, depth: Int) : MutableSet<TileInstance> {
         val layers = mutableSetOf<TileInstance>()
+        if (depth < 0) {
+            return layers
+        }
         for (i in 0 until WorldCell.CELL_SIZE) {
             for (j in 0 until WorldCell.CELL_SIZE) {
                 if (!cullingMemory[i][j]) {
@@ -105,7 +108,6 @@ class RenderedWorld {
     fun advanceDepth(server: Server, oldMap: TiledMap) : TiledMap {
         val map = TiledMap()
         map.tileSets.addTileSet(tileSet)
-        runBlocking { map.layers.add(getTileLayer(map, getLayer(server, depthDirection(depth, direction, oldMap.layers.count)))) }
         for (i in 0 until oldMap.layers.count - 1) {
             map.layers.add(oldMap.layers[i])
         }
@@ -118,7 +120,8 @@ class RenderedWorld {
         for (i in 1 until oldMap.layers.count) {
             map.layers.add(oldMap.layers[i])
         }
-        runBlocking { map.layers.add(getTileLayer(map, getLayer(server, depth))) }
+        resetCull()
+        runBlocking { map.layers.add(getTileLayer(map, layerCast(server, depth))) }
         oldMap.dispose()
         return map
     }
@@ -129,15 +132,46 @@ class RenderedWorld {
         for (i in 0 until renderDistance) {
             map.layers.add(getTileLayer(map,layerCast(server,depth - i)))
         }
+        resetCull()
+        return map
+    }
+    fun renderCastOver(depth: Int, server: Server, oldMap: TiledMap? = null) : TiledMap {
+        if (oldMap == null) { resetMap(server) }
+        val map = TiledMap()
+        map.tileSets.addTileSet(tileSet)
+        for (i in 0 until oldMap!!.layers.count) {
+            if (oldMap.layers.count - i - 1 == depth) {
+                map.layers.add(getTileLayer(map,layerCast(server, depthDirection(this.depth, direction, depth))))
+            } else {
+                map.layers.add(oldMap.layers[i])
+            }
+        }
+        oldMap.dispose()
+        return map
+    }
+    fun renderCastMore(server: Server, oldMap: TiledMap? = null) : TiledMap {
+        if (oldMap == null) { resetMap(server) }
+        val map = TiledMap()
+        map.tileSets.addTileSet(tileSet)
+        runBlocking { map.layers.add(getTileLayer(map, layerCast(server, depthDirection(depth, direction, oldMap!!.layers.count)))) }
+        for (i in 0 until oldMap!!.layers.count) {
+            map.layers.add(oldMap.layers[i])
+        }
+        oldMap.dispose()
+        if (map.layers.count == renderDistance) {
+            resetCull()
+        }
+        return map
+    }
+    fun resetCull() {
         for (i in cullingMemory) {
             i.fill(false)
         }
-        return map
     }
 
     // Companions
     companion object {
-        const val renderDistance = 32
+        const val renderDistance = 256
         fun depthDirection(depth: Int, direction: Direction3, increase: Int) : Int {
             return depth + if (direction.polarity()) {
                 increase

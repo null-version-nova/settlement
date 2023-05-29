@@ -14,6 +14,7 @@ import org.nullversionnova.client.settlement.SettlementClient
 import org.nullversionnova.common.*
 import org.nullversionnova.common.Direction3.*
 import org.nullversionnova.server.Server
+import org.nullversionnova.server.world.WorldCell
 
 class Client : ApplicationListener, InputProcessor {
     // Members
@@ -48,7 +49,7 @@ class Client : ApplicationListener, InputProcessor {
         world.initialize(registry)
         batch = SpriteBatch()
         camera.setToOrtho(false, 30f, 30f)
-        renderer = OrthogonalTiledMapRenderer(world.resetMap(server), (1f / scale.toFloat()))
+        renderer = OrthogonalTiledMapRenderer(world.renderCast(server), (1f / scale.toFloat()))
         camera.position.set(0f,0f,0f)
     }
 
@@ -62,7 +63,13 @@ class Client : ApplicationListener, InputProcessor {
         // Rendering
         if (reloadNecessary) { resetMap() }
         if (renderer.map.layers.count < RenderedWorld.renderDistance) {
-            renderer.map = world.renderMore(server,renderer.map)
+            renderer.map = world.renderCastMore(server,renderer.map)
+        }
+        else if (scanLine < renderer.map.layers.count) {
+            renderer.map = world.renderCastOver(scanLine,server,renderer.map)
+            scanLine++
+        } else {
+            world.resetCull()
         }
 
         // Display
@@ -72,6 +79,7 @@ class Client : ApplicationListener, InputProcessor {
         for (i in 0 until renderer.map.layers.count) {
             renderer.setView(camera)
             batch.begin()
+            batch.draw(registry.getTexture(Identifier("engine:fog")),0f,0f,w.toFloat(),h.toFloat())
             batch.draw(registry.getTexture(Identifier("engine:fog")),0f,0f,w.toFloat(),h.toFloat())
             batch.end()
             renderer.render(intArrayOf(i))
@@ -98,12 +106,16 @@ class Client : ApplicationListener, InputProcessor {
     override fun keyDown(keycode: Int): Boolean {
         when (keycode) {
             Input.Keys.PAGE_DOWN -> {
-                world.depth = RenderedWorld.depthDirection(world.depth, world.direction, -1)
-                resetMapViaDepth(false)
+                if (world.depth < WorldCell.CELL_SIZE) {
+                    world.depth++
+                    resetMapViaDepth(false)
+                }
             }
             Input.Keys.PAGE_UP -> {
-                world.depth = RenderedWorld.depthDirection(world.depth, world.direction, 1)
-                resetMapViaDepth(true)
+                if (world.depth >= 0) {
+                    world.depth--
+                    resetMapViaDepth(true)
+                }
             }
             else -> return false
         }
@@ -198,12 +210,17 @@ class Client : ApplicationListener, InputProcessor {
     private fun resetMapViaDepth(polarity: Boolean) {
         if (polarity) {
             renderer.map = world.advanceDepth(server,renderer.map)
+                    scanLine = 0
+            world.resetCull()
         } else {
             renderer.map = world.recedeDepth(server,renderer.map)
+            renderer.map = world.renderCastOver(1,server,renderer.map)
+            world.resetCull()
         }
+
     }
     private fun resetMap() {
-        renderer.map = world.resetMap(server,renderer.map)
+        renderer.map = world.renderCast(server,renderer.map)
         reloadNecessary = false
     }
 

@@ -1,8 +1,10 @@
 package org.nullversionnova.server.world
 
 import org.nullversionnova.SimplexNoise
+import org.nullversionnova.common.Identifier
 import org.nullversionnova.common.IntVector2
 import org.nullversionnova.common.IntVector3
+import org.nullversionnova.common.InvalidIdentifierException
 import org.nullversionnova.server.Server
 import org.nullversionnova.server.tiles.TickableTile
 import org.nullversionnova.server.tiles.TileInstance
@@ -10,6 +12,7 @@ import org.nullversionnova.server.tiles.TileInstance
 class WorldCell {
     // Members
     private val tileMap = mutableMapOf<IntVector3, TileInstance>()
+    private val tickableSet = mutableSetOf<IntVector3>()
     private var loaded = false
     var location = IntVector3()
 
@@ -28,24 +31,12 @@ class WorldCell {
         for (i in 0 until CELL_SIZE) {
             for (j in 0 until CELL_SIZE) {
                 for (k in 0 until heightmap[IntVector2(i,j)]!! - Generator.SOIL_DEPTH) {
-                    try { this[IntVector3(i,j,k)] = server.registry.instanceTile("settlement:rock", IntVector3(i,j,k),server) }
-                    catch (e: Exception) {
-                        println(e)
-                    }
+                    placeTile(Identifier("settlement","rock"),IntVector3(i,j,k),server)
                 }
                 for (k in heightmap[IntVector2(i,j)]!! - Generator.SOIL_DEPTH until heightmap[IntVector2(i,j)]!!) {
-                    try { this[IntVector3(i,j,k)] = server.registry.instanceTile("settlement:dirt",
-                        IntVector3(i,j,k),server) }
-                    catch (e: Exception) {
-                        println(e)
-                    }
+                    placeTile(Identifier("settlement","dirt"),IntVector3(i,j,k),server)
                 }
-                try {
-                    this[IntVector3(i,j,heightmap[IntVector2(i,j)]!!)] = server.registry.instanceTile("settlement:grass",IntVector3(i,j,heightmap[IntVector2(i,j)]!!),server)
-                }
-                catch (e: Exception) {
-                    println(e)
-                }
+                placeTile(Identifier("settlement","grass"),IntVector3(i,j,heightmap[IntVector2(i,j)]!!),server)
             }
         }
     }
@@ -53,18 +44,29 @@ class WorldCell {
         loaded = false
         tileMap.clear()
     }
+    fun placeTile(identifier: Identifier, location: IntVector3, server: Server) {
+        try {
+            tileMap[location] = server.registry.instanceTile(identifier,location,server)
+            if (server.registry.accessTile(identifier) is TickableTile) {
+                tickableSet.add(location)
+            }
+        } catch (e: InvalidIdentifierException) {
+            println("Error: Tried to place $identifier at $location, which does not exist")
+        } catch (e: Exception) {
+            println("Error: Tried to place $identifier at $location, which is out of bounds")
+        }
+    }
     fun tick(server: Server) {
-        for (i in tileMap.values) {
-            val tile = server.registry.accessTile(i.identifier)
+        for (i in tickableSet) {
+            val tile = server.registry.accessTile(tileMap[i]!!.identifier)
             if (tile is TickableTile) {
-                tile.tick(i.location,server)
+                tile.tick(i,server)
             }
         }
     }
     operator fun get(location: IntVector3): TileInstance? {
         return tileMap[location]
     }
-    operator fun set(location: IntVector3, tile: TileInstance) { tileMap[location] = tile }
 
     // Companions
     companion object {
