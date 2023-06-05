@@ -6,7 +6,7 @@ import org.nullversionnova.server.ServerRegistry
 object EngineTiles {
     // Tiles
     val NULL_TILE = Tile()
-    val AIR = Tile().addProperty(Identifier("engine","transparent"))
+    val AIR = Tile().addProperty(Identifier("engine","transparent")).addProperty(Identifier("engine","intangible"))
 
     // Functions
     fun registerTiles(registry: ServerRegistry) {

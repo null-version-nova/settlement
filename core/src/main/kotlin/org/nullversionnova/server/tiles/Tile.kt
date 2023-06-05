@@ -20,13 +20,15 @@ open class Tile(var material: Identifier = Identifier(), override var identifier
     open val maximumValues = mutableMapOf<Identifier,Number>(
         // Pair(property, Maximum), Pair(otherProperty, otherMaximum)
     )
-    private val addedProperties = mutableSetOf<Identifier>()
-    private val removedProperties = mutableSetOf<Identifier>()
+    private val properties = mutableSetOf<Identifier>()
 
     // Methods
     open fun place(tile: TileInstance, server: Server) {
         for (i in defaultValues.keys) {
             tile[i] = defaultValues[i]!!
+        }
+        if (checkTileProperty(Identifier("engine","always_floor"))) {
+            tile.isFloor = true
         }
     }
 
@@ -36,13 +38,11 @@ open class Tile(var material: Identifier = Identifier(), override var identifier
         return this
     }
     fun addProperty(property: Identifier) : Tile {
-        addedProperties.add(property)
-        removedProperties.remove(property)
+        properties.add(property)
         return this
     }
     fun removeProperty(property: Identifier) : Tile {
-        removedProperties.add(property)
-        addedProperties.remove(property)
+        properties.remove(property)
         return this
     }
     fun addValueProperty(property: Identifier, default: Number, max: Number? = null, min: Number? = null) : Tile {
@@ -56,13 +56,10 @@ open class Tile(var material: Identifier = Identifier(), override var identifier
     fun checkValue(value: Identifier, registry: ServerRegistry) : Number {
         return registry.getMaterialValue(material,value)
     }
-    fun checkProperty(property: Identifier, registry: ServerRegistry) : Boolean {
-        return if (addedProperties.contains(property)) {
-            true
-        } else if (removedProperties.contains(property)) {
-            false
-        } else {
-            registry.isMaterial(material,property)
-        }
+    fun checkMaterialProperty(property: Identifier, registry: ServerRegistry) : Boolean {
+        return registry.isMaterial(material,property)
+    }
+    fun checkTileProperty(property: Identifier) : Boolean {
+        return properties.contains(property)
     }
 }

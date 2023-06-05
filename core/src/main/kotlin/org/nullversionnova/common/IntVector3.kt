@@ -65,6 +65,13 @@ data class IntVector3(var x: Int, var y: Int, var z: Int) {
             Axis3.Z -> z
         }
     }
+    operator fun set(axis: Axis3, value: Number) {
+        when (axis) {
+            Axis3.X -> x = value.toInt()
+            Axis3.Y -> y = value.toInt()
+            Axis3.Z -> z = value.toInt()
+        }
+    }
     fun setAxis(newValue : Number, axis: Axis3) {
         when (axis) {
             Axis3.X -> x = newValue.toInt()
@@ -87,6 +94,10 @@ data class IntVector3(var x: Int, var y: Int, var z: Int) {
     fun toGlobal(local: IntVector3 = IntVector3()) : IntVector3 { return this * WorldCell.CELL_SIZE - local }
     fun toGlobal(localX: Number, localY: Number, localZ: Number) : IntVector3 { return toGlobal(IntVector3(localX,localY,localZ)) }
     fun toLocal() : IntVector3 { return IntVector3(x.mod(WorldCell.CELL_SIZE),y.mod(WorldCell.CELL_SIZE),z.mod(WorldCell.CELL_SIZE)) }
+    fun outOfBounds() : Boolean {
+        return x < 0 || y < 0 || z < 0 || x >= WorldCell.CELL_SIZE || y >= WorldCell.CELL_SIZE || z >= WorldCell.CELL_SIZE
+    }
+
 
     companion object {
         val UNIT = IntVector3(1,0,0)

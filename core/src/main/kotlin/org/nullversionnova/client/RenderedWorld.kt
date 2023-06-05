@@ -105,7 +105,7 @@ class RenderedWorld {
         oldMap.dispose()
         return map
     }
-    fun advanceDepth(server: Server, oldMap: TiledMap) : TiledMap {
+    fun advanceDepth(oldMap: TiledMap) : TiledMap {
         val map = TiledMap()
         map.tileSets.addTileSet(tileSet)
         for (i in 0 until oldMap.layers.count - 1) {

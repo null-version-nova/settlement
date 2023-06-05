@@ -38,10 +38,12 @@ subprojects {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
     maven { url 'https://jitpack.io' }
+
   }
   dependencies {
     implementation 'com.beust:klaxon:5.5'
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0-Beta")
+    implementation("io.github.libktx:ktx-async:1.11.0-rc5")
   }
 }
 

@@ -1,22 +1,27 @@
 package org.nullversionnova.client
 
-import com.badlogic.gdx.ApplicationListener
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
 import com.beust.klaxon.Klaxon
+import kotlinx.coroutines.launch
+import ktx.app.KtxApplicationAdapter
+import ktx.app.KtxInputAdapter
 import org.nullversionnova.client.settlement.SettlementClient
 import org.nullversionnova.common.*
 import org.nullversionnova.common.Direction3.*
 import org.nullversionnova.server.Server
 import org.nullversionnova.server.world.WorldCell
+import ktx.async.KtxAsync
+import ktx.graphics.use
+import org.nullversionnova.server.entities.Entity
 
-class Client : ApplicationListener, InputProcessor {
+class Client : KtxApplicationAdapter, KtxInputAdapter {
     // Members
     private val world = RenderedWorld()
     private val server = Server()
@@ -27,7 +32,7 @@ class Client : ApplicationListener, InputProcessor {
     private var w = 0
     private var h = 0
     private var zoom : Float = 1f
-    private var reloadNecessary = false
+    private var reloadNecessary = true
     private var scanLine = 0
 
     private val current = Vector3()
@@ -36,17 +41,20 @@ class Client : ApplicationListener, InputProcessor {
 
     // Application
     override fun create() {
+        KtxAsync.initiate()
         Gdx.input.inputProcessor = this
         w = Gdx.graphics.width
         h = Gdx.graphics.height
         registry.initialize()
         SettlementClient.loadAssets(registry)
-        server.initialize()
-        server.loadedCell.generate(server)
-        world.initialize(registry)
+        ScreenUtils.clear(190f / 255f, 205f / 255f, 255f / 255f, 1f)
+        KtxAsync.launch {
+            server.initialize()
+            world.initialize(registry)
+        }
         batch = SpriteBatch()
         camera.setToOrtho(false, 30f, 30f)
-        renderer = OrthogonalTiledMapRenderer(world.renderCast(server), (1f / scale.toFloat()))
+        renderer = OrthogonalTiledMapRenderer(TiledMap(), (1f / scale.toFloat()))
         camera.position.set(0f,0f,0f)
     }
 
@@ -58,34 +66,46 @@ class Client : ApplicationListener, InputProcessor {
 
     override fun render() {
         // Rendering
-        if (reloadNecessary) { resetMap() }
-        if (renderer.map.layers.count < RenderedWorld.renderDistance) {
-            renderer.map = world.renderCastMore(server,renderer.map)
-        }
-        else if (scanLine < renderer.map.layers.count) {
-            renderer.map = world.renderCastOver(scanLine,server,renderer.map)
-            scanLine++
-        } else {
-            world.resetCull()
+        if (server.loadedCell.loaded) {
+            if (reloadNecessary) { resetMap() }
+            if (renderer.map.layers.count < RenderedWorld.renderDistance) {
+                renderer.map = world.renderCastMore(server,renderer.map)
+            }
+            else if (scanLine < renderer.map.layers.count) {
+                renderer.map = world.renderCastOver(scanLine,server,renderer.map)
+                scanLine++
+            } else {
+                world.resetCull()
+            }
         }
 
         // Display
         ScreenUtils.clear(190f / 255f, 205f / 255f, 255f / 255f, 1f)
         camera.zoom = zoom + PARALLAX * renderer.map.layers.count
         camera.update()
+        val entities = grabEntities(server)
         for (i in 0 until renderer.map.layers.count) {
             renderer.setView(camera)
-            batch.begin()
-            batch.draw(registry.getTexture(Identifier("engine:fog")),0f,0f,w.toFloat(),h.toFloat())
-            batch.draw(registry.getTexture(Identifier("engine:fog")),0f,0f,w.toFloat(),h.toFloat())
-            batch.end()
+            batch.use {
+                batch.draw(registry.getTexture(Identifier("engine:fog")),0f,0f,w.toFloat(),h.toFloat())
+                batch.draw(registry.getTexture(Identifier("engine:fog")),0f,0f,w.toFloat(),h.toFloat())
+            }
             renderer.render(intArrayOf(i))
+            batch.use(camera) {
+                try {
+                    for (j in entities[i - (255 - world.depth)]) {
+                        batch.draw(registry.getTexture(j.identifier),j.location.x.toFloat(),j.location.y.toFloat(),1f,1f)
+                    }
+                } catch (_: Exception) {}
+            }
             camera.zoom -= PARALLAX
             camera.update()
         }
 
         // Game Processing
-        server.tick()
+        KtxAsync.launch {
+            server.tick()
+        }
     }
 
     override fun pause() {
@@ -106,12 +126,14 @@ class Client : ApplicationListener, InputProcessor {
                 if (world.depth < WorldCell.CELL_SIZE) {
                     world.depth++
                     resetMapViaDepth(false)
+                    println(world.depth)
                 }
             }
             Input.Keys.PAGE_UP -> {
                 if (world.depth >= 0) {
                     world.depth--
                     resetMapViaDepth(true)
+                    println(world.depth)
                 }
             }
             else -> return false
@@ -130,8 +152,7 @@ class Client : ApplicationListener, InputProcessor {
             's' -> camera.translate(0f,-0.5f)
             'd' -> camera.translate(0.5f,0f)
             'm' -> {
-                registry.getTexture("settlement:grass_side")
-                registry.isTexture(Identifier("settlement:grass_side"))
+                println(renderer.map.layers.count)
             }
             else -> return false
         }
@@ -177,14 +198,14 @@ class Client : ApplicationListener, InputProcessor {
         return true
     }
 
-    override fun touchDragged(x: Int, y: Int, pointer: Int): Boolean {
-        camera.unproject(current.set(x.toFloat(), y.toFloat(), 0f))
+    override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
+        camera.unproject(current.set(screenX.toFloat(), screenY.toFloat(), 0f))
         if (!(last.x == -1f && last.y == -1f && last.z == -1f)) {
             camera.unproject(delta.set(last.x, last.y, 0f))
             delta.sub(current)
             camera.position.add(delta.x, delta.y, 0f)
         }
-        last.set(x.toFloat(), y.toFloat(), 0f)
+        last.set(screenX.toFloat(), screenY.toFloat(), 0f)
         return false
     }
 
@@ -199,6 +220,8 @@ class Client : ApplicationListener, InputProcessor {
         }
         if (zoom > MAX_ZOOM) {
             zoom = MAX_ZOOM
+        } else if (zoom < 0) {
+            zoom = 0f
         }
         return true
     }
@@ -206,7 +229,7 @@ class Client : ApplicationListener, InputProcessor {
     // Auxiliary
     private fun resetMapViaDepth(polarity: Boolean) {
         if (polarity) {
-            renderer.map = world.advanceDepth(server,renderer.map)
+            renderer.map = world.advanceDepth(renderer.map)
             world.resetCull()
             renderer.map = world.renderCastOver(0,server,renderer.map)
             scanLine = 1
@@ -220,6 +243,14 @@ class Client : ApplicationListener, InputProcessor {
     private fun resetMap() {
         renderer.map = world.renderCast(server,renderer.map)
         reloadNecessary = false
+    }
+
+    private fun grabEntities(server: Server) : Array<MutableSet<Entity>> {
+        val array = Array<MutableSet<Entity>>(WorldCell.CELL_SIZE) { _ -> mutableSetOf() }
+        for (i in server.entities) {
+            array[i.location.z].add(i)
+        }
+        return array
     }
 
     // Companions

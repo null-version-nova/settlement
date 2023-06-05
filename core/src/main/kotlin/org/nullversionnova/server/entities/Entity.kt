@@ -1,16 +1,17 @@
 package org.nullversionnova.server.entities
 
-import org.nullversionnova.common.Identifier
+import org.nullversionnova.common.IntVector3
 import org.nullversionnova.server.GameObject
+import org.nullversionnova.server.Server
 
 interface Entity : GameObject {
     // Members
-    override var identifier: Identifier
-    var tickable: Boolean
+    var tickable : Boolean
     var maxHealth : Int
     var health : Int
+    val location : IntVector3
 
     // Methods
-    fun tick()
+    fun tick(server: Server)
     fun die()
 }

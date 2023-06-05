@@ -5,31 +5,20 @@ import org.nullversionnova.common.properties.InheritingProperties
 import org.nullversionnova.common.properties.MutableMappedProperties
 import org.nullversionnova.server.ServerRegistry
 import org.nullversionnova.server.GameObject
+import org.nullversionnova.server.Server
 
 class TileInstance(override var identifier: Identifier, var location : IntVector3) : MutableMappedProperties<Number>(),
     GameObject {
     // Members
     var direction : Direction3? = null
-    private var currentTexture : Identifier? = null
+    var isFloor : Boolean = false
 
-    // Self Returns
-    fun at(location: IntVector3) : TileInstance {
-        this.location = location
-        return this
-    }
-    fun infuse(properties: MutableMappedProperties<Number>) : TileInstance {
-        this.properties.addAll(properties.properties())
-        for (i in properties.values()) { this[i] = properties[i]!! }
-        return this
-    }
     // Getters
-    fun getTexture() : Identifier { return currentTexture ?: identifier }
+    fun getTexture() : Identifier { return identifier }
     fun getTile(registry: ServerRegistry) : Tile { return registry.accessTile(identifier) }
     fun getMaterial(registry: ServerRegistry) : InheritingProperties<Number> { return registry.getMaterial(registry.accessTile(identifier).material) }
 
     // Mutators
-    fun setTexture(texture: Identifier) { currentTexture = if (texture == identifier) { null } else { texture } }
-    fun setTexture(texture: String) { setTexture(Identifier(texture)) }
     fun increment(property: Identifier, registry: ServerRegistry, value: Number = 1) : Number {
         val currentValue = this[property] ?: return 0
         if (currentValue is Double) {
@@ -64,5 +53,16 @@ class TileInstance(override var identifier: Identifier, var location : IntVector
     }
     fun decrement(property: Identifier, registry: ServerRegistry, value: Double = 1.0) : Number {
         return increment(property, registry, value * -1)
+    }
+
+    companion object {
+        fun instanceTile(tile: Identifier, location: IntVector3, server: Server, asFloor: Boolean = false) : TileInstance {
+            if (!server.registry.getTiles().contains(tile)) { throw InvalidIdentifierException() }
+            if (location.outOfBounds()) { throw Exception("Out of bounds! Location was $location") }
+            val instance = TileInstance(tile,location)
+            instance.isFloor = asFloor
+            server.registry.accessTile(instance.identifier).place(instance, server)
+            return instance
+        }
     }
 }

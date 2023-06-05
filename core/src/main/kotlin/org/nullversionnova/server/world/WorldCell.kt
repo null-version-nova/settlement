@@ -8,12 +8,14 @@ import org.nullversionnova.common.InvalidIdentifierException
 import org.nullversionnova.server.Server
 import org.nullversionnova.server.tiles.TickableTile
 import org.nullversionnova.server.tiles.TileInstance
+import org.nullversionnova.server.tiles.TileInstance.Companion.instanceTile
 
 class WorldCell {
     // Members
     private val tileMap = mutableMapOf<IntVector3, TileInstance>()
     private val tickableSet = mutableListOf<IntVector3>()
     var location = IntVector3()
+    var loaded = false
 
     // Methods
     fun generate(server: Server) {
@@ -38,10 +40,11 @@ class WorldCell {
                 placeTile(Identifier("settlement","grass"),IntVector3(i,j,heightmap[IntVector2(i,j)]!!),server)
             }
         }
+        loaded = true
     }
     fun placeTile(identifier: Identifier, location: IntVector3, server: Server) {
         try {
-            tileMap[location] = server.registry.instanceTile(identifier,location,server)
+            tileMap[location] = instanceTile(identifier,location,server)
             if (server.registry.accessTile(identifier) is TickableTile) {
                 tickableSet.add(location)
             }
