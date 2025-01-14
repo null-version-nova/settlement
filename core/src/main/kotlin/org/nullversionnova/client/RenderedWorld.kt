@@ -8,13 +8,13 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileSet
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 import kotlinx.coroutines.runBlocking
 import org.nullversionnova.client.Client.Companion.getTileTexture
-import org.nullversionnova.common.Direction3
-import org.nullversionnova.common.Direction3.*
-import org.nullversionnova.common.Identifier
-import org.nullversionnova.common.IntVector3
-import org.nullversionnova.server.Server
-import org.nullversionnova.server.world.WorldCell
-import org.nullversionnova.server.tiles.TileInstance
+import org.nullversionnova.math.Direction3
+import org.nullversionnova.math.Direction3.*
+import org.nullversionnova.registry.Identifier
+import org.nullversionnova.math.IntVector3
+import org.nullversionnova.Server
+import org.nullversionnova.world.WorldCell
+import org.nullversionnova.world.tiles.TileInstance
 
 class RenderedWorld {
     // Initialize
@@ -33,7 +33,7 @@ class RenderedWorld {
 
     // Methods
     private fun getTileLayer(map: TiledMap, layers : MutableSet<TileInstance>) : TiledMapTileLayer {
-        val tileLayer = TiledMapTileLayer(WorldCell.CELL_SIZE, WorldCell.CELL_SIZE, Client.scale, Client.scale)
+        val tileLayer = TiledMapTileLayer(WorldCell.CELL_SIZE, WorldCell.CELL_SIZE, Client.SCALE, Client.SCALE)
         val allTiles = mutableMapOf<Identifier,Cell>()
         for (i in layers) {
             val vector = i.location

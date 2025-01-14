@@ -12,14 +12,15 @@ import com.beust.klaxon.Klaxon
 import kotlinx.coroutines.launch
 import ktx.app.KtxApplicationAdapter
 import ktx.app.KtxInputAdapter
-import org.nullversionnova.client.settlement.SettlementClient
-import org.nullversionnova.common.*
-import org.nullversionnova.common.Direction3.*
-import org.nullversionnova.server.Server
-import org.nullversionnova.server.world.WorldCell
+import org.nullversionnova.settlement.client.SettlementClient
+import org.nullversionnova.math.Direction3.*
+import org.nullversionnova.Server
+import org.nullversionnova.world.WorldCell
 import ktx.async.KtxAsync
 import ktx.graphics.use
-import org.nullversionnova.server.entities.Entity
+import org.nullversionnova.math.Direction3
+import org.nullversionnova.registry.Identifier
+import org.nullversionnova.world.entities.Entity
 
 class Client : KtxApplicationAdapter, KtxInputAdapter {
     // Members
@@ -54,7 +55,7 @@ class Client : KtxApplicationAdapter, KtxInputAdapter {
         }
         batch = SpriteBatch()
         camera.setToOrtho(false, 30f, 30f)
-        renderer = OrthogonalTiledMapRenderer(TiledMap(), (1f / scale.toFloat()))
+        renderer = OrthogonalTiledMapRenderer(TiledMap(), (1f / SCALE.toFloat()))
         camera.position.set(0f,0f,0f)
     }
 
@@ -255,7 +256,7 @@ class Client : KtxApplicationAdapter, KtxInputAdapter {
 
     // Companions
     companion object {
-        const val scale = 8
+        const val SCALE = 8
         const val PARALLAX = 0.00f
         const val MAX_ZOOM = 5f
         fun getTileTexture(direction: Direction3, identifier: Identifier): Identifier {
@@ -266,8 +267,8 @@ class Client : KtxApplicationAdapter, KtxInputAdapter {
                     DOWN -> Identifier(data!!.top)
                     else -> Identifier(data!!.side)
                 }
-            } catch (e: Exception) {
-                Identifier("engine","default")
+            } catch (_: Exception) {
+                Identifier("engine", "default")
             }
         }
     }
