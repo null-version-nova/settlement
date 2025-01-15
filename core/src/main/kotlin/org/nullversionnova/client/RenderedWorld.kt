@@ -1,6 +1,5 @@
 package org.nullversionnova.client
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell
@@ -21,7 +20,7 @@ class RenderedWorld {
     fun initialize(registry: ClientRegistry) {
         for ((counter, i) in registry.getTextureSet().withIndex()) {
             textureIds[i] = counter
-            tileSet.putTile(counter, StaticTiledMapTile(TextureRegion(registry.getTexture(i))))
+            tileSet.putTile(counter, StaticTiledMapTile(ClientRegistries.textureRegistry[i]))
         }
     }
     // Members

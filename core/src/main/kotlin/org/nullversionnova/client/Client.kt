@@ -12,14 +12,15 @@ import com.beust.klaxon.Klaxon
 import kotlinx.coroutines.launch
 import ktx.app.KtxApplicationAdapter
 import ktx.app.KtxInputAdapter
-import org.nullversionnova.settlement.client.SettlementClient
-import org.nullversionnova.math.Direction3.*
-import org.nullversionnova.Server
-import org.nullversionnova.world.WorldCell
 import ktx.async.KtxAsync
 import ktx.graphics.use
+import org.nullversionnova.Server
 import org.nullversionnova.math.Direction3
+import org.nullversionnova.math.Direction3.DOWN
+import org.nullversionnova.math.Direction3.UP
 import org.nullversionnova.registry.Identifier
+import org.nullversionnova.settlement.client.SettlementClient
+import org.nullversionnova.world.WorldCell
 import org.nullversionnova.world.entities.Entity
 
 class Client : KtxApplicationAdapter, KtxInputAdapter {
@@ -48,6 +49,7 @@ class Client : KtxApplicationAdapter, KtxInputAdapter {
         h = Gdx.graphics.height
         registry.initialize()
         SettlementClient.loadAssets(registry)
+        ClientRegistries.textureRegistry.register()
         ScreenUtils.clear(190f / 255f, 205f / 255f, 255f / 255f, 1f)
         KtxAsync.launch {
             server.initialize()
@@ -88,14 +90,18 @@ class Client : KtxApplicationAdapter, KtxInputAdapter {
         for (i in 0 until renderer.map.layers.count) {
             renderer.setView(camera)
             batch.use {
-                batch.draw(registry.getTexture(Identifier("engine:fog")),0f,0f,w.toFloat(),h.toFloat())
-                batch.draw(registry.getTexture(Identifier("engine:fog")),0f,0f,w.toFloat(),h.toFloat())
+                batch.draw(ClientRegistries.textureRegistry["engine:fog"],0f,0f,w.toFloat(),h.toFloat())
+                batch.draw(ClientRegistries.textureRegistry["engine:fog"],0f,0f,w.toFloat(),h.toFloat())
             }
-            renderer.render(intArrayOf(i))
+            try {
+                renderer.render(intArrayOf(i))
+            } catch (e: Exception) {
+                throw Exception("Renderer failed to render at layer $i",e)
+            }
             batch.use(camera) {
                 try {
                     for (j in entities[i - (255 - world.depth)]) {
-                        batch.draw(registry.getTexture(j.identifier),j.location.x.toFloat(),j.location.y.toFloat(),1f,1f)
+                        batch.draw(ClientRegistries.textureRegistry[j.identifier],j.location.x.toFloat(),j.location.y.toFloat(),1f,1f)
                     }
                 } catch (_: Exception) {}
             }
@@ -118,6 +124,7 @@ class Client : KtxApplicationAdapter, KtxInputAdapter {
     override fun dispose() {
         registry.destroy()
         renderer.map.dispose()
+        ClientRegistries.textureRegistry.dispose()
     }
 
     // Input

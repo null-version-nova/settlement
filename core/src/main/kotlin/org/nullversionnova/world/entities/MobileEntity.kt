@@ -25,7 +25,6 @@ open class MobileEntity(override var identifier: Identifier, override var locati
     fun move(direction: Direction3, server: Server) {
         val newLocation = location.copy()
         newLocation[direction.axis()] += if (direction.polarity()) { 1 } else { -1 }
-        println(!newLocation.outOfBounds())
         if (!newLocation.outOfBounds() && !server[newLocation].isWall) {
             location = newLocation
         }

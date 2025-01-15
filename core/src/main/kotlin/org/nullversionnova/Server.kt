@@ -31,7 +31,7 @@ class Server {
     }
     operator fun get(location: IntVector3) : TileState {
         if (loadedCell[location] == null) {
-            TileState.getTileState(TileInstance.instanceTile(Identifier("engine","air"),location,this),this)
+            return TileState.getTileState(TileInstance.instanceTile(Identifier("engine","air"),location,this),this)
         }
         return TileState.getTileState(loadedCell[location]!!,this)
     }

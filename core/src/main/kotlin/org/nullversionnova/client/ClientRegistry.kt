@@ -9,7 +9,6 @@ class ClientRegistry {
     // Initializing and Finalizing
     fun initialize() {
         println("Client registry initialized!")
-        loadTexture(Identifier())
     }
     fun destroy() {
         for (i in textureSet) { i.value.dispose() }

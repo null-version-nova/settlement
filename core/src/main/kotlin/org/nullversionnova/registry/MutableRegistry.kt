@@ -3,6 +3,11 @@ package org.nullversionnova.registry
 class MutableRegistry<T> : Registry<T> {
     private val registry = mutableMapOf<Identifier,T>()
 
+    private val callbacks = mutableListOf<() -> Unit>()
+    private var _registered = false
+    val registered : Boolean
+        get() = _registered
+
     override val entries = registry.entries
     override val keys = registry.keys
     override val size = registry.size
@@ -16,5 +21,19 @@ class MutableRegistry<T> : Registry<T> {
         if (containsKey(identifier)) throw Exception()
         registry[identifier] = obj
         return obj
+    }
+
+    override fun register() {
+        _registered = true
+        callbacks.forEach { it.invoke() }
+    }
+
+    override fun dispose() {
+        _registered = false
+        registry.clear()
+    }
+
+    override fun listen(callback: () -> Unit) {
+        callbacks.add(callback)
     }
 }
