@@ -1,27 +1,16 @@
-buildscript {
-  repositories {
-    mavenCentral()
-    maven { url 'https://s01.oss.sonatype.org' }
-    mavenLocal()
-    google()
-    gradlePluginPortal()
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
-  }
-  dependencies {
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-  }
+plugins {
+  id 'org.jetbrains.kotlin.jvm' version '2.1.0'
+  id 'org.jetbrains.kotlin.plugin.serialization' version '2.1.0'
 }
 
-allprojects {
-  apply plugin: 'eclipse'
-  apply plugin: 'idea'
+repositories {
+  mavenCentral()
 }
 
 configure(subprojects) {
   apply plugin: 'java-library'
   apply plugin: 'kotlin'
-  sourceCompatibility = 1.8
+  sourceCompatibility = 2.1
   compileJava {
     options.incremental = true
   }
@@ -32,19 +21,10 @@ subprojects {
   ext.appName = 'settlement'
   repositories {
     mavenCentral()
-    maven { url 'https://s01.oss.sonatype.org' }
-    mavenLocal()
-    gradlePluginPortal()
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
-    maven { url 'https://jitpack.io' }
-
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
   }
   dependencies {
-    implementation 'com.beust:klaxon:5.5'
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0-Beta")
-    implementation("io.github.libktx:ktx-async:1.11.0-rc5")
+    implementation("io.github.libktx:ktx-async:1.12.1-rc2")
   }
 }
-
-eclipse.project.name = 'settlement' + '-parent'

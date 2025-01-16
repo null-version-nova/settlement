@@ -12,6 +12,7 @@ class TextureRegistry(private val registry: MutableRegistry<TextureAtlas.AtlasRe
         atlas.regions.forEach {
             registry.register(Identifier(it.name.substringBefore('.'),it.name.substringAfter('.')),it)
         }
+        println("Texture registry registered!")
     }
     override fun dispose() {
         atlas?.dispose()

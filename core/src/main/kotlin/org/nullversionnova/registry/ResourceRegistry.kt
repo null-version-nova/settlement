@@ -2,7 +2,7 @@ package org.nullversionnova.registry
 
 import java.io.File
 
-abstract class ResourceRegistry<T>(private val registry: MutableRegistry<T>, val clientSide: Boolean, val path: String, val extension: String) : Registry<T> by registry {
+open class ResourceRegistry<T>(private val registry: MutableRegistry<T>, val clientSide: Boolean, val path: String, val extension: String, val accessor: (File) -> T) : Registry<T> by registry {
     override fun register() {
         preRegister()
         if (clientSide) { clientSideNamespaces } else { serverSideNamespaces }.forEach { namespace ->
@@ -14,7 +14,6 @@ abstract class ResourceRegistry<T>(private val registry: MutableRegistry<T>, val
         }
         postRegister()
     }
-    abstract fun accessor(file: File) : T
     open fun preRegister() {}
     open fun postRegister() {}
 

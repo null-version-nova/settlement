@@ -19,7 +19,6 @@ else {
 
 sourceSets.main.resources.srcDirs += [ rootProject.file('assets').path ]
 mainClassName = 'org.nullversionnova.lwjgl3.Lwjgl3Launcher'
-eclipse.project.name = appName + '-lwjgl3'
 sourceCompatibility = 1.8
 
 dependencies {
@@ -100,4 +99,14 @@ if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_14)) {
 
 // Equivalent to the jar task; here for compatibility with gdx-setup.
 task dist(dependsOn: [jar]) {
+}
+
+repositories {
+  mavenCentral()
+  maven { url 'https://s01.oss.sonatype.org' }
+  mavenLocal()
+  gradlePluginPortal()
+  maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+  maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+  maven { url 'https://jitpack.io' }
 }

@@ -19,7 +19,6 @@ import org.nullversionnova.math.Direction3
 import org.nullversionnova.math.Direction3.DOWN
 import org.nullversionnova.math.Direction3.UP
 import org.nullversionnova.registry.Identifier
-import org.nullversionnova.settlement.client.SettlementClient
 import org.nullversionnova.world.WorldCell
 import org.nullversionnova.world.entities.Entity
 
@@ -27,7 +26,6 @@ class Client : KtxApplicationAdapter, KtxInputAdapter {
     // Members
     private val world = RenderedWorld()
     private val server = Server()
-    private val registry = ClientRegistry()
     private val camera = OrthographicCamera()
     private lateinit var renderer : OrthogonalTiledMapRenderer
     private lateinit var batch : SpriteBatch
@@ -47,14 +45,10 @@ class Client : KtxApplicationAdapter, KtxInputAdapter {
         Gdx.input.inputProcessor = this
         w = Gdx.graphics.width
         h = Gdx.graphics.height
-        registry.initialize()
-        SettlementClient.loadAssets(registry)
         ClientRegistries.textureRegistry.register()
         ScreenUtils.clear(190f / 255f, 205f / 255f, 255f / 255f, 1f)
-        KtxAsync.launch {
-            server.initialize()
-            world.initialize(registry)
-        }
+        server.initialize()
+        world.initialize()
         batch = SpriteBatch()
         camera.setToOrtho(false, 30f, 30f)
         renderer = OrthogonalTiledMapRenderer(TiledMap(), (1f / SCALE.toFloat()))
@@ -122,7 +116,6 @@ class Client : KtxApplicationAdapter, KtxInputAdapter {
     }
 
     override fun dispose() {
-        registry.destroy()
         renderer.map.dispose()
         ClientRegistries.textureRegistry.dispose()
     }

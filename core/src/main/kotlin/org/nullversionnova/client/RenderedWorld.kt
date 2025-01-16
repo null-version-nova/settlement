@@ -17,11 +17,12 @@ import org.nullversionnova.world.tiles.TileInstance
 
 class RenderedWorld {
     // Initialize
-    fun initialize(registry: ClientRegistry) {
-        for ((counter, i) in registry.getTextureSet().withIndex()) {
-            textureIds[i] = counter
-            tileSet.putTile(counter, StaticTiledMapTile(ClientRegistries.textureRegistry[i]))
+    fun initialize() {
+        for (i in ClientRegistries.textureRegistry.keys.withIndex()) {
+            textureIds[i.value] = i.index
+            tileSet.putTile(i.index, StaticTiledMapTile(ClientRegistries.textureRegistry[i.value]))
         }
+        println("Renderer initialized!")
     }
     // Members
     private val textureIds = mutableMapOf<Identifier,Int>()
@@ -152,8 +153,8 @@ class RenderedWorld {
         if (oldMap == null) { resetMap(server) }
         val map = TiledMap()
         map.tileSets.addTileSet(tileSet)
-        runBlocking { map.layers.add(getTileLayer(map, layerCast(server, depthDirection(depth, direction, oldMap!!.layers.count)))) }
-        for (i in 0 until oldMap!!.layers.count) {
+        map.layers.add(getTileLayer(map, layerCast(server, depthDirection(depth, direction, oldMap!!.layers.count))))
+        for (i in 0 until oldMap.layers.count) {
             map.layers.add(oldMap.layers[i])
         }
         oldMap.dispose()
