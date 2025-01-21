@@ -10,7 +10,6 @@ repositories {
 configure(subprojects) {
   apply plugin: 'java-library'
   apply plugin: 'kotlin'
-  sourceCompatibility = 2.1
   compileJava {
     options.incremental = true
   }

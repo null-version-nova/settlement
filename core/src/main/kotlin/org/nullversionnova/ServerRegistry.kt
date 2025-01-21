@@ -1,7 +1,6 @@
 package org.nullversionnova
 
 import com.badlogic.gdx.Gdx
-import com.beust.klaxon.Klaxon
 import org.nullversionnova.registry.Identifier
 import org.nullversionnova.properties.MutableInheritingProperties
 import org.nullversionnova.properties.InheritingPropertiesJSON
@@ -30,13 +29,13 @@ class ServerRegistry {
     fun addValueProperty(identifier: Identifier, default: Number) { valueProperties[identifier] = default }
     fun addMaterial(identifier: Identifier) {
         val material = try {
-            Klaxon().parse<InheritingPropertiesJSON>(Gdx.files.internal("server/${identifier.pack}/materials/${identifier.name}.json").readString())?.cast(this,identifier)
+//            Klaxon().parse<InheritingPropertiesJSON>(Gdx.files.internal("server/${identifier.pack}/materials/${identifier.name}.json").readString())?.cast(this,identifier)
         } catch (e: Exception) {
             println("Warning: Exception while loading JSON associated with identifier $identifier")
             println(e)
             return
         }
-        materials[identifier] = material!!
+//        materials[identifier] = material!!
     }
 
     // Retrieving

@@ -8,8 +8,9 @@ import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
-import com.beust.klaxon.Klaxon
+//import com.beust.klaxon.Klaxon
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import ktx.app.KtxApplicationAdapter
 import ktx.app.KtxInputAdapter
 import ktx.async.KtxAsync
@@ -261,11 +262,11 @@ class Client : KtxApplicationAdapter, KtxInputAdapter {
         const val MAX_ZOOM = 5f
         fun getTileTexture(direction: Direction3, identifier: Identifier): Identifier {
             return try {
-                val data = Klaxon().parse<TileModel>(Gdx.files.internal("client/${identifier.pack}/models/tiles/${identifier.name}.json").readString())
+                val data = Json.decodeFromString<TileModel>(Gdx.files.internal("client/${identifier.pack}/models/tiles/${identifier.name}.json").readString())
                 when (direction) {
-                    UP -> Identifier(data!!.bottom)
-                    DOWN -> Identifier(data!!.top)
-                    else -> Identifier(data!!.side)
+                    UP -> Identifier(data.bottom)
+                    DOWN -> Identifier(data.top)
+                    else -> Identifier(data.side)
                 }
             } catch (_: Exception) {
                 Identifier("engine", "default")
