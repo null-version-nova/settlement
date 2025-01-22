@@ -5,7 +5,7 @@ class MutableRegistry<T> : Registry<T> {
 
     private val callbacks = mutableListOf<() -> Unit>()
     private var _registered = false
-    val registered : Boolean
+    override val registered : Boolean
         get() = _registered
 
     override val entries = registry.entries

@@ -37,14 +37,13 @@ class WorldCell {
                 for (k in heightmap[IntVector2(i,j)]!! - Generator.SOIL_DEPTH until heightmap[IntVector2(i,j)]!!) {
                     placeTile(Identifier("settlement","dirt"),IntVector3(i,j,k),server)
                 }
-                placeTile(Identifier("settlement","grass"),IntVector3(i,j,heightmap[IntVector2(i,j)]!!),server)
             }
         }
         loaded = true
     }
     fun placeTile(identifier: Identifier, location: IntVector3, server: Server) {
         try {
-            tileMap[location] = instanceTile(identifier,location,server)
+            tileMap[location] = instanceTile(server.registry.accessTile(identifier),location,server)
             if (server.registry.accessTile(identifier) is TickableTile) {
                 tickableSet.add(location)
             }
@@ -56,7 +55,7 @@ class WorldCell {
     }
     fun tick(server: Server,tickIndex: Int) {
         location = tickableSet[tickIndex]
-        val tile = server.registry.accessTile(tileMap[location]!!.identifier)
+        val tile = server.registry.accessTile(tileMap[location]!!.tileType.identifier)
         if (tile is TickableTile) {
             tile.tick(location,server)
         }

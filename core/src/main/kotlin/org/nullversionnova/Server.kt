@@ -32,7 +32,7 @@ class Server {
     }
     operator fun get(location: IntVector3) : TileState {
         if (loadedCell[location] == null) {
-            return TileState.getTileState(TileInstance.instanceTile(Identifier("engine","air"),location,this),this)
+            return TileState.getTileState(TileInstance.instanceTile(registry.accessTile(Identifier("engine:air")),location,this),this)
         }
         return TileState.getTileState(loadedCell[location]!!,this)
     }

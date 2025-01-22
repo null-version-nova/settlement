@@ -1,7 +1,7 @@
 package org.nullversionnova.world.tiles
 
+import org.nullversionnova.Registries
 import org.nullversionnova.registry.Identifier
-import org.nullversionnova.ServerRegistry
 import org.nullversionnova.Server
 import org.nullversionnova.world.GameObject
 
@@ -53,11 +53,11 @@ open class Tile(var material: Identifier = Identifier(), override var identifier
     }
 
     // Getters
-    fun checkValue(value: Identifier, registry: ServerRegistry) : Number {
-        return registry.getMaterialValue(material,value)
+    fun checkValue(value: Identifier) : Number {
+        return Registries.materialRegistry[material]?.get(value)!!
     }
-    fun checkMaterialProperty(property: Identifier, registry: ServerRegistry) : Boolean {
-        return registry.isMaterial(material,property)
+    fun checkMaterialProperty(property: Identifier) : Boolean {
+        return Registries.materialRegistry[material]!!.hasProperty(property)
     }
     fun checkTileProperty(property: Identifier) : Boolean {
         return properties.contains(property)

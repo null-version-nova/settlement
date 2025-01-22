@@ -1,9 +1,8 @@
 package org.nullversionnova.properties
 
 import kotlinx.serialization.Serializable
+import org.nullversionnova.Registries
 import org.nullversionnova.registry.Identifier
-import org.nullversionnova.ServerRegistry
-import org.nullversionnova.settlement.SettlementRegistries
 
 @Serializable
 class InheritingPropertiesJSON (
@@ -12,8 +11,8 @@ class InheritingPropertiesJSON (
     private val propertyNegation: Array<String> = arrayOf(),
     private val parent : String? = null
 ) {
-    fun cast() : MutableInheritingProperties<Number> {
-        val item = MutableInheritingProperties<Number>(parent?.let { SettlementRegistries.MaterialRegistry[it] })
+    fun cast() : MutableInheritingProperties<Int> {
+        val item = MutableInheritingProperties<Int>(parent?.let { Registries.materialRegistry[it] } as InheritingProperties<Int>?)
         for (i in values) {
             item[i.property] = i.value
         }
@@ -25,8 +24,8 @@ class InheritingPropertiesJSON (
         }
         return item
     }
-    fun cast(registry: ServerRegistry, identifier: Identifier) : MutableInheritingProperties<Number> {
-        val item = MutableInheritingProperties(parent?.let { registry.getMaterial(it) })
+    fun cast(identifier: Identifier) : MutableInheritingProperties<Int> {
+        val item = MutableInheritingProperties<Int>(parent?.let { Registries.materialRegistry[it] } as InheritingProperties<Int>?)
         for (i in values) {
             item[i.property] = i.value
         }

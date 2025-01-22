@@ -6,12 +6,11 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 import kotlinx.coroutines.runBlocking
-import org.nullversionnova.client.Client.Companion.getTileTexture
-import org.nullversionnova.math.Direction3
-import org.nullversionnova.math.Direction3.*
-import org.nullversionnova.registry.Identifier
-import org.nullversionnova.math.IntVector3
 import org.nullversionnova.Server
+import org.nullversionnova.math.Direction3
+import org.nullversionnova.math.Direction3.DOWN
+import org.nullversionnova.math.IntVector3
+import org.nullversionnova.registry.Identifier
 import org.nullversionnova.world.WorldCell
 import org.nullversionnova.world.tiles.TileInstance
 
@@ -40,9 +39,9 @@ class RenderedWorld {
             val x = vector.x
             val y = vector.y
             if (!allTiles.keys.contains(i.getTexture())) {
-                allTiles[i.getTexture()] = Cell().setTile(textureIds[getTileTexture(direction,i.getTexture())]?.let { map.tileSets.getTile(it) })
+                allTiles[i.getTexture()] = Cell().setTile(textureIds[Client.getTileTexture(direction,i.getTexture())]?.let { map.tileSets.getTile(it) })
             }
-            tileLayer.setCell(x,y, allTiles[i.identifier])
+            tileLayer.setCell(x,y, allTiles[i.tileType.identifier])
         }
         allTiles.clear()
         return tileLayer

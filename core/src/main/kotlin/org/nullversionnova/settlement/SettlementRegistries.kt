@@ -7,7 +7,5 @@ import org.nullversionnova.registry.MutableRegistry
 import org.nullversionnova.registry.ResourceRegistry
 
 object SettlementRegistries {
-    val MaterialRegistry = ResourceRegistry<MutableInheritingProperties<Number>>(MutableRegistry(),false,"materials",".json") {
-        Json.decodeFromString<InheritingPropertiesJSON>(it.readText()).cast()
-    }
+
 }

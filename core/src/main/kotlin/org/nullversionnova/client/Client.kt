@@ -47,6 +47,7 @@ class Client : KtxApplicationAdapter, KtxInputAdapter {
         w = Gdx.graphics.width
         h = Gdx.graphics.height
         ClientRegistries.textureRegistry.register()
+        ClientRegistries.tileModelRegistry.register()
         ScreenUtils.clear(190f / 255f, 205f / 255f, 255f / 255f, 1f)
         server.initialize()
         world.initialize()
@@ -260,15 +261,24 @@ class Client : KtxApplicationAdapter, KtxInputAdapter {
         const val SCALE = 8
         const val PARALLAX = 0.00f
         const val MAX_ZOOM = 5f
+        private var errorReported = false
         fun getTileTexture(direction: Direction3, identifier: Identifier): Identifier {
             return try {
-                val data = Json.decodeFromString<TileModel>(Gdx.files.internal("client/${identifier.pack}/models/tiles/${identifier.name}.json").readString())
+                val data = ClientRegistries.tileModelRegistry[identifier]!!
                 when (direction) {
                     UP -> Identifier(data.bottom)
                     DOWN -> Identifier(data.top)
                     else -> Identifier(data.side)
                 }
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                if (!errorReported) {
+                    println("Operation failed for identifier $identifier")
+                    e.printStackTrace()
+                    errorReported = true
+                    ClientRegistries.tileModelRegistry.keys.forEach {
+                        println(it.toString())
+                    }
+                };
                 Identifier("engine", "default")
             }
         }

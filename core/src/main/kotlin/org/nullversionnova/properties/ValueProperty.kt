@@ -1,3 +1,6 @@
 package org.nullversionnova.properties
 
-data class ValueProperty(var property: String, var value: Number)
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class ValueProperty(var property: String, var value: Int)
