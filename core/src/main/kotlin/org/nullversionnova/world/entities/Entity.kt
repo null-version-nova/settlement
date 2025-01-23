@@ -1,10 +1,10 @@
 package org.nullversionnova.world.entities
 
-import org.nullversionnova.math.IntVector3
-import org.nullversionnova.world.GameObject
 import org.nullversionnova.Server
+import org.nullversionnova.math.IntVector3
+import org.nullversionnova.world.RegistryObject
 
-interface Entity : GameObject {
+interface Entity : RegistryObject {
     // Members
     var tickable : Boolean
     var maxHealth : Int

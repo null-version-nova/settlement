@@ -1,15 +1,12 @@
 package org.nullversionnova.world.tiles
 
-import org.nullversionnova.Registries
-import org.nullversionnova.registry.Identifier
 import org.nullversionnova.Server
-import org.nullversionnova.world.GameObject
+import org.nullversionnova.client.ClientRegistries
+import org.nullversionnova.properties.InheritingProperties
+import org.nullversionnova.registry.Identifier
+import org.nullversionnova.world.AbstractRegistryObject
 
-open class Tile(var material: Identifier = Identifier(), override var identifier: Identifier = Identifier()) :
-    GameObject {
-    // Initialization
-    constructor(material: String) : this(Identifier(material))
-
+open class Tile(var material: InheritingProperties<Int>? = null) : AbstractRegistryObject() {
     // Members
     open val defaultValues = mutableMapOf<Identifier,Number>(
         // Pair(property, default), Pair(otherProperty, otherDefault)
@@ -22,6 +19,8 @@ open class Tile(var material: Identifier = Identifier(), override var identifier
     )
     private val properties = mutableSetOf<Identifier>()
 
+    val textureModel by lazy { ClientRegistries.textureRegistry[identifier] }
+
     // Methods
     open fun place(tile: TileInstance, server: Server) {
         for (i in defaultValues.keys) {
@@ -33,10 +32,6 @@ open class Tile(var material: Identifier = Identifier(), override var identifier
     }
 
     // Setters
-    fun material(newMaterial: Identifier) : Tile {
-        material = newMaterial
-        return this
-    }
     fun addProperty(property: Identifier) : Tile {
         properties.add(property)
         return this
@@ -53,11 +48,11 @@ open class Tile(var material: Identifier = Identifier(), override var identifier
     }
 
     // Getters
-    fun checkValue(value: Identifier) : Number {
-        return Registries.materialRegistry[material]?.get(value)!!
+    fun checkMaterialValue(value: Identifier) : Number {
+        return material?.get(value) ?: 0
     }
     fun checkMaterialProperty(property: Identifier) : Boolean {
-        return Registries.materialRegistry[material]!!.hasProperty(property)
+        return material?.hasProperty(property) == true
     }
     fun checkTileProperty(property: Identifier) : Boolean {
         return properties.contains(property)

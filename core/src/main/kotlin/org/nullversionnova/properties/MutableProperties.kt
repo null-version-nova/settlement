@@ -9,5 +9,4 @@ interface MutableProperties<T> : Properties<T> {
     fun make(identifier: String) : Boolean { return make(Identifier(identifier)) }
     fun makeNot(identifier: Identifier) : Boolean
     fun makeNot(identifier: String) : Boolean { return makeNot(Identifier(identifier)) }
-    fun staticCopy() : Properties<T>
 }

@@ -1,12 +1,13 @@
 package org.nullversionnova.world.tiles
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import org.nullversionnova.Registries
-import org.nullversionnova.properties.InheritingProperties
-import org.nullversionnova.properties.MutableMappedProperties
+import org.nullversionnova.Server
 import org.nullversionnova.math.Direction3
 import org.nullversionnova.math.IntVector3
+import org.nullversionnova.properties.InheritingProperties
+import org.nullversionnova.properties.MutableMappedProperties
 import org.nullversionnova.registry.Identifier
-import org.nullversionnova.Server
 
 class TileInstance(var tileType: Tile, var location : IntVector3) : MutableMappedProperties<Number>() {
     // Members
@@ -14,8 +15,8 @@ class TileInstance(var tileType: Tile, var location : IntVector3) : MutableMappe
     var isFloor : Boolean = false
 
     // Getters
-    fun getTexture() : Identifier { return tileType.identifier }
-    fun getMaterial() : InheritingProperties<Int> { return Registries.materialRegistry[tileType.material]!! }
+    fun getTexture() : TextureRegion { return tileType.textureModel!! }
+    fun getMaterial() : InheritingProperties<Int>? { return tileType.material }
 
     // Mutators
     fun increment(property: Identifier, value: Number = 1) : Number {
@@ -54,9 +55,10 @@ class TileInstance(var tileType: Tile, var location : IntVector3) : MutableMappe
         return increment(property, value * -1)
     }
 
+    val isWall = !isFloor && !tileType.checkTileProperty(Identifier("engine","intangible"))
+
     companion object {
         fun instanceTile(tile: Tile, location: IntVector3, server: Server, asFloor: Boolean = false) : TileInstance {
-//            if (!server.registry.getTiles().contains(tile)) throw InvalidIdentifierException()
             if (location.outOfBounds()) { throw Exception("Out of bounds! Location was $location") }
             val instance = TileInstance(tile,location)
             instance.isFloor = asFloor

@@ -38,8 +38,8 @@ class RenderedWorld {
             val vector = i.location
             val x = vector.x
             val y = vector.y
-            if (!allTiles.keys.contains(i.getTexture())) {
-                allTiles[i.getTexture()] = Cell().setTile(textureIds[Client.getTileTexture(direction,i.getTexture())]?.let { map.tileSets.getTile(it) })
+            if (!allTiles.keys.contains(i.tileType.identifier)) {
+                allTiles[i.tileType.identifier] = Cell().setTile(textureIds[i.tileType.identifier]?.let { map.tileSets.getTile(it) })
             }
             tileLayer.setCell(x,y, allTiles[i.tileType.identifier])
         }

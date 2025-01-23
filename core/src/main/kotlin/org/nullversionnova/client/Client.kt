@@ -14,10 +14,6 @@ import ktx.app.KtxInputAdapter
 import ktx.async.KtxAsync
 import ktx.graphics.use
 import org.nullversionnova.Server
-import org.nullversionnova.math.Direction3
-import org.nullversionnova.math.Direction3.DOWN
-import org.nullversionnova.math.Direction3.UP
-import org.nullversionnova.registry.Identifier
 import org.nullversionnova.world.WorldCell
 import org.nullversionnova.world.entities.Entity
 
@@ -45,7 +41,6 @@ class Client : KtxApplicationAdapter, KtxInputAdapter {
         w = Gdx.graphics.width
         h = Gdx.graphics.height
         ClientRegistries.textureRegistry.register()
-        ClientRegistries.tileModelRegistry.register()
         ScreenUtils.clear(190f / 255f, 205f / 255f, 255f / 255f, 1f)
         server.initialize()
         world.initialize()
@@ -259,19 +254,5 @@ class Client : KtxApplicationAdapter, KtxInputAdapter {
         const val SCALE = 8
         const val PARALLAX = 0.00f
         const val MAX_ZOOM = 5f
-        fun getTileTexture(direction: Direction3, identifier: Identifier): Identifier {
-            return try {
-                val data = ClientRegistries.tileModelRegistry[identifier] ?: return Identifier("engine:default")
-                when (direction) {
-                    UP -> Identifier(data.bottom)
-                    DOWN -> Identifier(data.top)
-                    else -> Identifier(data.side)
-                }
-            } catch (e: Exception) {
-                println("Operation failed for identifier $identifier")
-                e.printStackTrace()
-                Identifier("engine", "default")
-            }
-        }
     }
 }

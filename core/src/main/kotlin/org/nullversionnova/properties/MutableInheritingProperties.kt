@@ -22,7 +22,4 @@ open class MutableInheritingProperties<T>(parent: InheritingProperties<T>? = nul
             false
         }
     }
-    override fun staticCopy(): InheritingProperties<T> {
-        return InheritingProperties(parent,values.toMap(),properties.toSet(),propertyNegation.toSet())
-    }
 }

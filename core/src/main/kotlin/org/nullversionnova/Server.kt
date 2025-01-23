@@ -9,7 +9,6 @@ import org.nullversionnova.settlement.Settlement
 import org.nullversionnova.settlement.world.tiles.SettlementTiles
 import org.nullversionnova.world.tiles.EngineTiles
 import org.nullversionnova.world.tiles.TileInstance
-import org.nullversionnova.world.tiles.TileState
 
 class Server {
     // Members
@@ -34,10 +33,10 @@ class Server {
             i.tick(this)
         }
     }
-    operator fun get(location: IntVector3) : TileState {
+    operator fun get(location: IntVector3) : TileInstance {
         if (loadedCell[location] == null) {
-            return TileState.getTileState(TileInstance.instanceTile(EngineTiles.AIR,location,this))
+            return TileInstance.instanceTile(EngineTiles.AIR,location,this)
         }
-        return TileState.getTileState(loadedCell[location]!!)
+        return loadedCell[location]!!
     }
 }

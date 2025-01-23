@@ -2,6 +2,6 @@ package org.nullversionnova.world
 
 import org.nullversionnova.registry.Identifier
 
-interface GameObject {
-    var identifier: Identifier
+interface RegistryObject {
+    val identifier: Identifier
 }
