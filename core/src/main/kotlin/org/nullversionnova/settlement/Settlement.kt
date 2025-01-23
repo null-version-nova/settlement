@@ -1,14 +1,12 @@
 package org.nullversionnova.settlement
 
-import org.nullversionnova.registry.Identifier
 import org.nullversionnova.ServerRegistry
-import org.nullversionnova.settlement.world.tiles.SettlementTiles
+import org.nullversionnova.registry.Identifier
 
 object Settlement {
     const val PACK_IDENTIFIER = "settlement"
     fun load(registry: ServerRegistry) {
         registerProperties(registry)
-        SettlementTiles.registerTiles(registry)
     }
     fun registerProperties(registry: ServerRegistry) {
         registry.addValueProperty(getId("flammability"),-1)

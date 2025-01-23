@@ -4,9 +4,10 @@ import org.nullversionnova.world.tiles.EngineTiles
 
 object Engine {
     const val pack_identifier = "engine"
-    fun load(registry: ServerRegistry) {
+    fun load() {
         Registries.materialRegistry.register()
-        EngineTiles.registerTiles(registry)
+        EngineTiles
+        Registries.tileRegistry.register()
     }
 
 }
