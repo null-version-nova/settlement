@@ -8,9 +8,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
-//import com.beust.klaxon.Klaxon
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import ktx.app.KtxApplicationAdapter
 import ktx.app.KtxInputAdapter
 import ktx.async.KtxAsync
@@ -261,24 +259,17 @@ class Client : KtxApplicationAdapter, KtxInputAdapter {
         const val SCALE = 8
         const val PARALLAX = 0.00f
         const val MAX_ZOOM = 5f
-        private var errorReported = false
         fun getTileTexture(direction: Direction3, identifier: Identifier): Identifier {
             return try {
-                val data = ClientRegistries.tileModelRegistry[identifier]!!
+                val data = ClientRegistries.tileModelRegistry[identifier] ?: return Identifier("engine:default")
                 when (direction) {
                     UP -> Identifier(data.bottom)
                     DOWN -> Identifier(data.top)
                     else -> Identifier(data.side)
                 }
             } catch (e: Exception) {
-                if (!errorReported) {
-                    println("Operation failed for identifier $identifier")
-                    e.printStackTrace()
-                    errorReported = true
-                    ClientRegistries.tileModelRegistry.keys.forEach {
-                        println(it.toString())
-                    }
-                };
+                println("Operation failed for identifier $identifier")
+                e.printStackTrace()
                 Identifier("engine", "default")
             }
         }
