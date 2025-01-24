@@ -22,6 +22,7 @@ class MutableRegistry<T> : Registry<T> {
         registry[identifier] = obj
         return obj
     }
+    fun register(identifier: String, obj: T) : T = register(Identifier(identifier),obj)
 
     override fun register() {
         _registered = true

@@ -13,4 +13,5 @@ object Registries {
         Json.decodeFromString<InheritingPropertiesJSON>(it.readText()).cast()
     }
     val tileRegistry = ConstructorRegistry<Tile>(MutableRegistry())
+    val valuePropertyRegistry = MutableRegistry<Int>()
 }

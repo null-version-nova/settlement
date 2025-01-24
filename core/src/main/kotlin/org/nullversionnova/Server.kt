@@ -13,7 +13,6 @@ import org.nullversionnova.world.tiles.TileInstance
 class Server {
     // Members
     val loadedCell = WorldCell()
-    val registry = ServerRegistry()
     val entities = mutableListOf<Entity>()
     private var tickIndex = 0
 
@@ -22,7 +21,7 @@ class Server {
         EngineTiles
         SettlementTiles
         Engine.load()
-        Settlement.load(registry)
+        Settlement.load()
         loadedCell.generate(this)
         entities.add(MobileEntity(Identifier("settlement","snowman"), IntVector3(0,30,128)))
         println("Server initialized!")

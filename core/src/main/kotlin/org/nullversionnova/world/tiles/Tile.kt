@@ -1,5 +1,6 @@
 package org.nullversionnova.world.tiles
 
+import org.nullversionnova.Registries
 import org.nullversionnova.Server
 import org.nullversionnova.client.ClientRegistries
 import org.nullversionnova.properties.InheritingProperties
@@ -9,13 +10,13 @@ import org.nullversionnova.world.AbstractRegistryObject
 open class Tile(var material: InheritingProperties<Int>? = null) : AbstractRegistryObject() {
     // Members
     open val defaultValues = mutableMapOf<Identifier,Number>(
-        // Pair(property, default), Pair(otherProperty, otherDefault)
+        // Pair(property, default), Pair(otherProperty, otherDefault)...
     )
     open val minimumValues = mutableMapOf<Identifier,Number>(
-        // Pair(property, minimum), Pair(otherProperty, otherMinimum)
+        // Pair(property, minimum), Pair(otherProperty, otherMinimum)...
     )
     open val maximumValues = mutableMapOf<Identifier,Number>(
-        // Pair(property, Maximum), Pair(otherProperty, otherMaximum)
+        // Pair(property, Maximum), Pair(otherProperty, otherMaximum)...
     )
     private val properties = mutableSetOf<Identifier>()
 
@@ -49,7 +50,7 @@ open class Tile(var material: InheritingProperties<Int>? = null) : AbstractRegis
 
     // Getters
     fun checkMaterialValue(value: Identifier) : Number {
-        return material?.get(value) ?: 0
+        return material?.get(value) ?: Registries.valuePropertyRegistry[identifier] ?: 0
     }
     fun checkMaterialProperty(property: Identifier) : Boolean {
         return material?.hasProperty(property) == true
